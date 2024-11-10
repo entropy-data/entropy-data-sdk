@@ -1,0 +1,38 @@
+{
+  "mappings" : [
+    {
+      "request" : {
+        "method" : "GET",
+        "urlPathTemplate" : "/api/access/{accessId}"
+      },
+      "response" : {
+        "status" : 200,
+        "headers" : {
+          "Content-Type" : "application/json"
+        },
+        "jsonBody" : {
+          "dataUsageAgreementSpecification": "0.0.1",
+          "id": "2OzPnlv1OVp20sKQaqRQAl",
+          "info": {
+            "purpose": "purpose-1",
+            "status": "approved",
+            "active": true,
+            "startDate": "2024-11-09"
+          },
+          "provider": {
+            "teamId": "my-example-team",
+            "dataProductId": "my-example-data-product",
+            "outputPortId": "snowflake"
+          },
+          "consumer": {
+            "userId": "demo.user@demo3K2ZPgN1InUIVJpIsrNzQu.datamesh-manager.com"
+          },
+          "tags": [],
+          "links": {},
+          "custom": {}
+        }
+
+      }
+    }
+  ]
+}

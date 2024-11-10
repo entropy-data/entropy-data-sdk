@@ -1,0 +1,141 @@
+{
+  "mappings" : [
+    {
+      "request" : {
+        "method" : "GET",
+        "urlPath" : "/api/events",
+        "queryParameters": {
+          "lastEventId": {
+            "doesNotMatch" : "1ef9ebfe-29f4-6f4a-b4cc-03e3b7d7579f"
+          }
+        }
+      },
+      "response" : {
+        "status" : 200,
+        "headers" : {
+          "Content-Type" : "application/json"
+        },
+        "jsonBody" : [
+          {
+            "specversion": "1.0",
+            "id": "1ef9ebfd-1baf-6800-b4cc-29ec4630cb43",
+            "type": "com.datamesh-manager.events.DataProductCreatedEvent",
+            "source": "https://app.datamesh-manager.com",
+            "time": "2024-11-09T17:26:56.640037Z",
+            "subject": "my-example-data-product",
+            "datacontenttype": "application/json",
+            "dataschema": "https://api.datamesh-manager.com/api/openapi.yaml#/components/schemas/DataProductCreatedEvent",
+            "data": {
+              "id": "my-example-data-product",
+              "timestamp": "2024-11-09T17:26:56.640035Z"
+            }
+          },
+          {
+            "specversion": "1.0",
+            "id": "1ef9ebfe-0748-6002-b4cc-eb62af15d801",
+            "type": "com.datamesh-manager.events.AccessCreatedEvent",
+            "source": "https://app.datamesh-manager.com",
+            "time": "2024-11-09T17:27:21.344117Z",
+            "subject": "2OzPnlv1OVp20sKQaqRQAl",
+            "datacontenttype": "application/json",
+            "dataschema": "https://api.datamesh-manager.com/api/openapi.yaml#/components/schemas/AccessCreatedEvent",
+            "data": {
+              "id": "2OzPnlv1OVp20sKQaqRQAl",
+              "timestamp": "2024-11-09T17:27:21.344115Z"
+            }
+          },
+          {
+            "specversion": "1.0",
+            "id": "1ef9ebfe-075d-6f94-b4cc-e1993374c733",
+            "type": "com.datamesh-manager.events.AccessRequestedEvent",
+            "source": "https://app.datamesh-manager.com",
+            "time": "2024-11-09T17:27:21.353326Z",
+            "subject": "2OzPnlv1OVp20sKQaqRQAl",
+            "datacontenttype": "application/json",
+            "dataschema": "https://api.datamesh-manager.com/api/openapi.yaml#/components/schemas/AccessRequestedEvent",
+            "data": {
+              "id": "2OzPnlv1OVp20sKQaqRQAl",
+              "timestamp": "2024-11-09T17:27:21.353324Z"
+            }
+          },
+          {
+            "specversion": "1.0",
+            "id": "1ef9ebfe-29da-6196-b4cc-3d78b268068c",
+            "type": "com.datamesh-manager.events.AccessUpdatedEvent",
+            "source": "https://app.datamesh-manager.com",
+            "time": "2024-11-09T17:27:24.969315Z",
+            "subject": "2OzPnlv1OVp20sKQaqRQAl",
+            "datacontenttype": "application/json",
+            "dataschema": "https://api.datamesh-manager.com/api/openapi.yaml#/components/schemas/AccessUpdatedEvent",
+            "data": {
+              "id": "2OzPnlv1OVp20sKQaqRQAl",
+              "timestamp": "2024-11-09T17:27:24.969313Z"
+            }
+          },
+          {
+            "specversion": "1.0",
+            "id": "1ef9ebfe-29de-6fb8-b4cc-7312901fe464",
+            "type": "com.datamesh-manager.events.AccessApprovedEvent",
+            "source": "https://app.datamesh-manager.com",
+            "time": "2024-11-09T17:27:24.97133Z",
+            "subject": "2OzPnlv1OVp20sKQaqRQAl",
+            "datacontenttype": "application/json",
+            "dataschema": "https://api.datamesh-manager.com/api/openapi.yaml#/components/schemas/AccessApprovedEvent",
+            "data": {
+              "id": "2OzPnlv1OVp20sKQaqRQAl",
+              "timestamp": "2024-11-09T17:27:24.971329Z"
+            }
+          },
+          {
+            "specversion": "1.0",
+            "id": "1ef9ebfe-29f4-6f4a-b4cc-03e3b7d7579f",
+            "type": "com.datamesh-manager.events.AccessActivatedEvent",
+            "source": "https://app.datamesh-manager.com",
+            "time": "2024-11-09T17:27:24.980234Z",
+            "subject": "2OzPnlv1OVp20sKQaqRQAl",
+            "datacontenttype": "application/json",
+            "dataschema": "https://api.datamesh-manager.com/api/openapi.yaml#/components/schemas/AccessActivatedEvent",
+            "data": {
+              "id": "2OzPnlv1OVp20sKQaqRQAl",
+              "timestamp": "2024-11-09T17:27:24.980232Z"
+            }
+          },
+          {
+            "specversion": "1.0",
+            "id": "1ef9ebfe-29f4-6f4a-b4cc-03e3b7d757a0",
+            "type": "com.datamesh-manager.events.UnknownEvent",
+            "source": "https://app.datamesh-manager.com",
+            "time": "2024-11-09T17:27:24.980234Z",
+            "subject": "2OzPnlv1OVp20sKQaqRQAl",
+            "datacontenttype": "application/json",
+            "dataschema": "https://api.datamesh-manager.com/api/openapi.yaml#/components/schemas/AccessActivatedEvent",
+            "data": {
+              "id": "2OzPnlv1OVp20sKQaqRQAl",
+              "timestamp": "2024-11-09T17:27:24.980232Z"
+            }
+          }
+
+        ]
+      }
+    },
+    {
+      "request" : {
+        "method" : "GET",
+        "urlPath" : "/api/events",
+        "queryParameters": {
+          "lastEventId": {
+            "equalTo" : "1ef9ebfe-29f4-6f4a-b4cc-03e3b7d757a0"
+          }
+        }
+      },
+      "response" : {
+        "status" : 200,
+        "headers" : {
+          "Content-Type" : "application/json"
+        },
+        "jsonBody" : []
+  }
+    }
+
+  ]
+}
