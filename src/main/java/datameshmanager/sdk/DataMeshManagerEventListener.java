@@ -56,17 +56,22 @@ public class DataMeshManagerEventListener {
 
   private static final Logger log = LoggerFactory.getLogger(DataMeshManagerEventListener.class);
 
+  private final String eventListenerId;
   private final DataMeshManagerEventHandler eventHandler;
   private final DataMeshManagerClient client;
+  private final DataMeshManagerStateRepository stateRepository;
 
   private final ObjectMapper objectMapper;
 
   private boolean stopped = false;
   private Duration pollInterval = Duration.ofSeconds(5);
 
-  public DataMeshManagerEventListener(DataMeshManagerEventHandler eventHandler, DataMeshManagerClient client) {
+  public DataMeshManagerEventListener(String eventListenerId, DataMeshManagerEventHandler eventHandler, DataMeshManagerClient client,
+      DataMeshManagerStateRepository stateRepository) {
+    this.eventListenerId = Objects.requireNonNull(eventListenerId, "eventListenerId must not be null");
     this.eventHandler = Objects.requireNonNull(eventHandler, "eventHandler must not be null");
     this.client = Objects.requireNonNull(client, "client must not be null");
+    this.stateRepository = Objects.requireNonNull(stateRepository, "stateRepository must not be null");
 
     this.objectMapper = new ObjectMapper()
         .findAndRegisterModules()
@@ -75,22 +80,20 @@ public class DataMeshManagerEventListener {
 
   /**
    * Starts the event listener to poll for events from the DataMeshManager in an infinite loop.
-   *
-   * @param lastEventId the ID of the last event (cloudevent.id) that was processed. Use `null` to start from the beginning.
    */
-  public void start(@Nullable String lastEventId) {
-    log.info("Polling for events with lastEventId={}", lastEventId);
+  public void start() {
+    log.info("{}: Start polling for events", eventListenerId);
 
-    var currentLastEventId = lastEventId;
+    var lastEventId = stateRepository.getLastEventId(eventListenerId);
     while (!this.stopped) {
       try {
 
-        List<datameshmanager.sdk.client.model.CloudEvent> events = fetchEvents(currentLastEventId);
+        List<datameshmanager.sdk.client.model.CloudEvent> events = fetchEvents(lastEventId);
 
         for (var event : events) {
           processEvent(event);
-          // TODO update in StateRepository
-          currentLastEventId = event.getId().toString();
+          lastEventId = event.getId().toString();
+          stateRepository.saveLastEventId(eventListenerId, lastEventId);
         }
 
         if (events.isEmpty()) {
@@ -116,7 +119,7 @@ public class DataMeshManagerEventListener {
 
 
   public List<datameshmanager.sdk.client.model.CloudEvent> fetchEvents(String lastEventId) throws InterruptedException {
-    log.debug("Fetching events with lastEventId={}", lastEventId);
+    log.info("Fetching events with lastEventId={}", lastEventId);
     List<CloudEvent> response = null;
     try {
       var events = client.getEventsApi().pollEvents(lastEventId);

@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.shaded.org.checkerframework.checker.units.qual.A;
 import org.wiremock.integrations.testcontainers.WireMockContainer;
 
 /**
@@ -66,9 +65,10 @@ class DataMeshManagerEventListenerTests {
         }
       }
     };
-    DataMeshManagerEventListener eventListener = new DataMeshManagerEventListener(testEventHandler, client);
+    DataMeshManagerStateRepositoryInMemory stateRepository = new DataMeshManagerStateRepositoryInMemory();
+    var eventListener = new DataMeshManagerEventListener("unittest", testEventHandler, client, stateRepository);
 
-    new Thread(() -> eventListener.start(null)).start();
+    new Thread(eventListener::start).start();
     Thread.sleep(1000);
     eventListener.stop();
 
