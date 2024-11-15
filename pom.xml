@@ -97,6 +97,7 @@
                 <apiPackage>datameshmanager.sdk.client.api</apiPackage>
                 <invokerPackage>datameshmanager.sdk.client</invokerPackage>
                 <modelPackage>datameshmanager.sdk.client.model</modelPackage>
+                <useRuntimeException>true</useRuntimeException>
               </configOptions>
               <generateModelTests>false</generateModelTests>
               <generateApiTests>false</generateApiTests>
