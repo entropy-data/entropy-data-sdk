@@ -1,5 +1,6 @@
 package datameshmanager.sdk;
 
+import datameshmanager.sdk.client.ApiException;
 import datameshmanager.sdk.client.model.IntegrationAgent;
 import datameshmanager.sdk.client.model.IntegrationAgentHealth;
 import datameshmanager.sdk.client.model.IntegrationAgentInfo;
@@ -33,10 +34,17 @@ public class DataMeshManagerAgentRegistration {
   }
 
   public void register() {
-    IntegrationAgent integrationAgent = client.getIntegrationsApi().getIntegrationAgent(id);
 
-    if (integrationAgent == null) {
-      integrationAgent = new IntegrationAgent();
+    IntegrationAgent integrationAgent;
+    try {
+      log.debug("Checking if integration agent {} already exists", id);
+      integrationAgent = client.getIntegrationsApi().getIntegrationAgent(id);
+    } catch (ApiException e) {
+      if (e.getCode() == 404) {
+        integrationAgent = new IntegrationAgent();
+      } else {
+        throw e;
+      }
     }
 
     integrationAgent
@@ -49,11 +57,12 @@ public class DataMeshManagerAgentRegistration {
             .status("UP")
         );
 
+    log.info("Registering integration agent {}", id);
     client.getIntegrationsApi().putIntegrationAgent(id, integrationAgent);
   }
 
   public void stop() {
-    IntegrationAgent integrationAgent = client.getIntegrationsApi().getIntegrationAgent(id);
+    IntegrationAgent integrationAgent = client.getIntegrationsApi().getIntegrationAgent(this.id);
     if (integrationAgent.getHealth() == null) {
       integrationAgent.setHealth(new IntegrationAgentHealth());
     }
@@ -63,30 +72,34 @@ public class DataMeshManagerAgentRegistration {
     client.getIntegrationsApi().putIntegrationAgent(id, integrationAgent);
   }
 
-  public void up(String id) {
-    IntegrationAgent integrationAgent = client.getIntegrationsApi().getIntegrationAgent(id);
+  public void up() {
+    IntegrationAgent integrationAgent = client.getIntegrationsApi().getIntegrationAgent(this.id);
     if (integrationAgent.getHealth() == null) {
       integrationAgent.setHealth(new IntegrationAgentHealth());
     }
     integrationAgent.getHealth().setStatus("UP");
     integrationAgent.getHealth().setErrorMessage(null);
-    log.info("Publish integration agent {} in status UP", id);
-    client.getIntegrationsApi().putIntegrationAgent(id, integrationAgent);
+    log.info("Publish integration agent {} in status UP", this.id);
+    client.getIntegrationsApi().putIntegrationAgent(this.id, integrationAgent);
   }
 
-  public void error(String id, String message) {
-    IntegrationAgent integrationAgent = client.getIntegrationsApi().getIntegrationAgent(id);
+  public void error(String message) {
+    IntegrationAgent integrationAgent = client.getIntegrationsApi().getIntegrationAgent(this.id);
     if (integrationAgent.getHealth() == null) {
       integrationAgent.setHealth(new IntegrationAgentHealth());
     }
     integrationAgent.getHealth().setStatus("ERROR");
     integrationAgent.getHealth().setErrorMessage(message);
-    log.info("Publish integration agent {} in status ERROR: {}", id, message);
-    client.getIntegrationsApi().putIntegrationAgent(id, integrationAgent);
+    log.info("Publish integration agent {} in status ERROR: {}", this.id, message);
+    client.getIntegrationsApi().putIntegrationAgent(this.id, integrationAgent);
   }
 
-  public void reset(String id) {
-    IntegrationAgent integrationAgent = client.getIntegrationsApi().getIntegrationAgent(id);
+  public void error(Exception exception) {
+    error(exception.getMessage());
+  }
+
+  public void reset() {
+    IntegrationAgent integrationAgent = client.getIntegrationsApi().getIntegrationAgent(this.id);
     if (integrationAgent.getHealth() == null) {
       integrationAgent.setHealth(new IntegrationAgentHealth());
     }
@@ -94,13 +107,21 @@ public class DataMeshManagerAgentRegistration {
     integrationAgent.getHealth().setErrorMessage(null);
     integrationAgent.getHealth().setUpdatedAt(null);
     integrationAgent.setState(null);
-    log.info("Publish integration agent {} to reset", id);
-    client.getIntegrationsApi().putIntegrationAgent(id, integrationAgent);
+    log.info("Publish integration agent {} to reset", this.id);
+    client.getIntegrationsApi().putIntegrationAgent(this.id, integrationAgent);
   }
 
-  public void delete(String id) {
-    log.info("Deleting integration agent {}", id);
-    client.getIntegrationsApi().deleteIntegrationAgent(id);
+  public void delete() {
+    log.info("Deleting integration agent {}", this.id);
+    try {
+      client.getIntegrationsApi().deleteIntegrationAgent(this.id);
+    } catch (ApiException e) {
+      if (e.getCode() == 404) {
+        log.error("Integration agent with id {} already deleted", this.id);
+      } else {
+        throw e;
+      }
+    }
   }
 
 }

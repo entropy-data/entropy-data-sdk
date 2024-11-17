@@ -11,6 +11,9 @@ import datameshmanager.sdk.client.model.AccessDeletedEvent;
 import datameshmanager.sdk.client.model.AccessRejectedEvent;
 import datameshmanager.sdk.client.model.AccessRequestedEvent;
 import datameshmanager.sdk.client.model.AccessUpdatedEvent;
+import datameshmanager.sdk.client.model.AssetCreatedEvent;
+import datameshmanager.sdk.client.model.AssetDeletedEvent;
+import datameshmanager.sdk.client.model.AssetUpdatedEvent;
 import datameshmanager.sdk.client.model.CloudEvent;
 import datameshmanager.sdk.client.model.CloudEventData;
 import datameshmanager.sdk.client.model.DataContractCreatedEvent;
@@ -236,6 +239,12 @@ public class DataMeshManagerEventListener {
           this.eventHandler.onTagUpdatedEvent(convertPayload(event, TagUpdatedEvent.class));
       case "com.datamesh-manager.events.TagDeletedEvent" ->
           this.eventHandler.onTagDeletedEvent(convertPayload(event, TagDeletedEvent.class));
+      case "com.datamesh-manager.events.AssetCreatedEvent" ->
+          this.eventHandler.onAssetCreatedEvent(convertPayload(event, AssetCreatedEvent.class));
+      case "com.datamesh-manager.events.AssetUpdatedEvent" ->
+          this.eventHandler.onAssetUpdatedEvent(convertPayload(event, AssetUpdatedEvent.class));
+      case "com.datamesh-manager.events.AssetDeletedEvent" ->
+          this.eventHandler.onAssetDeletedEvent(convertPayload(event, AssetDeletedEvent.class));
       case "com.datamesh-manager.events.TestResultsCreatedEvent" -> this.eventHandler.onTestResultsCreatedEvent(
           convertPayload(event, datameshmanager.sdk.client.model.TestResultsCreatedEvent.class));
       case "com.datamesh-manager.events.TestResultsDeletedEvent" -> this.eventHandler.onTestResultsDeletedEvent(

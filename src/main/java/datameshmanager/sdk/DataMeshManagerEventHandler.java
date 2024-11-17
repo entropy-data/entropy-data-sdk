@@ -8,6 +8,9 @@ import datameshmanager.sdk.client.model.AccessDeletedEvent;
 import datameshmanager.sdk.client.model.AccessRejectedEvent;
 import datameshmanager.sdk.client.model.AccessRequestedEvent;
 import datameshmanager.sdk.client.model.AccessUpdatedEvent;
+import datameshmanager.sdk.client.model.AssetCreatedEvent;
+import datameshmanager.sdk.client.model.AssetDeletedEvent;
+import datameshmanager.sdk.client.model.AssetUpdatedEvent;
 import datameshmanager.sdk.client.model.CloudEvent;
 import datameshmanager.sdk.client.model.DataContractCreatedEvent;
 import datameshmanager.sdk.client.model.DataContractDeletedEvent;
@@ -159,6 +162,15 @@ public interface DataMeshManagerEventHandler {
   }
 
   default void onTagDeletedEvent(TagDeletedEvent event) {
+  }
+
+  default void onAssetCreatedEvent(AssetCreatedEvent event) {
+  }
+
+  default void onAssetUpdatedEvent(AssetUpdatedEvent event) {
+  }
+
+  default void onAssetDeletedEvent(AssetDeletedEvent event) {
   }
 
   default void onTestResultsCreatedEvent(TestResultsCreatedEvent event) {
