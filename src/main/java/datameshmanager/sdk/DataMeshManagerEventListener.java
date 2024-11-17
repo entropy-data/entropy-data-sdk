@@ -45,6 +45,7 @@ import datameshmanager.sdk.client.model.TeamUpdatedEvent;
 import jakarta.annotation.Nullable;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +85,7 @@ public class DataMeshManagerEventListener {
   public void start() {
     log.info("{}: Start polling for events", eventListenerId);
 
-    var lastEventId = stateRepository.getLastEventId(eventListenerId);
+    var lastEventId = getLastEventId();
     while (!this.stopped) {
       try {
 
@@ -92,8 +93,8 @@ public class DataMeshManagerEventListener {
 
         for (var event : events) {
           processEvent(event);
-          lastEventId = event.getId().toString();
-          stateRepository.saveLastEventId(eventListenerId, lastEventId);
+          lastEventId = Objects.requireNonNull(event.getId()).toString();
+          saveLastEventId(lastEventId);
         }
 
         if (events.isEmpty()) {
@@ -115,6 +116,15 @@ public class DataMeshManagerEventListener {
     }
 
     log.info("Stopped polling for events");
+  }
+
+  @Nullable
+  private String getLastEventId() {
+    return (String) stateRepository.getState(eventListenerId).get("lastEventId");
+  }
+
+  private void saveLastEventId(String lastEventId) {
+    stateRepository.saveState(eventListenerId, Map.of("lastEventId", lastEventId));
   }
 
 

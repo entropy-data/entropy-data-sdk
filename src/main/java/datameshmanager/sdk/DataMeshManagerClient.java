@@ -8,6 +8,7 @@ import datameshmanager.sdk.client.api.DataContractsApi;
 import datameshmanager.sdk.client.api.DataProductsApi;
 import datameshmanager.sdk.client.api.DefinitionsApi;
 import datameshmanager.sdk.client.api.EventsApi;
+import datameshmanager.sdk.client.api.IntegrationsApi;
 import datameshmanager.sdk.client.api.SourceSystemsApi;
 import datameshmanager.sdk.client.api.TagsApi;
 import datameshmanager.sdk.client.api.TeamsApi;
@@ -30,6 +31,7 @@ public class DataMeshManagerClient {
   private final TagsApi tagsApi;
   private final TeamsApi teamsApi;
   private final TestResultsApi testResultsApi;
+  private final IntegrationsApi integrationsApi;
 
   public DataMeshManagerClient(DataMeshManagerClientProperties properties) {
     var apiClient = new ApiClient();
@@ -48,6 +50,7 @@ public class DataMeshManagerClient {
     this.tagsApi = new TagsApi(apiClient);
     this.teamsApi = new TeamsApi(apiClient);
     this.testResultsApi = new TestResultsApi(apiClient);
+    this.integrationsApi = new IntegrationsApi(apiClient);
   }
 
   public ApiClient getApiClient() {
@@ -96,5 +99,9 @@ public class DataMeshManagerClient {
 
   public TestResultsApi getTestResultsApi() {
     return testResultsApi;
+  }
+
+  public IntegrationsApi getIntegrationsApi() {
+    return integrationsApi;
   }
 }
