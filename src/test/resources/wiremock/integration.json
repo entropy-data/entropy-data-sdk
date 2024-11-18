@@ -1,0 +1,49 @@
+{
+  "mappings" : [
+    {
+      "request" : {
+        "method" : "PUT",
+        "urlPathTemplate" : "/api/integrations/agents/{agentId}"
+      },
+      "response" : {
+        "status" : 200,
+        "headers" : {
+          "Content-Type" : "application/json"
+        },
+        "jsonBody" : []      }
+    },
+    {
+      "request" : {
+        "method" : "GET",
+        "urlPathTemplate" : "/api/integrations/agents/{agentId}"
+      },
+      "response" : {
+        "status" : 200,
+        "headers" : {
+          "Content-Type" : "application/json"
+        },
+        "jsonBody" : {
+          "id": "agent-123",
+          "info": {
+            "type": "databricks",
+            "description": "This is a databricks integration agent.",
+            "agentVersion": "1.0.0"
+          },
+          "health": {
+            "status": "running",
+            "startedAt": "2023-01-01T09:15:20.705Z",
+            "updatedAt": "2023-01-01T09:15:20.705Z",
+            "errorMessage": "Connection lost"
+          },
+          "state": {
+            "lastEventId": "95837f96-766f-4f8b-96f8-4f337f2a36a6",
+            "lastHeartbeat": "2023-10-01T12:00:00Z"
+          },
+          "custom": {
+            "additionalProp1": {}
+          }
+        }
+      }
+    }
+  ]
+}

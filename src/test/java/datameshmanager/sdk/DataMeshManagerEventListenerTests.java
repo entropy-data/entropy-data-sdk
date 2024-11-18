@@ -29,7 +29,8 @@ class DataMeshManagerEventListenerTests {
   WireMockContainer wiremockServer = new WireMockContainer("wiremock/wiremock:3.9.2")
       .withMappingFromResource("wiremock/events.json")
       .withMappingFromResource("wiremock/dataproduct.json")
-      .withMappingFromResource("wiremock/access.json");
+      .withMappingFromResource("wiremock/access.json")
+      .withMappingFromResource("wiremock/integration.json");
 
   @Test
   void testEventListener() throws Exception {
