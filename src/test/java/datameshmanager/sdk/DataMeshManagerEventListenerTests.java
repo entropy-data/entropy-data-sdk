@@ -38,7 +38,6 @@ class DataMeshManagerEventListenerTests {
     var dataPlatformRole = new String[1];
 
     var client = new DataMeshManagerClient(new DataMeshManagerClientProperties(
-        "unittest",
         wiremockServer.getBaseUrl(),
         "APIKEY"
     ));
