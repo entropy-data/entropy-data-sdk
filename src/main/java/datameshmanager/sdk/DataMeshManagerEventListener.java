@@ -66,20 +66,24 @@ public class DataMeshManagerEventListener {
   private final DataMeshManagerStateRepository stateRepository;
 
   private final ObjectMapper objectMapper;
+  private final DataMeshManagerAgentRegistration agentRegistration;
 
   private boolean stopped = false;
   private Duration pollInterval = Duration.ofSeconds(5);
 
-  public DataMeshManagerEventListener(String eventListenerId, DataMeshManagerEventHandler eventHandler, DataMeshManagerClient client,
+  public DataMeshManagerEventListener(String agentId, DataMeshManagerEventHandler eventHandler, DataMeshManagerClient client,
       DataMeshManagerStateRepository stateRepository) {
-    this.eventListenerId = Objects.requireNonNull(eventListenerId, "eventListenerId must not be null");
+    this.eventListenerId = Objects.requireNonNull(agentId, "agentId must not be null");
     this.eventHandler = Objects.requireNonNull(eventHandler, "eventHandler must not be null");
     this.client = Objects.requireNonNull(client, "client must not be null");
     this.stateRepository = Objects.requireNonNull(stateRepository, "stateRepository must not be null");
+    this.agentRegistration = new DataMeshManagerAgentRegistration(client, agentId, "event-listener");
 
     this.objectMapper = new ObjectMapper()
         .findAndRegisterModules()
         .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+    this.agentRegistration.register();
   }
 
   /**
@@ -87,6 +91,9 @@ public class DataMeshManagerEventListener {
    */
   public void start() {
     log.info("{}: Start polling for events", eventListenerId);
+    this.agentRegistration.up();
+
+    // TODO error handling for agentRegistration
 
     var lastEventId = getLastEventId();
     while (!this.stopped) {
@@ -111,7 +118,7 @@ public class DataMeshManagerEventListener {
       } catch (Exception e) {
         log.error("Failed to fetch events, now wait for 30 seconds to make the next call", e);
         try {
-          Thread.sleep(30_000);
+          Thread.sleep(Duration.ofSeconds(30).toMillis());
         } catch (InterruptedException ex) {
           break;
         }
@@ -119,6 +126,7 @@ public class DataMeshManagerEventListener {
     }
 
     log.info("Stopped polling for events");
+    this.agentRegistration.stop();
   }
 
   @Nullable

@@ -2,25 +2,17 @@ package datameshmanager.sdk;
 
 import datameshmanager.sdk.client.ApiException;
 import datameshmanager.sdk.client.model.Asset;
-import jakarta.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.function.Consumer;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 
 
 public class DataMeshManagerAssetsSynchronizer {
 
   private static final Logger log = LoggerFactory.getLogger(DataMeshManagerAssetsSynchronizer.class);
 
+  private final String agentId;
   private final DataMeshManagerClient client;
   private final DataMeshManagerAgentRegistration agentRegistration;
   private final DataMeshManagerAssetsProvider assetsProvider;
@@ -28,36 +20,33 @@ public class DataMeshManagerAssetsSynchronizer {
 
   private Duration delay = Duration.parse("PT5S");
 
-  public DataMeshManagerAssetsSynchronizer(String id,
+  public DataMeshManagerAssetsSynchronizer(String agentId,
       DataMeshManagerClient client,
       DataMeshManagerAssetsProvider assetsProvider) {
+    this.agentId = agentId;
     this.client = client;
     this.assetsProvider = assetsProvider;
-    this.agentRegistration = new DataMeshManagerAgentRegistration(client, id, "assets-asynchronizer");
+    this.agentRegistration = new DataMeshManagerAgentRegistration(client, agentId, "assets-asynchronizer");
 
     this.agentRegistration.register();
   }
 
   public void start() {
+    log.info("{}: start syncing assets", agentId);
     this.agentRegistration.up();
+
+    // TODO error handling for agentRegistration
+    // TODO error handling during while loop
 
     while(!this.stopped) {
       synchronizeDatabricksAssets();
-      delay(delay);
-    }
-  }
-
-  private void delay(Duration duration) {
-    long start = System.currentTimeMillis();
-    long end = start + duration.toMillis();
-    while(System.currentTimeMillis() < end) {
       try {
-        Thread.sleep(end - System.currentTimeMillis());
-      } catch (InterruptedException ignored) {
-
+        log.info("Waiting for {} until next sync ...", delay);
+        Thread.sleep(delay.toMillis());
+      } catch (InterruptedException e) {
+        break;
       }
     }
-
   }
 
   public void stop() {
@@ -68,6 +57,7 @@ public class DataMeshManagerAssetsSynchronizer {
     }
     this.stopped = true;
     log.info("Stopped asset synchronization");
+    log.info("{}: stopped syncing assets", agentId);
   }
 
   protected void synchronizeDatabricksAssets() {

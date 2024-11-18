@@ -27,9 +27,9 @@ public class DataMeshManagerAgentRegistration {
    */
   private final String type;
 
-  public DataMeshManagerAgentRegistration(DataMeshManagerClient client, String id, String type) {
+  public DataMeshManagerAgentRegistration(DataMeshManagerClient client, String agentId, String type) {
     this.client = client;
-    this.id = Objects.requireNonNull(id, "Agent ID is required");
+    this.id = Objects.requireNonNull(agentId, "Agent ID is required");
     this.type = Objects.requireNonNull(type, "Agent type is required");
   }
 
