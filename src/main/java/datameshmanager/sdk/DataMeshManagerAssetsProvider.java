@@ -1,10 +1,9 @@
 package datameshmanager.sdk;
 
 import datameshmanager.sdk.client.model.Asset;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public interface DataMeshManagerAssetsProvider {
-   // TODO evtl. supplier
-  Stream<Asset> streamAssets();
-
+  void publishAssetsToConsumer(Consumer<Asset> consumer);
 }
