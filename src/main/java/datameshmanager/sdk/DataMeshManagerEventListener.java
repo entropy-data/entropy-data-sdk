@@ -60,7 +60,7 @@ public class DataMeshManagerEventListener {
 
   private static final Logger log = LoggerFactory.getLogger(DataMeshManagerEventListener.class);
 
-  private final String eventListenerId;
+  private final String agentId;
   private final DataMeshManagerEventHandler eventHandler;
   private final DataMeshManagerClient client;
   private final DataMeshManagerStateRepository stateRepository;
@@ -73,7 +73,7 @@ public class DataMeshManagerEventListener {
 
   public DataMeshManagerEventListener(String agentId, DataMeshManagerClient client, DataMeshManagerEventHandler eventHandler,
       DataMeshManagerStateRepository stateRepository) {
-    this.eventListenerId = Objects.requireNonNull(agentId, "agentId must not be null");
+    this.agentId = Objects.requireNonNull(agentId, "agentId must not be null");
     this.eventHandler = Objects.requireNonNull(eventHandler, "eventHandler must not be null");
     this.client = Objects.requireNonNull(client, "client must not be null");
     this.stateRepository = Objects.requireNonNull(stateRepository, "stateRepository must not be null");
@@ -90,7 +90,7 @@ public class DataMeshManagerEventListener {
    * Starts the event listener to poll for events from the DataMeshManager in an infinite loop.
    */
   public void start() {
-    log.info("{}: Start polling for events", eventListenerId);
+    log.info("{}: Start polling for events", agentId);
     this.agentRegistration.up();
 
     // TODO error handling for agentRegistration
@@ -131,11 +131,11 @@ public class DataMeshManagerEventListener {
 
   @Nullable
   private String getLastEventId() {
-    return (String) stateRepository.getState(eventListenerId).get("lastEventId");
+    return (String) stateRepository.getState().get("lastEventId");
   }
 
   private void saveLastEventId(String lastEventId) {
-    stateRepository.saveState(eventListenerId, Map.of("lastEventId", lastEventId));
+    stateRepository.saveState(Map.of("lastEventId", lastEventId));
   }
 
 

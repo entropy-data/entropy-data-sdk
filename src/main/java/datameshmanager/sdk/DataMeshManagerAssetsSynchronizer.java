@@ -19,15 +19,16 @@ public class DataMeshManagerAssetsSynchronizer {
   private final DataMeshManagerAssetsProvider assetsProvider;
   private volatile boolean stopped = false;
 
-  private Duration delay = Duration.parse("PT5S");
+  private Duration delay = Duration.parse("PT60M");
 
-  public DataMeshManagerAssetsSynchronizer(String agentId,
+  public DataMeshManagerAssetsSynchronizer(
+      String agentId,
       DataMeshManagerClient client,
       DataMeshManagerAssetsProvider assetsProvider) {
     this.agentId = agentId;
     this.client = client;
     this.assetsProvider = assetsProvider;
-    this.agentRegistration = new DataMeshManagerAgentRegistration(client, agentId, "assets-asynchronizer");
+    this.agentRegistration = new DataMeshManagerAgentRegistration(client, agentId, "assets-synchronizer");
 
     this.agentRegistration.register();
   }
@@ -39,7 +40,7 @@ public class DataMeshManagerAssetsSynchronizer {
     // TODO error handling for agentRegistration
     // TODO error handling during while loop
 
-    while(!this.stopped) {
+    while (!this.stopped) {
       synchronizeAssets();
       try {
         log.info("Waiting for {} until next sync ...", delay);
@@ -72,6 +73,14 @@ public class DataMeshManagerAssetsSynchronizer {
         deleteAsset(id);
       }
     });
+  }
+
+  public Duration getDelay() {
+    return delay;
+  }
+
+  public void setDelay(Duration delay) {
+    this.delay = delay;
   }
 
   public void saveAsset(Asset asset) {
