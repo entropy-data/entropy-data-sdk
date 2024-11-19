@@ -13,9 +13,7 @@ import datameshmanager.sdk.client.api.SourceSystemsApi;
 import datameshmanager.sdk.client.api.TagsApi;
 import datameshmanager.sdk.client.api.TeamsApi;
 import datameshmanager.sdk.client.api.TestResultsApi;
-import org.springframework.stereotype.Component;
 
-@Component
 public class DataMeshManagerClient {
 
   private final ApiClient apiClient;
@@ -33,10 +31,10 @@ public class DataMeshManagerClient {
   private final TestResultsApi testResultsApi;
   private final IntegrationsApi integrationsApi;
 
-  public DataMeshManagerClient(DataMeshManagerClientProperties properties) {
+  public DataMeshManagerClient(String host, String apiKey) {
     var apiClient = new ApiClient();
-    apiClient.setBasePath(properties.host());
-    apiClient.setApiKey(properties.apikey());
+    apiClient.setBasePath(host);
+    apiClient.setApiKey(apiKey);
     this.apiClient = apiClient;
 
     this.accessApi = new AccessApi(apiClient);

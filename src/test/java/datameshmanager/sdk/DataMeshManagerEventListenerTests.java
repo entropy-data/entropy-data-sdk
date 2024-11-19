@@ -38,10 +38,10 @@ class DataMeshManagerEventListenerTests {
     var eventsCount = new AtomicInteger(0);
     var dataPlatformRole = new String[1];
 
-    var client = new DataMeshManagerClient(new DataMeshManagerClientProperties(
+    var client = new DataMeshManagerClient(
         wiremockServer.getBaseUrl(),
         "APIKEY"
-    ));
+    );
     DataMeshManagerEventHandler testEventHandler = new DataMeshManagerEventHandler() {
       @Override
       public void onAccessActivatedEvent(AccessActivatedEvent event) {

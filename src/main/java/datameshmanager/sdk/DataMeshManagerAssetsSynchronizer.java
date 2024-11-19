@@ -39,7 +39,7 @@ public class DataMeshManagerAssetsSynchronizer {
     // TODO error handling during while loop
 
     while(!this.stopped) {
-      synchronizeDatabricksAssets();
+      synchronizeAssets();
       try {
         log.info("Waiting for {} until next sync ...", delay);
         Thread.sleep(delay.toMillis());
@@ -60,7 +60,7 @@ public class DataMeshManagerAssetsSynchronizer {
     log.info("{}: stopped syncing assets", agentId);
   }
 
-  protected void synchronizeDatabricksAssets() {
+  protected void synchronizeAssets() {
     assetsProvider.publishAssetsToConsumer(this::saveAsset);
   }
 
