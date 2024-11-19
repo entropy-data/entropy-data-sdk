@@ -60,7 +60,7 @@ public class DataMeshManagerAssetsSynchronizer {
     log.info("{}: Stopped syncing assets", agentId);
   }
 
-  protected void synchronizeAssets() {
+  public void synchronizeAssets() {
     assetsProvider.fetchAssets(new AssetCallback() {
       @Override
       public void onAssetUpdated(Asset asset) {
