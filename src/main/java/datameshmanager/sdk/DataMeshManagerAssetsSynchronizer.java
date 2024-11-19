@@ -1,5 +1,6 @@
 package datameshmanager.sdk;
 
+import datameshmanager.sdk.DataMeshManagerAssetsProvider.AssetCallback;
 import datameshmanager.sdk.client.ApiException;
 import datameshmanager.sdk.client.model.Asset;
 import java.time.Duration;
@@ -61,7 +62,17 @@ public class DataMeshManagerAssetsSynchronizer {
   }
 
   protected void synchronizeAssets() {
-    assetsProvider.publishAssetsToConsumer(this::saveAsset);
+    assetsProvider.fetchAssets(new AssetCallback() {
+      @Override
+      public void onAssetUpdated(Asset asset) {
+        saveAsset(asset);
+      }
+
+      @Override
+      public void onAssetDeleted(String id) {
+        deleteAsset(id);
+      }
+    });
   }
 
   public void saveAsset(Asset asset) {
