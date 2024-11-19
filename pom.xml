@@ -85,17 +85,15 @@
       <plugin>
         <groupId>org.openapitools</groupId>
         <artifactId>openapi-generator-maven-plugin</artifactId>
-        <!-- RELEASE_VERSION -->
         <version>7.9.0</version>
-        <!-- /RELEASE_VERSION -->
         <executions>
           <execution>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>https://api.datamesh-manager.com/openapi.yaml</inputSpec>
-              <!--								<inputSpec>../datamesh-manager/src/main/resources/static/openapi.yaml</inputSpec>-->
+<!--              <inputSpec>https://api.datamesh-manager.com/openapi.yaml</inputSpec>-->
+              <inputSpec>src/main/resources/openapi.yaml</inputSpec>
               <generatorName>java</generatorName>
               <library>apache-httpclient</library>
               <configOptions>
@@ -119,11 +117,5 @@
       </plugin>
     </plugins>
   </build>
-  <repositories>
-    <repository>
-      <id>maven_central</id>
-      <name>Maven Central</name>
-      <url>https://repo.maven.apache.org/maven2/</url>
-    </repository>
-  </repositories>
+
 </project>
