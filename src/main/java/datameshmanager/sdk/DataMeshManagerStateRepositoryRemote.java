@@ -34,7 +34,7 @@ public class DataMeshManagerStateRepositoryRemote implements DataMeshManagerStat
       client.getIntegrationsApi().putIntegrationAgent(agentId, agent);
     } catch (ApiException e) {
       if (e.getCode() == 404) {
-        log.error("Integration agent with id {} not found, please register it first", id);
+        log.error("Integration agent with id {} not found, please register it first", agentId);
         throw e;
       } else {
         throw e;

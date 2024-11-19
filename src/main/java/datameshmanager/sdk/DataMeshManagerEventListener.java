@@ -22,14 +22,6 @@ import datameshmanager.sdk.client.model.DataContractUpdatedEvent;
 import datameshmanager.sdk.client.model.DataProductCreatedEvent;
 import datameshmanager.sdk.client.model.DataProductDeletedEvent;
 import datameshmanager.sdk.client.model.DataProductUpdatedEvent;
-import datameshmanager.sdk.client.model.DataUsageAgreementActivatedEvent;
-import datameshmanager.sdk.client.model.DataUsageAgreementApprovedEvent;
-import datameshmanager.sdk.client.model.DataUsageAgreementCreatedEvent;
-import datameshmanager.sdk.client.model.DataUsageAgreementDeactivatedEvent;
-import datameshmanager.sdk.client.model.DataUsageAgreementDeletedEvent;
-import datameshmanager.sdk.client.model.DataUsageAgreementRejectedEvent;
-import datameshmanager.sdk.client.model.DataUsageAgreementRequestedEvent;
-import datameshmanager.sdk.client.model.DataUsageAgreementUpdatedEvent;
 import datameshmanager.sdk.client.model.DefinitionCreatedEvent;
 import datameshmanager.sdk.client.model.DefinitionDeletedEvent;
 import datameshmanager.sdk.client.model.DefinitionUpdatedEvent;
@@ -207,22 +199,6 @@ public class DataMeshManagerEventListener {
           this.eventHandler.onAccessActivatedEvent(convertPayload(event, AccessActivatedEvent.class));
       case "com.datamesh-manager.events.AccessDeactivatedEvent" ->
           this.eventHandler.onAccessDeactivatedEvent(convertPayload(event, AccessDeactivatedEvent.class));
-      case "com.datamesh-manager.events.DataUsageAgreementCreatedEvent" ->
-          this.eventHandler.onDataUsageAgreementCreatedEvent(convertPayload(event, DataUsageAgreementCreatedEvent.class));
-      case "com.datamesh-manager.events.DataUsageAgreementUpdatedEvent" ->
-          this.eventHandler.onDataUsageAgreementUpdatedEvent(convertPayload(event, DataUsageAgreementUpdatedEvent.class));
-      case "com.datamesh-manager.events.DataUsageAgreementDeletedEvent" ->
-          this.eventHandler.onDataUsageAgreementDeletedEvent(convertPayload(event, DataUsageAgreementDeletedEvent.class));
-      case "com.datamesh-manager.events.DataUsageAgreementRequestedEvent" ->
-          this.eventHandler.onDataUsageAgreementRequestedEvent(convertPayload(event, DataUsageAgreementRequestedEvent.class));
-      case "com.datamesh-manager.events.DataUsageAgreementApprovedEvent" ->
-          this.eventHandler.onDataUsageAgreementApprovedEvent(convertPayload(event, DataUsageAgreementApprovedEvent.class));
-      case "com.datamesh-manager.events.DataUsageAgreementRejectedEvent" ->
-          this.eventHandler.onDataUsageAgreementRejectedEvent(convertPayload(event, DataUsageAgreementRejectedEvent.class));
-      case "com.datamesh-manager.events.DataUsageAgreementActivatedEvent" ->
-          this.eventHandler.onDataUsageAgreementActivatedEvent(convertPayload(event, DataUsageAgreementActivatedEvent.class));
-      case "com.datamesh-manager.events.DataUsageAgreementDeactivatedEvent" ->
-          this.eventHandler.onDataUsageAgreementDeactivatedEvent(convertPayload(event, DataUsageAgreementDeactivatedEvent.class));
       case "com.datamesh-manager.events.SourceSystemCreatedEvent" ->
           this.eventHandler.onSourceSystemCreatedEvent(convertPayload(event, SourceSystemCreatedEvent.class));
       case "com.datamesh-manager.events.SourceSystemUpdatedEvent" ->

@@ -18,14 +18,6 @@ import datameshmanager.sdk.client.model.DataContractUpdatedEvent;
 import datameshmanager.sdk.client.model.DataProductCreatedEvent;
 import datameshmanager.sdk.client.model.DataProductDeletedEvent;
 import datameshmanager.sdk.client.model.DataProductUpdatedEvent;
-import datameshmanager.sdk.client.model.DataUsageAgreementActivatedEvent;
-import datameshmanager.sdk.client.model.DataUsageAgreementApprovedEvent;
-import datameshmanager.sdk.client.model.DataUsageAgreementCreatedEvent;
-import datameshmanager.sdk.client.model.DataUsageAgreementDeactivatedEvent;
-import datameshmanager.sdk.client.model.DataUsageAgreementDeletedEvent;
-import datameshmanager.sdk.client.model.DataUsageAgreementRejectedEvent;
-import datameshmanager.sdk.client.model.DataUsageAgreementRequestedEvent;
-import datameshmanager.sdk.client.model.DataUsageAgreementUpdatedEvent;
 import datameshmanager.sdk.client.model.DefinitionCreatedEvent;
 import datameshmanager.sdk.client.model.DefinitionDeletedEvent;
 import datameshmanager.sdk.client.model.DefinitionUpdatedEvent;
@@ -102,30 +94,6 @@ public interface DataMeshManagerEventHandler {
   }
 
   default void onAccessDeactivatedEvent(AccessDeactivatedEvent event) {
-  }
-
-  default void onDataUsageAgreementCreatedEvent(DataUsageAgreementCreatedEvent event) {
-  }
-
-  default void onDataUsageAgreementUpdatedEvent(DataUsageAgreementUpdatedEvent event) {
-  }
-
-  default void onDataUsageAgreementDeletedEvent(DataUsageAgreementDeletedEvent event) {
-  }
-
-  default void onDataUsageAgreementRequestedEvent(DataUsageAgreementRequestedEvent event) {
-  }
-
-  default void onDataUsageAgreementApprovedEvent(DataUsageAgreementApprovedEvent event) {
-  }
-
-  default void onDataUsageAgreementRejectedEvent(DataUsageAgreementRejectedEvent event) {
-  }
-
-  default void onDataUsageAgreementActivatedEvent(DataUsageAgreementActivatedEvent event) {
-  }
-
-  default void onDataUsageAgreementDeactivatedEvent(DataUsageAgreementDeactivatedEvent event) {
   }
 
   default void onSourceSystemCreatedEvent(SourceSystemCreatedEvent event) {
