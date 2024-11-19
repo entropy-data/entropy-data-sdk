@@ -53,12 +53,11 @@ public class DataMeshManagerAssetsSynchronizer {
   public void stop() {
     this.agentRegistration.stop();
     if (this.stopped) {
-      log.info("Already stopped asset synchronization");
+      log.info("{}: Already stopped asset synchronization", agentId);
       return;
     }
     this.stopped = true;
-    log.info("Stopped asset synchronization");
-    log.info("{}: stopped syncing assets", agentId);
+    log.info("{}: Stopped syncing assets", agentId);
   }
 
   protected void synchronizeAssets() {
