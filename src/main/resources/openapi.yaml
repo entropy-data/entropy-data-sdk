@@ -1,0 +1,3337 @@
+openapi: 3.0.3
+info:
+  description: |
+    The [Data Mesh Manager](https://www.datamesh-manager.com) / [Data Contract Manager](https://www.datacontract-manager.com) API allows you to integrate with your data platform.
+    
+    You can manage data products, data usage agreements, data contracts, and teams. You can also approve, reject, or cancel data usage agreements. 
+    
+    You can observe any changes to data products, data usage agreements, data contracts, and teams via events by polling an [HTTP Feed](https://www.http-feeds.org/). 
+    
+    You need an API key for every operation. You can generate the API key within the UI in the organization settings.
+  version: 0.0.3
+  title: REST-API
+  contact:
+    name: support
+    email: support@datamesh-manager.com
+  termsOfService: https://datamesh-manager.com/terms-of-service
+externalDocs:
+  description: Documentation
+  url: https://docs.datamesh-manager.com
+servers:
+  - url: https://api.datamesh-manager.com
+  - url: https://api.datacontract-manager.com
+  - url: https://localhost:8080
+tags:
+  - name: Data Products
+    description: Data Products implement Data Contracts. They provide the actual data via output ports, and link to source systems via input ports.
+  - name: Data Contracts
+    description: Data Contracts are the API for Data. An output port can implement a data contract. A data contract can be implemented by multiple output ports.
+    externalDocs:
+      description: Data Contract Specification
+      url: https://datacontract.com
+  - name: Access
+    description: Access (formerly known as "Data Usage Agreements") represents the edges in the graph. They connect a consuming data product with an output port of a providing data product. When active, the consumer should be able to access the data.
+  - name: Data Usage Agreements
+    description: Deprecated. Use the "Access" instead.
+  - name: Source Systems
+    description: Source Systems are the systems that provide data to the data products. They are connected to the data products via input ports.
+  - name: Teams
+    description: Teams are the organizational unit in the Data Mesh Manager. They own data products, source systems, data contracts, and definitions.
+  - name: Definitions
+    description: Definitions specify a reusable business or technical term, including its type, description, examples, and classifications. Definitions can be referenced from within Data Contracts.
+  - name: Assets
+    description: EXPERIMENTAL A data asset refers to any data-related resource or entity that can be managed and tracked within the system, such as a database table, file, or data pipeline.
+  - name: Tags
+    description: Tags can be applied to data products, data contracts or assets and are unique.
+  - name: Policies
+    description: EXPERIMENTAL Manage the policies of your data mesh. Policies are the rules of play of the data mesh.
+  - name: Costs
+    description: EXPERIMENTAL Expenses of data products, e.g., storage, compute, maintenance, and data transfer costs. The expenses can be automatically extracted from cloud provider billing APIs via our integrations.
+  - name: Integrations
+    description: EXPERIMENTAL Used by SDK and integration agents. Use this API to store state (such as the lastEventId) and update health information.
+  - name: Test Results
+    description: EXPERIMENTAL Results of test runs of a data contract against a server (e.g., output port of a data product). The test runs van be executed using the Data Contract CLI tool.
+  - name: Events
+    description: Events are emitted when one of the core resource are created, updated, or deleted. There may be additional events like special state changes, as well.
+paths:
+  /api/dataproducts:
+    get:
+      tags:
+        - Data Products
+      summary: Get all data products
+      description: Get all data products of an organization.
+      operationId: getDataProducts
+      responses:
+        200:
+          description: List of data products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DataProduct'
+  /api/dataproducts/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this data product, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - Data Products
+      summary: Add or update a data product
+      description: Add a new data product or update an existing data product. Usually, the CI/CD pipeline of your data product calls this operation during its deployment.
+      operationId: addDataProduct
+      responses:
+        200:
+          description: data product successfully registered or updated
+        422:
+          description: data product cannot be updated due to invalid data
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/DataProduct'
+    get:
+      tags:
+        - Data Products
+      summary: Get a data product
+      description: Get a data product by its ID. The data product contains all its output ports.
+      operationId: getDataProduct
+      responses:
+        200:
+          description: The data product
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/DataProduct'
+    delete:
+      summary: Delete a data product
+      operationId: deleteDataProduct
+      description: Deletes a data product by its ID. The data product must not be used in an active access.
+      tags:
+        - Data Products
+      responses:
+        200:
+          description: Data product was deleted
+        422:
+          description: data product cannot be deleted, e.g. when it is still used in an active access.
+  /api/datacontracts:
+    get:
+      tags:
+        - Data Contracts
+      summary: Get all data contracts
+      operationId: getDataContracts
+      responses:
+        200:
+          description: List of data contracts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DataContract'
+  /api/datacontracts/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this data contract, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - Data Contracts
+      operationId: addDataContract
+      summary: Add or update a data contract
+      responses:
+        200:
+          description: data contract successfully registered or updated
+        422:
+          description: data contract cannot be updated due to invalid data
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/DataContract'
+    get:
+      tags:
+        - Data Contracts
+      summary: Get a data contract
+      operationId: getDataContract
+      responses:
+        200:
+          description: The data contract
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/DataContract'
+    delete:
+      summary: Delete a data contract
+      operationId: deleteDataContract
+      tags:
+        - Data Contracts
+      responses:
+        200:
+          description: Data contract was deleted
+        422:
+          description: data contract cannot be deleted, e.g. when it is still used in an output port of a data product
+  /api/datacontracts/{id}/datacontract.yaml:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this data contract, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Data Contracts
+      summary: Get the datacontract.yaml for a data contract
+      operationId: getDataContractYaml
+      responses:
+        200:
+          description: The datacontract.yaml
+          content:
+            'application/yaml':
+              example: |-
+                dataContractSpecification: 0.9.2
+                id: search-queries
+                info:
+                  title: Search Queries v2
+                  version: 1.0.0
+                  description: All search queries with user interactions v2
+                  owner: my-team
+  /api/access:
+    get:
+      tags:
+        - Access
+      summary: Get all access resources
+      operationId: getAccessList
+      responses:
+        200:
+          description: List of access resources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Access'
+  /api/access/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this access resource, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - Access
+      summary: Add or update an access resource
+      operationId: addAccess
+      responses:
+        200:
+          description: access successfully created or updated
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Access'
+    get:
+      tags:
+        - Access
+      summary: Get a access resource
+      operationId: getAccess
+      responses:
+        200:
+          description: The acess resource
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Access'
+    delete:
+      summary: Delete an access resource
+      operationId: deleteAccess
+      tags:
+        - Access
+      responses:
+        200:
+          description: Access was deleted
+  /api/access/{id}/approve:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this access resource, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Access
+      summary: Approve a requested access
+      operationId: approveAccess
+      responses:
+        200:
+          description: Access request successfully approved
+  /api/access/{id}/reject:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this access resource, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Access
+      summary: Rejects an access request
+      operationId: rejectAcess
+      responses:
+        200:
+          description: Access request successfully rejected
+  /api/access/{id}/cancel:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this access resource, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Access
+      summary: Cancels an approved access to get deacticated at a specified end date (can be now).
+      operationId: cancelAccess
+      responses:
+        200:
+          description: Access successfully canceled
+  /api/datausageagreements:
+    get:
+      tags:
+        - Data Usage Agreements
+      summary: Get all data usage agreements
+      operationId: getDataUsageAgreements
+      responses:
+        200:
+          description: List of data usage agreements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DataUsageAgreement'
+  /api/datausageagreements/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this data usage agreement, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - Data Usage Agreements
+      summary: Add or update a data usage agreement
+      operationId: addDataUsageAgreement
+      responses:
+        200:
+          description: data usage agreement successfully created or updated
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/DataUsageAgreement'
+    get:
+      tags:
+        - Data Usage Agreements
+      summary: Get a data usage agreement
+      operationId: getDataUsageAgreement
+      responses:
+        200:
+          description: The data usage agreement
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/DataUsageAgreement'
+    delete:
+      summary: Delete a data usage agreement
+      operationId: deleteDataUsageAgreement
+      tags:
+        - Data Usage Agreements
+      responses:
+        200:
+          description: Data usage agreement was deleted
+  /api/datausageagreements/{id}/approve:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this data usage agreement, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Data Usage Agreements
+      summary: Approve a requested data usage agreement
+      operationId: approveDataUsageAgreement
+      responses:
+        200:
+          description: data usage agreement successfully approved
+  /api/datausageagreements/{id}/reject:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this data usage agreement, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Data Usage Agreements
+      summary: Rejects a requested data usage agreement
+      operationId: rejectDataUsageAgreement
+      responses:
+        200:
+          description: data usage agreement successfully rejected
+  /api/datausageagreements/{id}/cancel:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this data usage agreement, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Data Usage Agreements
+      summary: Cancels an approved data usage agreement
+      operationId: cancelDataUsageAgreement
+      responses:
+        200:
+          description: data usage agreement successfully canceled
+  /api/teams:
+    get:
+      tags:
+        - Teams
+      summary: Get all teams
+      operationId: getTeams
+      responses:
+        200:
+          description: List of teams
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+  /api/teams/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this team, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        example: marketing
+        schema:
+          type: string
+    put:
+      tags:
+        - Teams
+      summary: Add or update a team
+      operationId: addTeam
+      responses:
+        200:
+          description: team successfully created or updated
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Team'
+    get:
+      tags:
+        - Teams
+      summary: Get a team
+      operationId: getTeam
+      responses:
+        200:
+          description: The team
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Team'
+    delete:
+      summary: Delete a team
+      operationId: deleteTeam
+      tags:
+        - Teams
+      responses:
+        200:
+          description: Team was deleted
+  /api/sourcesystems:
+    get:
+      tags:
+        - Source Systems
+      summary: Get all source systems
+      operationId: getSourceSystems
+      parameters:
+        - in: query
+          name: p
+          schema:
+            type: integer
+            minimum: 0
+          required: false
+          description: The number of the requested page, starting from 0. Each page contains a maximum of 1000 source systems, sorted by creation date ascending.
+      responses:
+        200:
+          description: List of source systems
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SourceSystem'
+  /api/sourcesystems/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this source system, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        example: stock-service
+        schema:
+          type: string
+    put:
+      tags:
+        - Source Systems
+      summary: Add or update a source system
+      operationId: addSourceSystem
+      responses:
+        200:
+          description: source system successfully created or updated
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/SourceSystem'
+    get:
+      tags:
+        - Source Systems
+      summary: Get an source system
+      operationId: getSourceSystem
+      responses:
+        200:
+          description: The source system
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/SourceSystem'
+    delete:
+      summary: Delete an source system
+      operationId: deleteSourceSystem
+      tags:
+        - Source Systems
+      responses:
+        200:
+          description: Source system was deleted
+  /api/definitions:
+    get:
+      tags:
+        - Definitions
+      summary: Get all definitions
+      operationId: getDefinitions
+      responses:
+        200:
+          description: List of definitions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Definition'
+  /api/definitions/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this definition, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        example: checkout/customer_name
+        schema:
+          type: string
+    put:
+      tags:
+        - Definitions
+      summary: Add or update a definition
+      operationId: addDefinition
+      responses:
+        200:
+          description: definition successfully created or updated
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Definition'
+    get:
+      tags:
+        - Definitions
+      summary: Get an definition
+      operationId: getDefinition
+      responses:
+        200:
+          description: The definition
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Definition'
+    delete:
+      summary: Delete an definition
+      operationId: deleteDefinition
+      tags:
+        - Definitions
+      responses:
+        200:
+          description: definition was deleted
+  /api/assets:
+    get:
+      tags:
+        - Assets
+      summary: Get all data assets
+      description: Get all data products of an organization.
+      operationId: getAssets
+      parameters:
+        - in: query
+          name: p
+          schema:
+            type: integer
+            minimum: 0
+          required: false
+          description: The number of the requested page, starting from 0. Each page contains a maximum of 1000 assets, sorted by creation date ascending.
+      responses:
+        200:
+          description: List of all data assets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Asset'
+  /api/assets/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this assets, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - Assets
+      operationId: addAsset
+      summary: Add or update a data asset
+      responses:
+        200:
+          description: Asset successfully created or updated
+        422:
+          description: Asset cannot be updated due to invalid data
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Asset'
+    get:
+      tags:
+        - Assets
+      summary: Get a data asset
+      operationId: getAsset
+      responses:
+        200:
+          description: The Asset
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Asset'
+    delete:
+      summary: Delete a data asset
+      operationId: deleteAsset
+      tags:
+        - Assets
+      responses:
+        200:
+          description: Data asset was deleted
+        422:
+          description: Data asset cannot be deleted, e.g. when it is still used in a data product
+  /api/tags:
+    get:
+      tags:
+        - Tags
+      summary: Get all tags
+      operationId: getTags
+      parameters:
+        - in: query
+          name: p
+          schema:
+            type: integer
+            minimum: 0
+          required: false
+          description: The number of the requested page, starting from 0. Each page contains a maximum of 1000 tags, sorted by creation date ascending.
+      responses:
+        200:
+          description: List of tags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+  /api/tags/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this tag. Can contain "/" and is used for GET, PUT and DELETE requests.
+        required: true
+        example: Governance/PII
+        schema:
+          type: string
+    put:
+      tags:
+        - Tags
+      summary: Add or update a tag
+      operationId: addTag
+      responses:
+        200:
+          description: tag successfully created or updated
+        422:
+          description: tag not created or updated, due to a required field.
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Tag'
+    get:
+      tags:
+        - Tags
+      summary: Get a tag
+      operationId: getTag
+      responses:
+        200:
+          description: The tag exists
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Tag'
+    delete:
+      summary: Delete a tag
+      operationId: deleteTag
+      tags:
+        - Tags
+      responses:
+        200:
+          description: tag was deleted
+        404:
+          description: tag was not deleted, because it does not exist
+  /api/costs:
+    get:
+      tags:
+        - Costs
+      summary: Get all cost of a data product
+      operationId: getCosts
+      parameters:
+        - name: dataProductId
+          in: query
+          description: The id of the data product
+          required: true
+          example: data-product-1
+          schema:
+            type: string
+      responses:
+        200:
+          description: List of costs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cost'
+    post:
+      tags:
+        - Costs
+      summary: Add a cost
+      operationId: addCost
+      responses:
+        200:
+          description: cost successfully created
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Cost'
+  /api/costs/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: The cost id
+        required: true
+        example: 1ee46337-0a0b-4b94-a0df-a7d6b0bfb080
+        schema:
+          type: string
+          format: uuid
+    delete:
+      summary: Delete a cost
+      operationId: deleteCost
+      tags:
+        - Costs
+      responses:
+        200:
+          description: cost was deleted
+  /api/integrations/agents:
+    get:
+      tags:
+        - Integrations
+      summary: Get all integration agents
+      description: Get all integration agents of an organization.
+      operationId: getIntegrationAgents
+      responses:
+        200:
+          description: List of all integration agents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IntegrationAgent'
+  /api/integrations/agents/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this integration agent, such as an UUID, URN, string, number.
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - Integrations
+      operationId: putIntegrationAgent
+      summary: Use this operation to store state of an integration agent (e.g. lastEventId).
+      responses:
+        200:
+          description: Integration agent created or updated
+        422:
+          description: Integration agent cannot be updated due to invalid data
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/IntegrationAgent'
+    get:
+      tags:
+        - Integrations
+      summary: Get the current state of the integration agent
+      operationId: getIntegrationAgent
+      responses:
+        200:
+          description: The current state of the integration agent
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/IntegrationAgent'
+    delete:
+      summary: Delete an integration agent
+      operationId: deleteIntegrationAgent
+      tags:
+        - Integrations
+      responses:
+        200:
+          description: Integration agent  was deleted
+        422:
+          description: Integration agent cannot be deleted
+  /api/test-results:
+    post:
+      tags:
+        - Test Results
+      summary: Add test results of a datacontract CLI run
+      operationId: postTestResults
+      responses:
+        200:
+          description: Test results successfully added
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/TestResults'
+  /api/test-results/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this test result.
+        required: true
+        example: ec1d7cd3-b062-46bc-b039-a0f737b6c4e9
+        schema:
+          type: string
+    get:
+      tags:
+        - Test Results
+      summary: Get test results for a specific ID.
+      operationId: getTestResults
+      responses:
+        200:
+          description: The test results exists
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/TestResults'
+    delete:
+      tags:
+        - Test Results
+      summary: Delete test results for a specific ID.
+      operationId: deleteTestResults
+      responses:
+        200:
+          description: The test results deleted
+  /api/events:
+    get:
+      tags:
+        - Events
+      summary: An HTTP feed with all events
+      description: An [HTTP feed](https://www.http-feeds.org/) that can be used to subscribe for events and trigger actions, such as granting or revoking access, in your data platform.
+      operationId: pollEvents
+      parameters:
+        - name: lastEventId
+          in: query
+          description: The last known event id. The response contains events that occurs after this event id.
+          schema:
+            type: string
+      responses:
+        200:
+          description: A chronological sequence of events serialized in the [CloudEvents](https://cloudevents.io/) event format in batched responses
+          content:
+            'application/cloudevents-batch+json':
+              schema:
+                type: array
+                description: A chronological sequence of events. Max 1000 events per request. An empty array signals the end of the feed.
+                items:
+                  title: CloudEvent
+                  type: object
+                  properties:
+                    specversion:
+                      type: string
+                      description: "CloudEvents 'specversion' attribute. The version of the CloudEvents\r\nspecification which the event uses. This enables the interpretation of the context."
+                      example: "1.0"
+                    type:
+                      type: string
+                      description: "CloudEvents 'type' attribute. The event type."
+                      example: com.datamesh-manager.events.DataProductCreatedEvent
+                      x-extensible-enum:
+                        - com.datamesh-manager.events.DataProductCreatedEvent
+                        - com.datamesh-manager.events.DataProductUpdatedEvent
+                        - com.datamesh-manager.events.DataProductDeletedEvent
+                        - com.datamesh-manager.events.OutputPortCreatedEvent
+                        - com.datamesh-manager.events.OutputPortUpdatedEvent
+                        - com.datamesh-manager.events.OutputPortDeletedEvent
+                        - com.datamesh-manager.events.DataContractCreatedEvent
+                        - com.datamesh-manager.events.DataContractUpdatedEvent
+                        - com.datamesh-manager.events.DataContractDeletedEvent
+                        - com.datamesh-manager.events.AccessCreatedEvent
+                        - com.datamesh-manager.events.AccessUpdatedEvent
+                        - com.datamesh-manager.events.AccessDeletedEvent
+                        - com.datamesh-manager.events.AccessRequestedEvent
+                        - com.datamesh-manager.events.AccessApprovedEvent
+                        - com.datamesh-manager.events.AccessRejectedEvent
+                        - com.datamesh-manager.events.AccessActivatedEvent
+                        - com.datamesh-manager.events.AccessDeactivatedEvent
+                        - com.datamesh-manager.events.DataUsageAgreementCreatedEvent
+                        - com.datamesh-manager.events.DataUsageAgreementUpdatedEvent
+                        - com.datamesh-manager.events.DataUsageAgreementDeletedEvent
+                        - com.datamesh-manager.events.DataUsageAgreementRequestedEvent
+                        - com.datamesh-manager.events.DataUsageAgreementApprovedEvent
+                        - com.datamesh-manager.events.DataUsageAgreementRejectedEvent
+                        - com.datamesh-manager.events.DataUsageAgreementActivatedEvent
+                        - com.datamesh-manager.events.DataUsageAgreementDeactivatedEvent
+                        - com.datamesh-manager.events.SourceSystemCreatedEvent
+                        - com.datamesh-manager.events.SourceSystemUpdatedEvent
+                        - com.datamesh-manager.events.SourceSystemDeletedEvent
+                        - com.datamesh-manager.events.TeamCreatedEvent
+                        - com.datamesh-manager.events.TeamUpdatedEvent
+                        - com.datamesh-manager.events.TeamDeletedEvent
+                        - com.datamesh-manager.events.DefinitionCreatedEvent
+                        - com.datamesh-manager.events.DefinitionUpdatedEvent
+                        - com.datamesh-manager.events.DefinitionDeletedEvent
+                        - com.datamesh-manager.events.TagCreatedEvent
+                        - com.datamesh-manager.events.TagUpdatedEvent
+                        - com.datamesh-manager.events.TagDeletedEvent
+                        - com.datamesh-manager.events.AssetCreatedEvent
+                        - com.datamesh-manager.events.AssetUpdatedEvent
+                        - com.datamesh-manager.events.AssetDeletedEvent
+                        - com.datamesh-manager.events.TestResultsCreatedEvent
+                        - com.datamesh-manager.events.TestResultsDeletedEvent
+                    id:
+                      type: string
+                      format: uuid
+                      description: "Identifies the event. If a duplicate event is re-sent (e.g. due to a network error) it MAY have the same id. Consumers MAY assume that Events with identical source and id are duplicates. Use this id for the `lastEventId` parameter."
+                      example: 95e78465-f8a0-42ec-9d72-cc26c8a64b35
+                    source:
+                      type: string
+                      description: "Identifies the context in which an event happened. Often this will include information such as the type of the event source, the organization publishing the event or the process that produced the event. The exact syntax and semantics behind the data encoded in the URI is defined by the event producer.\r\n            \r\nProducers MUST ensure that source + id is unique for each distinct event.\r\n            \r\nAn application MAY assign a unique source to each distinct producer, which makes it easy to produce unique IDs since no other producer will have the same source. The application MAY use UUIDs, URNs, DNS authorities or an application-specific scheme to create unique source identifiers.\r\n            \r\nA source MAY include more than one producer. In that case the producers MUST collaborate to ensure that source + id is unique for each distinct event.\r\n            \r\nConstraints:\r\n            \r\n    REQUIRED\r\n    MUST be a non-empty URI-reference\r\n    An absolute URI is RECOMMENDED\r\n            \r\nExamples\r\n            \r\n    Internet-wide unique URI with a DNS authority.\r\n        https://github.com/cloudevents\r\n        mailto:cncf-wg-serverless @lists.cncf.io\r\n    Universally-unique URN with a UUID:\r\n        urn:uuid:6e8bc430-9c3a-11d9-9669-0800200c9a66\r\n    Application-specific identifiers\r\n        /cloudevents/spec/pull/123\r\n        /sensors/tn-1234567/alerts\r\n        1-555-123-4567"
+                      format: uri
+                      example: "https://datamesh-manager.com"
+                    subject:
+                      type: string
+                      description: "CloudEvents 'subject' attribute. This describes the subject of the event in the context\r\nof the event producer (identified by source)."
+                      nullable: true
+                      example: "access-1"
+                    time:
+                      type: string
+                      description: CloudEvents 'time' attribute. Timestamp of when the event happened.
+                      format: date-time
+                      nullable: true
+                    datacontenttype:
+                      type: string
+                      description: "Content type of data value. Always `application/json`."
+                      nullable: true
+                      example: application/json
+                    dataschema:
+                      type: string
+                      description: "Type: URI\r\nDescription: Identifies the schema that data adheres to."
+                      format: uri
+                      nullable: true
+                      example: "https://app.datamesh-manager.com/openapi.yaml/#/components/schemas/AccessActivatedEvent"
+                    data:
+                      title: CloudEventData
+                      type: object
+                      additionalProperties: false
+                      description: "CloudEvent 'data' content. The event payload. The payload depends on the type."
+                      nullable: true
+                      oneOf:
+                        - $ref: '#/components/schemas/DataProductCreatedEvent'
+                        - $ref: '#/components/schemas/DataProductUpdatedEvent'
+                        - $ref: '#/components/schemas/DataProductDeletedEvent'
+                        - $ref: '#/components/schemas/OutputPortCreatedEvent'
+                        - $ref: '#/components/schemas/OutputPortUpdatedEvent'
+                        - $ref: '#/components/schemas/OutputPortDeletedEvent'
+                        - $ref: '#/components/schemas/DataContractCreatedEvent'
+                        - $ref: '#/components/schemas/DataContractUpdatedEvent'
+                        - $ref: '#/components/schemas/DataContractDeletedEvent'
+                        - $ref: '#/components/schemas/AccessCreatedEvent'
+                        - $ref: '#/components/schemas/AccessUpdatedEvent'
+                        - $ref: '#/components/schemas/AccessDeletedEvent'
+                        - $ref: '#/components/schemas/AccessRequestedEvent'
+                        - $ref: '#/components/schemas/AccessApprovedEvent'
+                        - $ref: '#/components/schemas/AccessRejectedEvent'
+                        - $ref: '#/components/schemas/AccessActivatedEvent'
+                        - $ref: '#/components/schemas/AccessDeactivatedEvent'
+                        - $ref: '#/components/schemas/DataUsageAgreementCreatedEvent'
+                        - $ref: '#/components/schemas/DataUsageAgreementUpdatedEvent'
+                        - $ref: '#/components/schemas/DataUsageAgreementDeletedEvent'
+                        - $ref: '#/components/schemas/DataUsageAgreementRequestedEvent'
+                        - $ref: '#/components/schemas/DataUsageAgreementApprovedEvent'
+                        - $ref: '#/components/schemas/DataUsageAgreementRejectedEvent'
+                        - $ref: '#/components/schemas/DataUsageAgreementActivatedEvent'
+                        - $ref: '#/components/schemas/DataUsageAgreementDeactivatedEvent'
+                        - $ref: '#/components/schemas/SourceSystemCreatedEvent'
+                        - $ref: '#/components/schemas/SourceSystemUpdatedEvent'
+                        - $ref: '#/components/schemas/SourceSystemDeletedEvent'
+                        - $ref: '#/components/schemas/TeamCreatedEvent'
+                        - $ref: '#/components/schemas/TeamUpdatedEvent'
+                        - $ref: '#/components/schemas/TeamDeletedEvent'
+                        - $ref: '#/components/schemas/DefinitionCreatedEvent'
+                        - $ref: '#/components/schemas/DefinitionUpdatedEvent'
+                        - $ref: '#/components/schemas/DefinitionDeletedEvent'
+                        - $ref: '#/components/schemas/TagCreatedEvent'
+                        - $ref: '#/components/schemas/TagUpdatedEvent'
+                        - $ref: '#/components/schemas/TagDeletedEvent'
+                        - $ref: '#/components/schemas/AssetCreatedEvent'
+                        - $ref: '#/components/schemas/AssetUpdatedEvent'
+                        - $ref: '#/components/schemas/AssetDeletedEvent'
+                        - $ref: '#/components/schemas/TestResultsCreatedEvent'
+                        - $ref: '#/components/schemas/TestResultsDeletedEvent'
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      description: You need to authenticate every API request with your secret API key as as a header field. Each API key is bound to an organization. See the [documentation](https://docs.datamesh-manager.com/authentication) for more details on how to generate an API key for your organization.
+      in: header
+      name: x-api-key
+
+  schemas:
+    DataProduct:
+      type: object
+      description: Data product description, including the output ports. It is based on the [Data Product Specification](https://dataproduct-specification.com/).
+      required:
+        - id
+        - info
+      properties:
+        id:
+          type: string
+          description: An organizational unique technical identifier for this data product, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+          example: search-queries-all
+        info:
+          type: object
+          description: Information about the data product
+          required:
+            - title
+            - owner
+          properties:
+            title:
+              type: string
+              description: The display name of this data product
+              example: Search Queries all
+            owner:
+              type: string
+              description:
+                The technical id of the team that owns the data product
+              example: search-team
+            description:
+              type: string
+              example: All search queries with user interactions
+            status:
+              type: string
+              x-extensible-enum:
+                - proposed
+                - in development
+                - active
+                - deprecated
+                - retired
+              example: active
+            archetype:
+              type: string
+              description: The domain data archetype of the data product, such as consumer-aligned, aggregate, source-aligned.
+              x-extensible-enum:
+                - consumer-aligned
+                - aggregate
+                - source-aligned
+              example: consumer-aligned
+            maturity:
+              type: string
+              description: The maturity level of the data product.
+              x-extensible-enum:
+                - raw
+                - defined
+                - managed
+              example: managed
+        inputPorts:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - name
+              - sourceSystemId
+            properties:
+              id:
+                type: string
+                description: A technical identifier for this input port, such as an UUID, URN, string, number.
+                example: kafka_search_topic
+              name:
+                type: string
+                description: The display name for this input port.
+                example: kafka_search_topic
+              description:
+                type: string
+                description: The description for this input port.
+                example: Kafka Topic with search events
+              sourceSystemId:
+                type: string
+                description: A technical identifier for the source system connected to this input port
+                example: search-service
+              type:
+                type: string
+                description: The technical type of the output port
+                example: Kafka
+              location:
+                type: string
+                description: The location with the actual data
+                example: search topic
+              links:
+                type: object
+                description: Links are used to reference external resources, such as schemas or the dataset in a data catalog. You can add any links.
+                additionalProperties: {
+                  type: string
+                }
+                example: {
+                  schema: "https://catalog.example.com/search/search-queries",
+                  catalog: "https://catalog.example.com/search/search-queries/"
+                }
+              custom:
+                type: object
+                description: Custom fields can be used to add additional information to the input port.
+                additionalProperties: {
+                  type: string
+                }
+              tags:
+                type: array
+                description: Tags are used to categorize input ports.
+                items:
+                  type: string
+                  example: kafka
+                example: [ "kafka", "search" ]
+        outputPorts:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - name
+            properties:
+              id:
+                type: string
+                description: A technical identifier for this output port, such as an UUID, URN, string, number.
+                example: snowflake_search_queries_all_npii_v1
+              name:
+                type: string
+                description: The display name for this output port.
+                example: snowflake_search_queries_all_npii_v1
+              description:
+                type: string
+                description: The description for this output port.
+                example: All search queries and result sets with PII removed.
+              type:
+                type: string
+                description: The technical type of the output port
+                example: snowflake
+                x-extensible-enum:
+                  - snowflake
+                  - kafka
+                  - bigquery
+                  - s3
+                  - postgres
+                  - redshift
+              status:
+                type: string
+                description: The status of the output port implementation. The allowed status values might be customized for your organization.
+                x-extensible-enum:
+                  - proposed
+                  - in development
+                  - active
+                  - deprecated
+                  - retired
+                example: active
+              location:
+                type: string
+                description: DEPRECATED. Use the appropriate fields in server instead.
+                example: SEARCH_DB.SEARCH_QUERIES_ALL_NPII_V1
+                deprecated: true
+              server:
+                type: object
+                properties:
+                  project:
+                    type: string
+                    description: The project name (bigquery)
+                    example: dp-search
+                  dataset:
+                    type: string
+                    description: The dataset name (bigquery)
+                    example: search-queries
+                  account:
+                    type: string
+                    description: The account name (snowflake)
+                    example: https://acme-test_aws_us_east_2.snowflakecomputing.com
+                  database:
+                    type: string
+                    description: The database name (snowflake,postgres)
+                    example: SEARCH_DB
+                  schema:
+                    type: string
+                    description: The schema name (snowflake,postgres)
+                    example: SEARCH_QUERIES_ALL_NPII_V1
+                  host:
+                    type: string
+                    description: The host name (kafka)
+                    example: kafka.acme.com
+                  catalog:
+                    type: string
+                    description: The catalog name (databricks)
+                    example: acme
+                  topic:
+                    type: string
+                    description: The topic name (kafka)
+                    example: search-queries
+                  location:
+                    type: string
+                    description: The location url (s3)
+                    example: s3://acme-search-queries
+                  delimiter:
+                    type: string
+                    description: The delimiter (s3)
+                    example: "newline"
+                  format:
+                    type: string
+                    description: The format of the data, e.g., csv, json, parquet, delta (s3)
+                    example: "json"
+                  table:
+                    type: string
+                    description: The table name (postgres)
+                    example: search_queries
+                  view:
+                    type: string
+                    description: The view name (postgres)
+                    example: search_queries
+                  share:
+                    type: string
+                    description: The share name (databricks)
+                additionalProperties: {
+                  type: string
+                }
+                description: The server contains all connection details to find the actual data. Depending on the output port type, this might be different attributes. The main ones are listed explicitly, but feel free to add your own server info.
+              links:
+                type: object
+                description: Links are used to reference external resources, such as schemas or the dataset in a data catalog. You can add any links.
+                additionalProperties: {
+                  type: string
+                }
+                example: {
+                  schema: "https://catalog.example.com/search/search-queries",
+                  catalog: "https://catalog.example.com/search/search-queries/"
+                }
+              custom:
+                type: object
+                description: Custom fields can be used to add additional information to the output port.
+                additionalProperties: {
+                  type: string
+                }
+              containsPii:
+                type: boolean
+                description: Flag, if this output port contains personally identifiable information (PII)
+                example: false
+                default: false
+              autoApprove:
+                type: boolean
+                description: Automatically approve requested data usage agreements towards this output port. You might want to use this for public or internal data that is not sensitive.
+                example: false
+                default: false
+              dataContractId:
+                type: string
+                description: The technical identifier of the data contract that is implemented by this output port
+                example: search-queries-all
+              tags:
+                type: array
+                description: Tags are used to categorize output ports.
+                items:
+                  type: string
+                  example: snowflake
+                example: [ "snowflake", "search" ]
+        links:
+          type: object
+          description: Links are used to reference external resources, such as schemas or the dataset in a data catalog. You can add any links.
+          additionalProperties: {
+            type: string
+          }
+          example: {
+            dataProduct: "https://example.com/dataproducts/search-queries",
+            documentation: "https://git.example.com/search/search-queries/README.md",
+            catalog: "https://catalog.example.com/search/search-queries/",
+            repository: "https://git.example.com/search/search-queries"
+          }
+        custom:
+          type: object
+          description: Custom fields can be used to add additional information to the data product.
+          additionalProperties: {
+            type: string
+          }
+        tags:
+          type: array
+          description: Tags are used to categorize data products.
+          items:
+            type: string
+            example: high-quality
+          example: [ "high-quality", "marketing" ]
+    DataUsageAgreement:
+      type: object
+      deprecated: true
+      description: A data usage agreement is an agreement between a data product provider and a data product consumer. It is based on the Data Usage Agreement Specification.
+      required:
+        - id
+        - info
+        - provider
+        - consumer
+      properties:
+        id:
+          type: string
+          description: The technical identifier of the data usage agreement.
+          example: 640864de-83d4-4619-afba-ccea8037ed3a
+        info:
+          type: object
+          required:
+            - purpose
+          properties:
+            purpose:
+              type: string
+              description: The purpose describes the reason and the context on why the consumer wants to consume the data.
+              example: Use orders to calculate payment amount
+            individualAgreements:
+              type: string
+              description: The individual agreements describe any individual agreements between the provider and the consumer.
+              example: "Free for the first three months."
+            status:
+              type: string
+              example: approved
+              enum:
+                - requested
+                - approved
+                - rejected
+              description: Approval workflow status of the usage agreement. Managed by Data Mesh Manager
+              readOnly: true
+            active:
+              type: boolean
+              example: true
+              description: The data usage agreement is active if it is approved and the current date is between start and end date. Managed by Data Mesh Manager
+              readOnly: true
+            startDate:
+              type: string
+              format: date
+              example: "2023-01-01"
+              description: The start date, when an approved data usage agreement becomes active.
+            endDate:
+              type: string
+              format: date
+              example: "2023-01-01"
+              description: The end date, when an approved and active data usage agreement becomes inactive again.
+            nextReassessmentDate:
+              type: string
+              format: date
+              example: "2023-01-01"
+              description: The next reassessment date, when the data usage agreement needs to be reassessed.
+        provider:
+          type: object
+          required:
+            - dataProductId
+            - outputPortId
+          properties:
+            dataProductId:
+              type: string
+              description: A technical identifier for the provided data product.
+              example: snowflake_orders_v2
+            outputPortId:
+              type: string
+              description: A technical identifier for the provided output port.
+              example: snowflake_search_queries_all_npii_v1
+            teamId:
+              type: string
+              description: A technical identifier for the team providing the data product.
+              example: orders-team
+        consumer:
+          oneOf:
+            - type: object
+              properties:
+                dataProductId:
+                  type: string
+                  example: user_profiles
+                teamId:
+                  type: string
+                  example: marketing-team
+              required:
+                - dataProductId
+            - type: object
+              properties:
+                teamId:
+                  type: string
+                  example: marketing-team
+              required:
+                - teamId
+            - type: object
+              properties:
+                userId:
+                  type: string
+                  example: user-123
+              required:
+                - userId
+        tags:
+          type: array
+          description: Tags are used to categorize data usage agreements.
+          items:
+            type: string
+            example: business-critical
+          example: [ "business-critical", "marketing" ]
+        links:
+          type: object
+          description: Links are used to reference external resources, such as schemas or the dataset in a data catalog.
+          additionalProperties: {
+            type: string
+          }
+          example: {
+            schema: "https://catalog.example.com/search/search-queries",
+            catalog: "https://catalog.example.com/search/search-queries/"
+          }
+        custom:
+          type: object
+          description: Custom fields can be used to add additional information to the data usage agreement.
+          additionalProperties: {
+            type: string
+          }
+    Access:
+      type: object
+      description: Access is an agreement between one data product provider and one data product consumer with a defined workflow. First it is an access request, when approved, it becomes an access agreement.
+      required:
+        - id
+        - info
+        - provider
+        - consumer
+      properties:
+        id:
+          type: string
+          description: The technical identifier.
+          example: 640864de-83d4-4619-afba-ccea8037ed3a
+        info:
+          type: object
+          required:
+            - purpose
+          properties:
+            purpose:
+              type: string
+              description: The purpose describes the reason and the context on why the consumer wants to consume the data.
+              example: Use orders to calculate payment amount
+            individualAgreements:
+              type: string
+              description: The individual agreements describe any individual agreements between the provider and the consumer.
+              example: "Free for the first three months."
+            status:
+              type: string
+              example: approved
+              enum:
+                - requested
+                - approved
+                - rejected
+              description: Approval workflow status of the usage agreement. Managed by Data Mesh Manager
+              readOnly: true
+            active:
+              type: boolean
+              example: true
+              description: The data usage agreement is active if it is approved and the current date is between start and end date. Managed by Data Mesh Manager
+              readOnly: true
+            startDate:
+              type: string
+              format: date
+              example: "2023-01-01"
+              description: The start date, when an approved data usage agreement becomes active.
+            endDate:
+              type: string
+              format: date
+              example: "2023-01-01"
+              description: The end date, when an approved and active data usage agreement becomes inactive again.
+            nextReassessmentDate:
+              type: string
+              format: date
+              example: "2023-01-01"
+              description: The next reassessment date, when the data usage agreement needs to be reassessed.
+        provider:
+          type: object
+          required:
+            - dataProductId
+            - outputPortId
+          properties:
+            dataProductId:
+              type: string
+              description: A technical identifier for the provided data product.
+              example: snowflake_orders_v2
+            outputPortId:
+              type: string
+              description: A technical identifier for the provided output port.
+              example: snowflake_search_queries_all_npii_v1
+            teamId:
+              type: string
+              description: A technical identifier for the team providing the data product.
+              example: orders-team
+        consumer:
+          oneOf:
+            - type: object
+              properties:
+                dataProductId:
+                  type: string
+                  example: user_profiles
+                teamId:
+                  type: string
+                  example: marketing-team
+              required:
+                - dataProductId
+            - type: object
+              properties:
+                teamId:
+                  type: string
+                  example: marketing-team
+              required:
+                - teamId
+            - type: object
+              properties:
+                userId:
+                  type: string
+                  example: user-123
+              required:
+                - userId
+        tags:
+          type: array
+          description: Tags are used to categorize data usage agreements.
+          items:
+            type: string
+            example: business-critical
+          example: [ "business-critical", "marketing" ]
+        links:
+          type: object
+          description: Links are used to reference external resources, such as schemas or the dataset in a data catalog.
+          additionalProperties: {
+            type: string
+          }
+          example: {
+            schema: "https://catalog.example.com/search/search-queries",
+            catalog: "https://catalog.example.com/search/search-queries/"
+          }
+        custom:
+          type: object
+          description: Custom fields can be used to add additional information to the data usage agreement.
+          additionalProperties: {
+            type: string
+          }
+    SourceSystem:
+      type: object
+      description: A source system is typically an operational system that records business transactions (OLTP).
+      required:
+        - id
+        - name
+        - owner
+      properties:
+        id:
+          type: string
+          description: An organizational unique technical identifier for this source system. Must be same as the path parameter.
+          example: stock-service
+        name:
+          type: string
+          description: The display name of this source system
+          example: Stock Service
+        owner:
+          type: string
+          description: The technical id of the team that owns the source system.
+          example: fulfillment
+        description:
+          type: string
+          description: A description of the source system
+          example: This is the stock service
+        tags:
+          type: array
+          description: List of tags
+          items:
+            type: string
+            example: "dev"
+          example: [ "dev", "marketing" ]
+        links:
+          type: object
+          description: Links are used to reference external resources. You can add any links.
+          additionalProperties: {
+            type: string
+          }
+          example: {
+            homepage: "https://example.com/teams/checkout"
+          }
+        custom:
+          type: object
+          description: Custom fields can be used to add additional information to the source system.
+          additionalProperties: {
+            type: string
+          }
+          example: {
+            "slack-channel": "checkout-public"
+          }
+    Team:
+      type: object
+      required:
+        - id
+        - name
+        - type
+      properties:
+        id:
+          type: string
+          description: An organizational unique technical identifier for this domain or team. Must be same as the path parameter.
+          example: marketing
+        name:
+          type: string
+          description: The display name of this team
+          example: Marketing
+        parent:
+          type: string
+          description: The ID of a parent "team" (can be a team of type "Domain"). Can be used to model an organizational hierarchy.
+          example: finance
+        type:
+          type: string
+          description: The type of the team. Only a "Team" can own data products, source systems, data contracts, and definitions.
+          enum:
+            - Domain
+            - Team
+            - Domain Team
+            - Enabling Team
+            - Platform Team
+            - Governance Group
+          example: Team
+        description:
+          type: string
+          description: A description of the team and its responsibilities. If the team is a domain team, it should describe the domain and its boundaries as well.
+          example: This is the marketing team
+        members:
+          type: array
+          description: List of team members
+          items:
+            type: object
+            properties:
+              emailAddress:
+                type: string
+                description: E-Mail address of a member
+                example: alice@example.com
+              role:
+                type: string
+                description: The team members role
+                example: Data Product Owner
+        tags:
+          type: array
+          description: List of tags
+          items:
+            type: string
+            example: "dev"
+          example: [ "dev", "marketing" ]
+        links:
+          type: object
+          description: Links are used to reference external resources. You can add any links.
+          additionalProperties: {
+            type: string
+          }
+          example: {
+            homepage: "https://example.com/teams/checkout"
+          }
+        custom:
+          type: object
+          description: Custom fields can be used to add additional information to the team.
+          additionalProperties: {
+            type: string
+          }
+          example: {
+            "slack-channel": "checkout-public"
+          }
+    DataContract:
+      type: object
+      properties:
+        dataContractSpecification:
+          type: string
+          description: Specifies the Data Contract Specification being used.
+          default: "1.1.0"
+          example: "1.1.0"
+        id:
+          type: string
+          description: Specifies the identifier of the data contract.
+          example: "search-queries-all-v1"
+        info:
+          type: object
+          properties:
+            title:
+              type: string
+              description: The title of the data contract.
+              example: "Search Queries all"
+            version:
+              type: string
+              description: The version of the data contract document (which is distinct from the Data Contract Specification version or the Data Product implementation version).
+              example: "1.0.0"
+            description:
+              type: string
+              description: A description of the data contract.
+              example: "All search queries with user interactions"
+            owner:
+              type: string
+              description: The ID of the team responsible for managing the data contract and providing the data.
+              example: "search-team"
+            contact:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The identifying name of the contact person/organization.
+                  example: "John Doe"
+                url:
+                  type: string
+                  format: uri
+                  description: The URL pointing to the contact information. This MUST be in the form of a URL.
+                  example: "https://example.com/contact"
+                email:
+                  type: string
+                  format: email
+                  description: The email address of the contact person/organization. This MUST be in the form of an email address.
+                  example: "mail@example.com"
+              description: Contact information for the data contract.
+              additionalProperties: true
+          required:
+            - title
+            - version
+          description: Metadata and life cycle information about the data contract.
+          additionalProperties: true
+        servers:
+          type: object
+          additionalProperties:
+            discriminator:
+              propertyName: type
+            oneOf:
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - bigquery
+                      - BigQuery
+                    description: The type of the data product technology that implements the data contract.
+                  project:
+                    type: string
+                    description: An optional string describing the server.
+                  dataset:
+                    type: string
+                    description: An optional string describing the server.
+                additionalProperties: true
+                required:
+                  - type
+                  - project
+                  - dataset
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - s3
+                    description: The type of the data product technology that implements the data contract.
+                  location:
+                    type: string
+                    format: uri
+                    description: An optional string describing the server. Must be in the form of a URL.
+                additionalProperties: true
+                required:
+                  - type
+                  - location
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - redshift
+                    description: The type of the data product technology that implements the data contract.
+                  account:
+                    type: string
+                    description: An optional string describing the server.
+                  database:
+                    type: string
+                    description: An optional string describing the server.
+                  schema:
+                    type: string
+                    description: An optional string describing the server.
+                additionalProperties: true
+                required:
+                  - type
+                  - account
+                  - database
+                  - schema
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - snowflake
+                    description: The type of the data product technology that implements the data contract.
+                  account:
+                    type: string
+                    description: An optional string describing the server.
+                  database:
+                    type: string
+                    description: An optional string describing the server.
+                  schema:
+                    type: string
+                    description: An optional string describing the server.
+                additionalProperties: true
+                required:
+                  - type
+                  - account
+                  - database
+                  - schema
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - databricks
+                    description: The type of the data product technology that implements the data contract.
+                  share:
+                    type: string
+                    description: An optional string describing the server.
+                additionalProperties: true
+                required:
+                  - type
+                  - share
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - kafka
+                    description: The type of the data product technology that implements the data contract.
+                  host:
+                    type: string
+                    description: An optional string describing the server.
+                  topic:
+                    type: string
+                    description: An optional string describing the server.
+                additionalProperties: true
+                required:
+                  - type
+                  - host
+                  - topic
+          description: Information about the servers.
+        terms:
+          type: object
+          description: The terms and conditions of the data contract.
+          properties:
+            usage:
+              type: string
+              description: The usage describes the way the data is expected to be used. Can contain business and technical information.
+            limitations:
+              type: string
+              description: The limitations describe the restrictions on how the data can be used, can be technical or restrictions on what the data may not be used for.
+            billing:
+              type: string
+              description: The billing describes the pricing model for using the data, such as whether it's free, having a monthly fee, or metered pay-per-use.
+            noticePeriod:
+              type: string
+              description: The period of time that must be given by either party to terminate or modify a data usage agreement. Uses ISO-8601 period format, e.g., 'P3M' for a period of three months.
+        models:
+          description: Specifies the logical data model. Use the models name (e.g., the table name) as the key.
+          type: object
+          minProperties: 1
+          additionalProperties:
+            type: object
+            properties:
+              description:
+                type: string
+              type:
+                description: 'The type of the model. Examples: table, object. Default: table.'
+                type: string
+                default: table
+              fields:
+                description: Specifies a field in the data model. Use the field name (e.g., the column name) as the key.
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    description:
+                      type: string
+                      description: An optional string describing the semantic of the data in this field.
+                    type:
+                      type: string
+                      description: The logical data type of the field.
+                      enum:
+                        - number
+                        - decimal
+                        - numeric
+                        - int
+                        - integer
+                        - long
+                        - bigint
+                        - float
+                        - double
+                        - string
+                        - text
+                        - varchar
+                        - boolean
+                        - timestamp
+                        - timestamp_tz
+                        - timestamp_ntz
+                        - date
+                        - array
+                        - object
+                        - record
+                        - struct
+                        - bytes
+                        - "null"
+                    required:
+                      type: boolean
+                      default: false
+                      description: An indication, if this field must contain a value and may not be null.
+                    unique:
+                      type: boolean
+                      default: false
+                      description: An indication, if the value must be unique within the model.
+                    enum:
+                      type: array
+                      items:
+                        type: string
+                      uniqueItems: true
+                      description: A value must be equal to one of the elements in this array value. Only evaluated if the value is not null.
+                    minLength:
+                      type: number
+                      description: A value must greater than, or equal to, the value of this. Only applies to string types.
+                    maxLength:
+                      type: number
+                      description: A value must less than, or equal to, the value of this. Only applies to string types.
+                    format:
+                      type: string
+                      description: A specific format the value must comply with (e.g., 'email', 'uri', 'uuid').
+                    pattern:
+                      type: string
+                      description: A regular expression the value must match. Only applies to string types.
+                    minimum:
+                      type: number
+                      description: A value of a number must greater than, or equal to, the value of this. Only evaluated if the value is not null. Only applies to numeric values.
+                    exclusiveMinimum:
+                      type: number
+                      description: A value of a number must greater than the value of this. Only evaluated if the value is not null. Only applies to numeric values.
+                    maximum:
+                      type: number
+                      description: A value of a number must less than, or equal to, the value of this. Only evaluated if the value is not null. Only applies to numeric values.
+                    exclusiveMaximum:
+                      type: number
+                      description: A value of a number must less than the value of this. Only evaluated if the value is not null. Only applies to numeric values.
+                    example:
+                      type: string
+                      description: An example value for this field.
+                    pii:
+                      type: boolean
+                      description: An indication, if this field contains Personal Identifiable Information (PII).
+                    classification:
+                      type: string
+                      description: The data class defining the sensitivity level for this field, according to the organization's classification scheme.
+                      example: sensitive
+                    tags:
+                      type: array
+                      items:
+                        type: string
+                      description: Custom metadata to provide additional context.
+                    $ref:
+                      type: string
+                      description: A reference URI to a definition in the specification, internally or externally. Properties will be inherited from the definition.
+          x-propertyNames:
+            pattern: ^[a-zA-Z0-9_-]+$
+        definitions:
+          description: Clear and concise explanations of syntax, semantic, and classification of business objects in a given domain.
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              domain:
+                type: string
+                description: The domain in which this definition is valid.
+                default: global
+              name:
+                type: string
+                description: The technical name of this definition.
+              title:
+                type: string
+                description: The business name of this definition.
+              description:
+                type: string
+                description: Clear and concise explanations related to the domain.
+              type:
+                type: string
+                description: The logical data type.
+              minLength:
+                type: number
+                description: A value must be greater than or equal to this value. Applies only to string types.
+              maxLength:
+                type: number
+                description: A value must be less than or equal to this value. Applies only to string types.
+              format:
+                type: string
+                description: Specific format requirements for the value (e.g., 'email', 'uri', 'uuid').
+              pattern:
+                type: string
+                description: A regular expression pattern the value must match. Applies only to string types.
+              example:
+                type: string
+                description: An example value.
+              pii:
+                type: boolean
+                description: Indicates if the field contains Personal Identifiable Information (PII).
+              classification:
+                type: string
+                description: The data class defining the sensitivity level for this field.
+              tags:
+                type: array
+                items:
+                  type: string
+                description: Custom metadata to provide additional context.
+            required:
+              - name
+              - type
+          x-propertyNames:
+            pattern: ^[a-zA-Z0-9_-]+$
+        schema:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - dbt
+                - bigquery
+                - json-schema
+                - sql-ddl
+                - avro
+                - protobuf
+                - custom
+              description:
+                The type of the schema. Typical values are dbt, bigquery, json-schema, sql-ddl, avro, protobuf, custom.
+            specification:
+              oneOf:
+                - type: string
+                  description: The specification of the schema as a string.
+                - type: object
+                  description: The specification of the schema as an object.
+          required:
+            - type
+            - specification
+          description: The schema of the data contract describes the syntax and semantics of provided data sets. It supports different schema types.
+        examples:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - csv
+                  - json
+                  - yaml
+                  - custom
+                description: The type of the example data. Well-known types are csv, json, yaml, custom.
+                example: csv
+              model:
+                type: string
+                description: The reference to the model in the schema, e.g., a table name.
+                example: search_queries
+              data:
+                type: string
+                description: Example data for this model.
+                example: |
+                  id,query,timestamp
+                  1,hello world,2021-01-01T00:00:00Z
+                  2,hello world,2021-01-01T00:00:00Z
+                  3,hello world,2021-01-01T00:00:00Z
+              description:
+                type: string
+                description: An optional string describing the example.
+                example: "Example data for the search queries table."
+            required:
+              - type
+              - model
+              - data
+          description: The Examples Object is an array of Example Objects.
+        quality:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - SodaCL
+                - montecarlo
+                - custom
+              description: The type of the quality check. Typical values are SodaCL, montecarlo, custom.
+            specification:
+              oneOf:
+                - type: string
+                  description: The specification of the quality attributes as a string.
+                - type: object
+                  description: The specification of the quality attributes as an object.
+          required:
+            - type
+            - specification
+          description: The quality object contains quality attributes and checks.
+          additionalProperties: true
+      required:
+        - dataContractSpecification
+        - id
+        - info
+    Definition:
+      type: object
+      required:
+        - id
+        - owner
+      properties:
+        id:
+          type: string
+          description: An organizational unique technical identifier for this definition. Must be same as the path parameter.
+          example: checkout/customer_name
+        owner:
+          type: string
+          description: The owner of the definition (the ID of a team).
+          example: checkout
+        title:
+          type: string
+          description: "The business name of this definition."
+          example: "Customer Name"
+        description:
+          type: string
+          description: "Clear and concise explanations related to the domain."
+          example: "The full name of the customer, including first and last name."
+        type:
+          type: string
+          description: "The logical data type."
+          example: "string"
+          externalDocs:
+            description: "Available data types from the Data Contract Specification"
+            url: "https://datacontract.com/#data-types"
+        enum:
+          type: array
+          description: "A list of possible values."
+          items:
+            type: string
+            example: "some-value"
+          example: [ "make", "buy", "ignore" ]
+        minLength:
+          type: number
+          description: "A value must be greater than or equal to this value. Applies only to string types."
+          example: 1
+        maxLength:
+          type: number
+          description: "A value must be less than or equal to this value. Applies only to string types."
+          example: 100
+        minimum:
+          type: number
+          description: "A value must be greater than or equal to this value. Applies only to numeric types."
+          example: 0
+        maximum:
+          type: number
+          description: "A value must be less than or equal to this value. Applies only to numeric types."
+          example: 100
+        exclusiveMinimum:
+          type: number
+          description: "A value must be greater than this value. Applies only to numeric types."
+          example: 0
+        exclusiveMaximum:
+          type: number
+          description: "A value must be less than this value. Applies only to numeric types."
+          example: 100
+        format:
+          type: string
+          description: "Specific format requirements for the value (e.g., 'email', 'uri', 'uuid')."
+          example: "email"
+        pattern:
+          type: string
+          description: "A regular expression pattern the value must match. Applies only to string types."
+          example: "^[a-zA-Z0-9_]*$"
+        example:
+          type: string
+          description: "An example value."
+          example: "John Doe"
+        pii:
+          type: boolean
+          description: "Indicates if the field contains Personal Identifiable Information (PII)."
+          example: true
+        classification:
+          type: string
+          description: "The data class defining the sensitivity level for this field."
+          example: "sensitive"
+        tags:
+          type: array
+          items:
+            type: string
+            example: "customer"
+          description: "Custom metadata to provide additional context."
+          example: [ "customer", "name" ]
+
+    Asset:
+      description: A data asset refers to any data-related resource or entity that can be managed and tracked within the system, such as a database table, file, or data pipeline.
+      type: object
+      properties:
+        id:
+          type: string
+          description: An organizational unique technical identifier for this definition. Must be same as the path parameter.
+          example: "047bde7c-87d4-488a-b6d2-cef6f6f60001"
+        info:
+          type: object
+          description: Information about the asset.
+          properties:
+            owner:
+              type: string
+              description: The owner of the definition (the ID of a team). It is optional, but if it is set, it must be an existing team ID.
+              example: "team-456"
+            source:
+              type: string
+              description: The source of the asset.
+              example: "Purview"
+            sourceId:
+              type: string
+              description: The source identifier of the asset.
+              example: "047bde7c-87d4-488a-b6d2-cef6f6f60001"
+            sourceUrl:
+              type: string
+              description: The URL of the source.
+              example: "https://example.com/my-database/my-asset"
+            type:
+              type: string
+              description: The type of the asset.
+              example: "azure_sql_table"
+            name:
+              type: string
+              description: The display name of the asset.
+              example: "my_table"
+            qualifiedName:
+              type: string
+              description: The qualified name of the asset.
+              example: "mssql://dcm-orders-example.database.windows.net/orders-example/dbo/my_table"
+            version:
+              type: string
+              description: The version of the asset.
+              example: "0"
+            status:
+              type: string
+              description: The status of the asset.
+              example: "ACTIVE"
+            description:
+              type: string
+              description: A description of the asset.
+              example: "This is a description."
+        properties:
+          type: object
+          description: Additional properties of the asset. Can be a string or a complex object.
+          additionalProperties: true
+          example:
+            owner: "John.Doe@example.com"
+            objectType: "U"
+            Business Attributes:
+                Business Name: "Customer"
+                Business Description: "Customer Information"
+        columns:
+          type: array
+          description: If the asset type has a schema (such as a table or structured files), define the columns.
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The name of the column.
+                example: "column1"
+              type:
+                type: string
+                description: The type of the column.
+                example: "varchar"
+              description:
+                type: string
+                description: A description of the column.
+                example: "This is a column description."
+              qualifiedName:
+                type: string
+                description: The qualified name of the column.
+                example: "qualifiedName1"
+              tags:
+                type: array
+                description: Tags associated with the column.
+                items:
+                  type: string
+                example: ["classification:Full Name", "tag2"]
+              links:
+                type: object
+                description: Links associated with the column.
+                additionalProperties:
+                  type: string
+        relationships:
+          type: array
+          description: The relationships of the asset to other assets.
+          items:
+            type: object
+            properties:
+              relationshipType:
+                type: string
+                description: The type of the relationship.
+                example: "parent"
+              assetId:
+                type: string
+                description: The ID of the related asset (it should also be in the system).
+                example: "047bde7c-87d4-488a-b6d2-cef6f6f60003"
+        tags:
+          type: array
+          description: Tags associated with the asset.
+          items:
+            type: string
+          example: ["pii:true", "classification:Full Name"]
+        links:
+          type: object
+          description: Links associated with the asset.
+          additionalProperties:
+            type: string
+          example:
+            "Purview Data Map": "https://link1.com"
+            "Azure SQL Explorer": "https://link2.com"
+
+    Tag:
+      type: object
+      required:
+        - id
+        - owner
+      properties:
+        id:
+          type: string
+          description: An organizational unique technical identifier for this tag. Must be same as the path parameter.
+          example: Governance/PII
+        info:
+          type: object
+          description: Information of the tag
+          properties:
+            owner:
+              type: string
+              description: The owner of the tag (the ID of a team).
+              example: checkout
+            description:
+              type: string
+              description: "Clear and concise explanations related to the tag."
+              example: "This tag is used to categorize an entity as pii."
+        properties:
+          type: object
+          description: Properties can be used to add additional information to the tag.
+          additionalProperties: {
+            type: string
+          }
+
+    Cost:
+      type: object
+      required:
+        - dataProductId
+        - name
+        - amount
+        - currency
+      description: An expense of a data product.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: The unique identifier of the cost. Is automatically generated by the Data Mesh Manager.
+          example: 640864de-83d4-4619-afba-ccea8037ed3a
+        dataProductId:
+          type: string
+          description: The identifier of the data product this cost is associated with.
+          example: data-product-1
+        name:
+          type: string
+          description: The name of the cost.
+          example: AWS S3
+        yearMonth:
+          type: string
+          format: year-month
+          description: The year and month of the cost. Use this to report costs for a specific month. The format is YYYY-MM. Leave this empty if the cost is valid for every month.
+          pattern: '^\d{4}-\d{2}$'
+          example: 2023-01
+        amount:
+          type: number
+          description: The amount of the cost.
+          example: 1234.45
+        currency:
+          type: string
+          description: The currency of the cost.
+          example: USD
+        estimated:
+          type: boolean
+          default: false
+          description: Indicates if the cost is estimated. Use this to report costs for the current month that are not yet final.
+          example: false
+        category:
+          type: string
+          description: The category of the cost. Use this to group costs together.
+          example: Data Platform
+        description:
+          type: string
+          description: A description of the cost.
+          example: Costs for the AWS S3 bucket
+        tags:
+          type: array
+          description: Tags are used to categorize costs.
+          items:
+            type: string
+            example: "aws"
+        link:
+          type: string
+          format: uri
+          description: A link to the cost report.
+          example: https://example.com/link-to-aws-costexplorer
+
+    IntegrationAgent:
+      type: object
+      required:
+        - id
+        - info
+      properties:
+        id:
+          type: string
+          description: The identifier of the integration agent.
+          example: agent-123
+        info:
+          type: object
+          properties:
+            type:
+              type: string
+              description: The type of the integration agent.
+              example: databricks
+            description:
+              type: string
+              description: A description of the integration agent.
+              example: "This is a databricks integration agent."
+            agentVersion:
+              type: string
+              description: The version of the integration agent.
+              example: "1.0.0"
+        health:
+          type: object
+          properties:
+            status:
+              type: string
+              description: The health status of the integration agent.
+              example: running
+            startedAt:
+              type: string
+              format: date-time
+              description: The time when the health status started.
+              example: 2023-01-01T09:15:20.705Z
+            updatedAt:
+              type: string
+              format: date-time
+              description: The time when the health status was last updated.
+              example: 2023-01-01T09:15:20.705Z
+            errorMessage:
+              type: string
+              description: The error message if the agent is in an error state.
+              example: "Connection lost"
+        state:
+          type: object
+          additionalProperties: true
+          description: The state of the integration agent.
+          example:
+            lastEventId: 95837f96-766f-4f8b-96f8-4f337f2a36a6
+            lastHeartbeat: 2023-10-01T12:00:00Z
+        custom:
+          type: object
+          additionalProperties: true
+          description: Custom fields for the integration agent.
+
+    TestResults:
+      type: object
+      required:
+        - id
+        - dataContractId
+        - dataContractVersion
+        - server
+        - timestampStart
+        - timestampEnd
+        - result
+      description: An expense of a data product.
+      properties:
+        id:
+          type: string
+          description: A unique identifier for the test run, e.g., a UUID.
+          example: 466b4c17-8176-42f1-8199-59125dde5e61
+        dataContractId:
+          type: string
+          description: The id of the data contract that was tested. A data contract with this ID must be available in the system.
+          example: search-queries-all
+        dataContractVersion:
+          type: string
+          description: The version of the data contract that was tested.
+          example: 1.0.0
+        server:
+          type: string
+          description: The server that was tested. A server with this key must be defined in the data contract in the system.
+          example: production
+        timestampStart:
+          type: string
+          format: date-time
+          example: 2024-07-03T10:46:28.195230Z
+        timestampEnd:
+          type: string
+          format: date-time
+          example: 2024-07-03T10:46:42.481447Z
+        result:
+          type: string
+          description: The result of the test run.
+          enum: [ passed, failed, warning, error, unknown ]
+        checks:
+          type: array
+          items:
+            type: object
+            required:
+              - type
+              - result
+            properties:
+              type:
+                type: string
+                description: The type of the check, e.g. schema, quality
+                example: schema
+              name:
+                type: string
+                description: The name of the check, including the field or rule that was checked
+                example: Check that field order_id is present
+              result:
+                type: string
+                description: The result of the check
+                enum: [ passed, failed, warning, error, unknown ]
+                example: passed
+              engine:
+                type: string
+                description: The engine that performed the check
+                example: datacontract-cli
+              model:
+                type: string
+                description: The model that was checked
+                example: orders
+              field:
+                type: string
+                description: The field that was checked
+                example: order_id
+              reason:
+                type: string
+                description: The reason for the result
+                example: Field order_id is present
+              details:
+                type: string
+                description: Additional details about the check
+                example: Checked order_id
+        logs:
+          type: array
+          description: Additional log output from the test run or the test engines
+          items:
+            type: object
+            properties:
+              level:
+                type: string
+                description: The log level, e.g. INFO, WARN, ERROR
+                example: INFO
+              message:
+                type: string
+                description: The log message
+                example: "Running tests for data contract urn:datacontract:checkout:orders-latest with server production"
+              timestamp:
+                type: string
+                format: date-time
+                example: 2024-07-03T10:46:29.083871Z
+    DataProductCreatedEvent:
+      type: object
+      description: A data product was created.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data product.
+          example: data-product-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data product was created
+          example: 2023-01-01T09:15:20.705Z
+    DataProductUpdatedEvent:
+      type: object
+      description: A data product was updated.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data product.
+          example: data-product-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data product was updated
+          example: 2023-01-01T09:15:20.705Z
+    DataProductDeletedEvent:
+      type: object
+      description: A data product was deleted.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data product.
+          example: data-product-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data product was deleted
+          example: 2023-01-01T09:15:20.705Z
+    OutputPortCreatedEvent:
+      type: object
+      description: An output port was created. This event is emitted in addition to a DataProductCreatedEvent or DataProductUpdatedEvent.
+      required:
+        - id
+        - outputPortId
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data product.
+          example: data-product-1
+        outputPortId:
+          type: string
+          description: The identifier of the output port.
+          example: data-product-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data product was created
+          example: 2023-01-01T09:15:20.705Z
+    OutputPortUpdatedEvent:
+      type: object
+      description: An output port was updated. This event is emitted in addition to a DataProductUpdatedEvent.
+      required:
+        - id
+        - outputPortId
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data product.
+          example: data-product-1
+        outputPortId:
+          type: string
+          description: The identifier of the output port.
+          example: data-product-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data product was updated
+          example: 2023-01-01T09:15:20.705Z
+    OutputPortDeletedEvent:
+      type: object
+      description: An output port was deleted. This event is emitted in addition to a DataProductUpdatedEvent or DataProductDeletedEvent.
+      required:
+        - id
+        - outputPortId
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data product.
+          example: data-product-1
+        outputPortId:
+          type: string
+          description: The identifier of the output port.
+          example: data-product-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data product was deleted
+          example: 2023-01-01T09:15:20.705Z
+    DataContractCreatedEvent:
+      type: object
+      description: A data contract was created.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data contract.
+          example: data-contract-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data contract was created
+          example: 2023-01-01T09:15:20.705Z
+    DataContractUpdatedEvent:
+      type: object
+      description: A data contract was updated.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data contract.
+          example: data-contract-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data contract was updated
+          example: 2023-01-01T09:15:20.705Z
+    DataContractDeletedEvent:
+      type: object
+      description: A data contract was deleted.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data contract.
+          example: data-contract-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data contract was deleted
+          example: 2023-01-01T09:15:20.705Z
+    AccessCreatedEvent:
+      type: object
+      description: A new access resource was created.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was created
+          example: 2023-01-01T09:15:20.705Z
+    AccessUpdatedEvent:
+      type: object
+      description: An access resource was updated.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was updated
+          example: 2023-01-01T09:15:20.705Z
+    AccessDeletedEvent:
+      type: object
+      description: An access resource was deleted.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was deleted
+          example: 2023-01-01T09:15:20.705Z
+    AccessActivatedEvent:
+      type: object
+      description: An access was activated (it was approved and the startDate has been reached). Use this to automatically set permissions in your data platform.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was activated
+          example: 2023-01-01T09:15:20.705Z
+    AccessDeactivatedEvent:
+      type: object
+      description: An was deactivated (it was canceled and the endDate has been reached). Use this to automatically revoke permissions in your data platform.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was deactivated
+          example: 2023-01-01T09:15:20.705Z
+    AccessRequestedEvent:
+      type: object
+      description: An access was requested.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was requested
+          example: 2023-01-01T09:15:20.705Z
+    AccessApprovedEvent:
+      type: object
+      description: An access request was approved.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was approved
+          example: 2023-01-01T09:15:20.705Z
+    AccessRejectedEvent:
+      type: object
+      description: An access request was rejected.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was rejected
+          example: 2023-01-01T09:15:20.705Z
+    AccessCanceledEvent:
+      type: object
+      description: An access request was canceled (terminated) and will be deactivated at the defined end date.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was canceled
+          example: 2023-01-01T09:15:20.705Z
+    DataUsageAgreementCreatedEvent:
+      type: object
+      deprecated: true
+      description: Deprecated, use AccessCreatedEvent instead.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was created
+          example: 2023-01-01T09:15:20.705Z
+    DataUsageAgreementUpdatedEvent:
+      type: object
+      deprecated: true
+      description: Deprecated, use AccessUpdatedEvent instead.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was updated
+          example: 2023-01-01T09:15:20.705Z
+    DataUsageAgreementDeletedEvent:
+      type: object
+      deprecated: true
+      description: Deprecated, use AccessDeletedEvent instead.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was deleted
+          example: 2023-01-01T09:15:20.705Z
+    DataUsageAgreementActivatedEvent:
+      type: object
+      deprecated: true
+      description: Deprecated, use AccessActivatedEvent instead.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was activated
+          example: 2023-01-01T09:15:20.705Z
+    DataUsageAgreementDeactivatedEvent:
+      type: object
+      deprecated: true
+      description: Deprecated, use AccessDeactivatedEvent instead.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was deactivated
+          example: 2023-01-01T09:15:20.705Z
+    DataUsageAgreementRequestedEvent:
+      type: object
+      deprecated: true
+      description: Deprecated, use AccessRequestedEvent
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was requested
+          example: 2023-01-01T09:15:20.705Z
+    DataUsageAgreementApprovedEvent:
+      type: object
+      deprecated: true
+      description: Deprecated, use AccessApprovedEvent instead.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was approved
+          example: 2023-01-01T09:15:20.705Z
+    DataUsageAgreementRejectedEvent:
+      type: object
+      deprecated: true
+      description: Deprecated, use AccessRejectedEvent instead.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was rejected
+          example: 2023-01-01T09:15:20.705Z
+    DataUsageAgreementCanceledEvent:
+      type: object
+      deprecated: true
+      description: Deprecated, use AccessCanceledEvent instead.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the data usage agreement.
+          example: data-usage-agreement-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the data usage agreement was canceled
+          example: 2023-01-01T09:15:20.705Z
+    TeamCreatedEvent:
+      type: object
+      description: A team was created.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the team.
+          example: marketing
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the team was created
+          example: 2023-01-01T09:15:20.705Z
+    TeamUpdatedEvent:
+      type: object
+      description: A team was updated.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the team
+          example: marketing
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the team was updated
+          example: 2023-01-01T09:15:20.705Z
+    TeamDeletedEvent:
+      type: object
+      description: A team was deleted.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the team.
+          example: team
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the team was deleted
+          example: 2023-01-01T09:15:20.705Z
+    SourceSystemCreatedEvent:
+      type: object
+      description: A source system was created.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the source system.
+          example: source-system-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the source system was created
+          example: 2023-01-01T09:15:20.705Z
+    SourceSystemUpdatedEvent:
+      type: object
+      description: A source system was updated.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the source system.
+          example: source-system-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the source system was updated
+          example: 2023-01-01T09:15:20.705Z
+    SourceSystemDeletedEvent:
+      type: object
+      description: A source system was deleted.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the source system.
+          example: source-system-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the source system was deleted
+          example: 2023-01-01T09:15:20.705Z
+    DefinitionCreatedEvent:
+      type: object
+      description: A definition was created.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the definition.
+          example: definition-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the definition was created
+          example: 2023-01-01T09:15:20.705Z
+    DefinitionUpdatedEvent:
+      type: object
+      description: A definition was updated.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the definition.
+          example: definition-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the definition was updated
+          example: 2023-01-01T09:15:20.705Z
+    DefinitionDeletedEvent:
+      type: object
+      description: A definition was deleted.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the definition.
+          example: definition-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the definition was deleted
+          example: 2023-01-01T09:15:20.705Z
+    TagCreatedEvent:
+      type: object
+      description: A tag was created.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the tag.
+          example: tag-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the tag was created
+          example: 2023-01-01T09:15:20.705Z
+    TagUpdatedEvent:
+      type: object
+      description: A tag was updated.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the tag.
+          example: tag-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the tag was updated
+          example: 2023-01-01T09:15:20.705Z
+    TagDeletedEvent:
+      type: object
+      description: A tag was deleted.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the tag.
+          example: tag-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the tag was deleted
+          example: 2023-01-01T09:15:20.705Z
+    AssetCreatedEvent:
+      type: object
+      description: An asset was created.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the asset.
+          example: asset-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the asset was created
+          example: 2023-01-01T09:15:20.705Z
+    AssetUpdatedEvent:
+      type: object
+      description: An asset was updated.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the asset.
+          example: asset-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the asset was updated
+          example: 2023-01-01T09:15:20.705Z
+    AssetDeletedEvent:
+      type: object
+      description: An asset was deleted.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the asset.
+          example: asset-1
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the asset was deleted
+          example: 2023-01-01T09:15:20.705Z
+    TestResultsCreatedEvent:
+      type: object
+      description: A test result was published.
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the test results.
+          example: 2f0720d5-e7b2-4b83-90d3-421fda9be54b
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the test result was published
+          example: 2023-01-01T09:15:20.705Z
+    TestResultsDeletedEvent:
+      type: object
+      description: Test results have been deleted
+      required:
+        - id
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the test results.
+          example: 2f0720d5-e7b2-4b83-90d3-421fda9be54b
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time when the test result was deleted
+          example: 2023-01-01T09:15:20.705Z
+security:
+  - ApiKeyAuth: [ ]

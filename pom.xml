@@ -3,11 +3,36 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>com.datamesh-manager</groupId>
   <artifactId>datamesh-manager-sdk</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+
   <name>datamesh-manager-sdk</name>
   <description>SDK for Data Mesh Manager</description>
+  <url>https://github.com/datamesh-manager/datamesh-manager-sdk</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Jochen Christ</name>
+      <email>jochen.christ@datamesh-manager.com</email>
+      <organization>Data Mesh Manager</organization>
+      <organizationUrl>https://datamesh-manager.com/</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/datamesh-manager/datamesh-manager-sdk.git</connection>
+    <developerConnection>scm:git:ssh://github.com/datamesh-manager/datamesh-manager-sdk.git</developerConnection>
+    <url>http://github.com/datamesh-manager/datamesh-manager-sdk/tree/main</url>
+  </scm>
 
   <properties>
     <java.version>17</java.version>
