@@ -133,7 +133,7 @@ public class DataMeshManagerEventListener {
     log.info("Fetching events with lastEventId={}", lastEventId);
     List<CloudEvent> response = null;
     try {
-      var events = client.getEventsApi().pollEvents(lastEventId);
+      var events = client.getEventsApi().pollEvents(lastEventId, false);
       log.debug("Fetched {} events", events.size());
       return events;
     } catch (ApiException e) {

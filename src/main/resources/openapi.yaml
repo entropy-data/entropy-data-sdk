@@ -912,6 +912,11 @@ paths:
           description: The last known event id. The response contains events that occurs after this event id.
           schema:
             type: string
+        - name: longPolling
+          in: query
+          description: "Flag to enable long polling. Should be set to false. Default: true for legacy reasons (will change to false in the future)."
+          schema:
+            type: boolean
       responses:
         200:
           description: A chronological sequence of events serialized in the [CloudEvents](https://cloudevents.io/) event format in batched responses
