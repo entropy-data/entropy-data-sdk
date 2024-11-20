@@ -1,0 +1,4 @@
+#!/bin/bash
+set -ex
+
+curl -v -o src/main/resources/openapi.yaml https://api.datamesh-manager.com/openapi.yaml

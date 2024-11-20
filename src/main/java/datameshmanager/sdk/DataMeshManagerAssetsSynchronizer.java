@@ -35,7 +35,6 @@ public class DataMeshManagerAssetsSynchronizer {
 
   public void start() {
     log.info("{}: start syncing assets", agentId);
-    this.agentRegistration.up();
 
     // TODO error handling for agentRegistration
     // TODO error handling during while loop
@@ -52,7 +51,6 @@ public class DataMeshManagerAssetsSynchronizer {
   }
 
   public void stop() {
-    this.agentRegistration.stop();
     if (this.stopped) {
       log.info("{}: Already stopped asset synchronization", agentId);
       return;

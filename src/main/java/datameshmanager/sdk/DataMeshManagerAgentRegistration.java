@@ -2,9 +2,7 @@ package datameshmanager.sdk;
 
 import datameshmanager.sdk.client.ApiException;
 import datameshmanager.sdk.client.model.IntegrationAgent;
-import datameshmanager.sdk.client.model.IntegrationAgentHealth;
 import datameshmanager.sdk.client.model.IntegrationAgentInfo;
-import java.time.OffsetDateTime;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,64 +49,10 @@ public class DataMeshManagerAgentRegistration {
         .id(id)
         .info(new IntegrationAgentInfo()
             .type(type)
-        )
-        .health(new IntegrationAgentHealth()
-            .startedAt(OffsetDateTime.now())
-            .status("UP")
         );
 
     log.info("Registering integration agent {}", id);
     client.getIntegrationsApi().putIntegrationAgent(id, integrationAgent);
-  }
-
-  public void stop() {
-    IntegrationAgent integrationAgent = client.getIntegrationsApi().getIntegrationAgent(this.id);
-    if (integrationAgent.getHealth() == null) {
-      integrationAgent.setHealth(new IntegrationAgentHealth());
-    }
-    integrationAgent.getHealth().setStatus("STOPPED");
-    integrationAgent.getHealth().setErrorMessage(null);
-    log.info("Publish integration agent {} in status STOPPED", id);
-    client.getIntegrationsApi().putIntegrationAgent(id, integrationAgent);
-  }
-
-  public void up() {
-    IntegrationAgent integrationAgent = client.getIntegrationsApi().getIntegrationAgent(this.id);
-    if (integrationAgent.getHealth() == null) {
-      integrationAgent.setHealth(new IntegrationAgentHealth());
-    }
-    integrationAgent.getHealth().setStatus("UP");
-    integrationAgent.getHealth().setErrorMessage(null);
-    log.info("Publish integration agent {} in status UP", this.id);
-    client.getIntegrationsApi().putIntegrationAgent(this.id, integrationAgent);
-  }
-
-  public void error(String message) {
-    IntegrationAgent integrationAgent = client.getIntegrationsApi().getIntegrationAgent(this.id);
-    if (integrationAgent.getHealth() == null) {
-      integrationAgent.setHealth(new IntegrationAgentHealth());
-    }
-    integrationAgent.getHealth().setStatus("ERROR");
-    integrationAgent.getHealth().setErrorMessage(message);
-    log.info("Publish integration agent {} in status ERROR: {}", this.id, message);
-    client.getIntegrationsApi().putIntegrationAgent(this.id, integrationAgent);
-  }
-
-  public void error(Exception exception) {
-    error(exception.getMessage());
-  }
-
-  public void reset() {
-    IntegrationAgent integrationAgent = client.getIntegrationsApi().getIntegrationAgent(this.id);
-    if (integrationAgent.getHealth() == null) {
-      integrationAgent.setHealth(new IntegrationAgentHealth());
-    }
-    integrationAgent.getHealth().setStatus("UP");
-    integrationAgent.getHealth().setErrorMessage(null);
-    integrationAgent.getHealth().setUpdatedAt(null);
-    integrationAgent.setState(null);
-    log.info("Publish integration agent {} to reset", this.id);
-    client.getIntegrationsApi().putIntegrationAgent(this.id, integrationAgent);
   }
 
   public void delete() {

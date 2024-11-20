@@ -83,7 +83,6 @@ public class DataMeshManagerEventListener {
    */
   public void start() {
     log.info("{}: Start polling for events", agentId);
-    this.agentRegistration.up();
 
     // TODO error handling for agentRegistration
 
@@ -118,7 +117,6 @@ public class DataMeshManagerEventListener {
     }
 
     log.info("Stopped polling for events");
-    this.agentRegistration.stop();
   }
 
   @Nullable
