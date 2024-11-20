@@ -6,36 +6,30 @@ The Data Mesh Manager SDK is a Java library that provides a set of APIs to inter
 Using the SDK, you can build Java applications to automate data platform operations, such as:
 
 - Synchronize data products and data assets from the data platform to the Data Mesh Manager
+- Synchronize datacontract.yaml in Git repositories with Data Contract Manager
 - Automate permissions in the data platform when an access request has been approved
 - Notify downstream consumers when data contract tests have failed
 - Publish data product costs and usage data to Data Mesh Manager
-
-Concept
--------
 
 This SDK is designed as a foundation for building data platform integrations that run as long-running agents on customer's data platform, e.g., as containers running in a Kubernetes cluster or any other container-runtime. 
 
 It interacts with the Data Mesh Manager APIs to send metadata and to subscribe to events to trigger actions in the data platform or with other services.
 
-There are two different integration options:
-
-1. Push data to Data Mesh Manager, using the `DataMeshManagerClient` or specialized clients like `DataMeshManagerAssetsSynchronizer`
-2. Subscribe to events from Data Mesh Manager, using the `DataMeshManagerEventListener`
 
 Existing Integrations
 ---
 
 We provide some agents for commonly-used platforms that that use this SDK and that can be used out-of-the-box or as a template for custom integrations:
 
-| Platform              | Integration                                                                                                | Synchronize Assets                                        | Access Management  | Remarks     |
-|-----------------------|------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|--------------------|-------------|
-| Databricks            | [datamesh-manager-agent-databricks](https://github.com/datamesh-manager/datamesh-manager-agent-databricks) | ✅ | ✅  |             |
-| Snowflake             |  |  |  | Coming soon |
-| AWS                   |  |  |  | Coming soon |
-| Google Cloud Platform |  |  |  | Coming soon |
-| Azure                 |  |  |  | Coming soon |
-| datahub               |  |  |  | Coming soon |
-| Collibra              |  |  |  | Coming soon |
+| Platform    | Integration                                                                                                | Synchronize Assets | Access Management | Remarks                 |
+|-------------|------------------------------------------------------------------------------------------------------------|--------------------|-------------------|-------------------------|
+| Databricks  | [datamesh-manager-agent-databricks](https://github.com/datamesh-manager/datamesh-manager-agent-databricks) | ✅                  | ✅                 | Uses Unity Catalog APIs |
+| Snowflake   |                                                                                                            |                    |                   | Coming soon             |
+| AWS         |                                                                                                            |                    |                   | Coming soon             |
+| Google Cloud Platform |                                                                                                            |                    |                   | Coming soon             |
+| Azure       |                                                                                                            |                    |                   | Coming soon             |
+| datahub     |                                                                                                            |                    |                   | Coming soon             |
+| Collibra    |                                                                                                            |                    |                   | Coming soon             |
 
 If you are interested in further integration, please [contact us](https://entropy-data.atlassian.net/servicedesk/customer/portals).
 
@@ -79,7 +73,7 @@ This client has all methods to interact with the [Data Mesh Manager API](https:/
 
 ### Implement an AssetsProvider (optional)
 
-To synchronize assets (such as tables, views, files, topics, ...) from your data platform with Data Mesh Manager, you need to implement the `DataMeshManagerAssetsProvider` interface:
+To synchronize assets (such as tables, views, files, topics, ...) from your data platform with Data Mesh Manager, implement the `DataMeshManagerAssetsProvider` interface:
 
 ```java
 
@@ -134,16 +128,18 @@ var eventListener = new DataMeshManagerEventListener(agentid, client, eventHandl
 eventListener.start(); // This will start a long-running agent that listens to events from Data Mesh Manager
 ```
 
+If you have multiple agents in an application, make sure to start the `start()` methods in separate threads.
+
 ### State Repository
 
 The `DataMeshManagerEventListener` requires a `DataMeshManagerStateRepository` to store the `lastEventId` that has been processed.
-Also, you can use the state repository in other classes, if you need to store information what has been processed or what is the current state of your agent.
+Also, you can use the state repository in other agents, if you need to store information what has been processed or what is the current state of your agent.
 You can implement this interface to store the state in a database, a file, or any other storage:
 
 ```java
 public interface DataMeshManagerStateRepository {
-  Map<String, Object> getState(String id);
-  void saveState(String id, Map<String, Object> state);
+  Map<String, Object> getState();
+  void saveState(Map<String, Object> state);
 }
 ```
 
