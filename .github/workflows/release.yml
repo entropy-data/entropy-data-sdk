@@ -7,7 +7,6 @@ on:
   release:
     types: [created]
   workflow_dispatch:
-    
 
 jobs:
   build:
@@ -24,11 +23,13 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          server-id: ossrh
+          server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
+#      - name: Set version
+#        run: mvn versions:set -DnewVersion=${{ github.event.release.tag_name }}
       - name: Publish package
         run: mvn --batch-mode deploy
         env:
