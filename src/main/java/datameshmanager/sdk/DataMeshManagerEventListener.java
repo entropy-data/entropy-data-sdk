@@ -231,6 +231,14 @@ public class DataMeshManagerEventListener {
           convertPayload(event, datameshmanager.sdk.client.model.TestResultsCreatedEvent.class));
       case "com.datamesh-manager.events.TestResultsDeletedEvent" -> this.eventHandler.onTestResultsDeletedEvent(
           convertPayload(event, datameshmanager.sdk.client.model.TestResultsDeletedEvent.class));
+      case "com.datamesh-manager.events.DataUsageAgreementCreatedEvent" -> log.debug("Ignore deprecated event");
+      case "com.datamesh-manager.events.DataUsageAgreementUpdatedEvent" -> log.debug("Ignore deprecated event");
+      case "com.datamesh-manager.events.DataUsageAgreementDeletedEvent" -> log.debug("Ignore deprecated event");
+      case "com.datamesh-manager.events.DataUsageAgreementRequestedEvent" -> log.debug("Ignore deprecated event");
+      case "com.datamesh-manager.events.DataUsageAgreementApprovedEvent" -> log.debug("Ignore deprecated event");
+      case "com.datamesh-manager.events.DataUsageAgreementRejectedEvent" -> log.debug("Ignore deprecated event");
+      case "com.datamesh-manager.events.DataUsageAgreementActivatedEvent" -> log.debug("Ignore deprecated event");
+      case "com.datamesh-manager.events.DataUsageAgreementDeactivatedEvent" -> log.debug("Ignore deprecated event");
       default -> log.warn("Unknown event type: {}", event.getType());
 
     }
