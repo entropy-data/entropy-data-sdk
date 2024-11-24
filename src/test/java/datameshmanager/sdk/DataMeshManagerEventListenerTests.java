@@ -67,7 +67,7 @@ class DataMeshManagerEventListenerTests {
       }
     };
     DataMeshManagerStateRepositoryInMemory stateRepository = new DataMeshManagerStateRepositoryInMemory("unittest");
-    var eventListener = new DataMeshManagerEventListener("unittest", client, testEventHandler, stateRepository);
+    var eventListener = new DataMeshManagerEventListener("unittest","event-listener", client, testEventHandler, stateRepository);
 
     new Thread(eventListener::start).start();
     Thread.sleep(1000);

@@ -63,13 +63,13 @@ public class DataMeshManagerEventListener {
   private boolean stopped = false;
   private Duration pollInterval = Duration.ofSeconds(5);
 
-  public DataMeshManagerEventListener(String agentId, DataMeshManagerClient client, DataMeshManagerEventHandler eventHandler,
+  public DataMeshManagerEventListener(String agentId, String type, DataMeshManagerClient client, DataMeshManagerEventHandler eventHandler,
       DataMeshManagerStateRepository stateRepository) {
     this.agentId = Objects.requireNonNull(agentId, "agentId must not be null");
     this.eventHandler = Objects.requireNonNull(eventHandler, "eventHandler must not be null");
     this.client = Objects.requireNonNull(client, "client must not be null");
     this.stateRepository = Objects.requireNonNull(stateRepository, "stateRepository must not be null");
-    this.agentRegistration = new DataMeshManagerAgentRegistration(client, agentId, "event-listener");
+    this.agentRegistration = new DataMeshManagerAgentRegistration(client, agentId, type);
 
     this.objectMapper = new ObjectMapper()
         .findAndRegisterModules()
