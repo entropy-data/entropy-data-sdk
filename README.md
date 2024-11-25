@@ -26,7 +26,7 @@ We provide some agents for commonly-used platforms that that use this SDK and th
 | Databricks  | [datamesh-manager-agent-databricks](https://github.com/datamesh-manager/datamesh-manager-agent-databricks) | ✅                  | ✅                 | Uses Unity Catalog APIs |
 | Snowflake   |                                                                                                            |                    |                   | Coming soon             |
 | AWS         |                                                                                                            |                    |                   | Coming soon             |
-| Google Cloud Platform |                                                                                                            |                    |                   | Coming soon             |
+| Google Cloud Platform | [datamesh-manager-agent-gcp](https://github.com/datamesh-manager/datamesh-manager-agent-gcp)                                                                                                           | ✅                    |✅                   | Uses BigQuery APIs             |
 | Azure       |                                                                                                            |                    |                   | Coming soon             |
 | datahub     |                                                                                                            |                    |                   | Coming soon             |
 | Collibra    |                                                                                                            |                    |                   | Coming soon             |
