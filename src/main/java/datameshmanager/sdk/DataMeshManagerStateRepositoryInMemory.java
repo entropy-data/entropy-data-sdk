@@ -8,21 +8,21 @@ import java.util.Map;
  */
 public class DataMeshManagerStateRepositoryInMemory implements DataMeshManagerStateRepository {
 
-  private final String agentId;
+  private final String connectorId;
 
-  private final Map<String, Map<String, Object>> state = new HashMap<>(); // key: agentId, value: state
+  private final Map<String, Map<String, Object>> state = new HashMap<>(); // key: connectorId, value: state
 
-  public DataMeshManagerStateRepositoryInMemory(String agentId) {
-    this.agentId = agentId;
+  public DataMeshManagerStateRepositoryInMemory(String connectorId) {
+    this.connectorId = connectorId;
   }
 
   @Override
   public Map<String, Object> getState() {
-    return this.state.getOrDefault(agentId, new HashMap<>());
+    return this.state.getOrDefault(connectorId, new HashMap<>());
   }
 
   @Override
   public void saveState(Map<String, Object> state) {
-    this.state.put(agentId, state);
+    this.state.put(connectorId, state);
   }
 }

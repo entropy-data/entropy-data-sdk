@@ -52,39 +52,39 @@ public class DataMeshManagerEventListener {
 
   private static final Logger log = LoggerFactory.getLogger(DataMeshManagerEventListener.class);
 
-  private final String agentId;
+  private final String connectorId;
   private final DataMeshManagerEventHandler eventHandler;
   private final DataMeshManagerClient client;
   private final DataMeshManagerStateRepository stateRepository;
 
   private final ObjectMapper objectMapper;
-  private final DataMeshManagerAgentRegistration agentRegistration;
+  private final DataMeshManagerConnectorRegistration connectorRegistration;
 
   private boolean stopped = false;
   private Duration pollInterval = Duration.ofSeconds(5);
 
-  public DataMeshManagerEventListener(String agentId, String type, DataMeshManagerClient client, DataMeshManagerEventHandler eventHandler,
+  public DataMeshManagerEventListener(String connectorId, String type, DataMeshManagerClient client, DataMeshManagerEventHandler eventHandler,
       DataMeshManagerStateRepository stateRepository) {
-    this.agentId = Objects.requireNonNull(agentId, "agentId must not be null");
+    this.connectorId = Objects.requireNonNull(connectorId, "connectorId must not be null");
     this.eventHandler = Objects.requireNonNull(eventHandler, "eventHandler must not be null");
     this.client = Objects.requireNonNull(client, "client must not be null");
     this.stateRepository = Objects.requireNonNull(stateRepository, "stateRepository must not be null");
-    this.agentRegistration = new DataMeshManagerAgentRegistration(client, agentId, type);
+    this.connectorRegistration = new DataMeshManagerConnectorRegistration(client, connectorId, type);
 
     this.objectMapper = new ObjectMapper()
         .findAndRegisterModules()
         .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-    this.agentRegistration.register();
+    this.connectorRegistration.register();
   }
 
   /**
    * Starts the event listener to poll for events from the DataMeshManager in an infinite loop.
    */
   public void start() {
-    log.info("{}: Start polling for events", agentId);
+    log.info("{}: Start polling for events", connectorId);
 
-    // TODO error handling for agentRegistration
+    // TODO error handling for connectorRegistration
 
     var lastEventId = getLastEventId();
     while (!this.stopped) {

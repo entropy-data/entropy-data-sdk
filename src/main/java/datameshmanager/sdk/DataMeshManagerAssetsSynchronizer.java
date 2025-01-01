@@ -13,30 +13,30 @@ public class DataMeshManagerAssetsSynchronizer {
 
   private static final Logger log = LoggerFactory.getLogger(DataMeshManagerAssetsSynchronizer.class);
 
-  private final String agentId;
+  private final String connectorId;
   private final DataMeshManagerClient client;
-  private final DataMeshManagerAgentRegistration agentRegistration;
+  private final DataMeshManagerConnectorRegistration connectorRegistration;
   private final DataMeshManagerAssetsProvider assetsProvider;
   private volatile boolean stopped = false;
 
   private Duration delay = Duration.parse("PT60M");
 
   public DataMeshManagerAssetsSynchronizer(
-      String agentId,
+      String connectorId,
       DataMeshManagerClient client,
       DataMeshManagerAssetsProvider assetsProvider) {
-    this.agentId = agentId;
+    this.connectorId = connectorId;
     this.client = client;
     this.assetsProvider = assetsProvider;
-    this.agentRegistration = new DataMeshManagerAgentRegistration(client, agentId, "assets-synchronizer");
+    this.connectorRegistration = new DataMeshManagerConnectorRegistration(client, connectorId, "assets-synchronizer");
 
-    this.agentRegistration.register();
+    this.connectorRegistration.register();
   }
 
   public void start() {
-    log.info("{}: start syncing assets", agentId);
+    log.info("{}: start syncing assets", connectorId);
 
-    // TODO error handling for agentRegistration
+    // TODO error handling for connectorRegistration
     // TODO error handling during while loop
 
     while (!this.stopped) {
@@ -52,11 +52,11 @@ public class DataMeshManagerAssetsSynchronizer {
 
   public void stop() {
     if (this.stopped) {
-      log.info("{}: Already stopped asset synchronization", agentId);
+      log.info("{}: Already stopped asset synchronization", connectorId);
       return;
     }
     this.stopped = true;
-    log.info("{}: Stopped syncing assets", agentId);
+    log.info("{}: Stopped syncing assets", connectorId);
   }
 
   public void synchronizeAssets() {

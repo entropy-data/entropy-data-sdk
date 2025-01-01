@@ -11,25 +11,25 @@ Using the SDK, you can build Java applications to automate data platform operati
 - Notify downstream consumers when data contract tests have failed
 - Publish data product costs and usage data to Data Mesh Manager
 
-This SDK is designed as a foundation for building data platform integrations that run as long-running agents on customer's data platform, e.g., as containers running in a Kubernetes cluster or any other container-runtime. 
+This SDK is designed as a foundation for building data platform integrations that run as long-running connectors on customer's data platform, e.g., as containers running in a Kubernetes cluster or any other container-runtime. 
 
 It interacts with the Data Mesh Manager APIs to send metadata and to subscribe to events to trigger actions in the data platform or with other services.
 
 
-Existing Integrations
+Existing Connectors
 ---
 
-We provide some agents for commonly-used platforms that that use this SDK and that can be used out-of-the-box or as a template for custom integrations:
+We provide some connectors for commonly-used platforms that that use this SDK and that can be used out-of-the-box or as a template for custom integrations:
 
-| Platform    | Integration                                                                                                | Synchronize Assets | Access Management | Remarks                 |
-|-------------|------------------------------------------------------------------------------------------------------------|--------------------|-------------------|-------------------------|
-| Databricks  | [datamesh-manager-agent-databricks](https://github.com/datamesh-manager/datamesh-manager-agent-databricks) | ✅                  | ✅                 | Uses Unity Catalog APIs |
-| Snowflake   |  [datamesh-manager-agent-snowflake](https://github.com/datamesh-manager/datamesh-manager-agent-snowflake)                                                                                                          | ✅                   | ✅                  |  Uses the Snowflake REST API           | 
-| AWS         |                                                                                                            |                    |                   | Coming soon             |
-| Google Cloud Platform | [datamesh-manager-agent-gcp](https://github.com/datamesh-manager/datamesh-manager-agent-gcp)                                                                                                           | ✅                    |✅                   | Uses BigQuery APIs             |
-| Azure       |                                                                                                            |                    |                   | Coming soon             |
-| datahub     |                                                                                                            |                    |                   | Coming soon             |
-| Collibra    |                                                                                                            |                    |                   | Coming soon             |
+| Platform              | Connector                                                                                                  | Synchronize Assets | Access Management | Remarks                     |
+|-----------------------|------------------------------------------------------------------------------------------------------------|--------------------|-------------------|-----------------------------|
+| Databricks            | [datamesh-manager-agent-databricks](https://github.com/datamesh-manager/datamesh-manager-agent-databricks) | ✅                  | ✅                 | Uses Unity Catalog APIs     |
+| Snowflake             | [datamesh-manager-agent-snowflake](https://github.com/datamesh-manager/datamesh-manager-agent-snowflake)   | ✅                  | ✅                 | Uses the Snowflake REST API | 
+| AWS                   |                                                                                                            |                    |                   | Coming soon                 |
+| Google Cloud Platform | [datamesh-manager-agent-gcp](https://github.com/datamesh-manager/datamesh-manager-agent-gcp)               | ✅                  | ✅                 | Uses BigQuery APIs          |
+| Azure                 |                                                                                                            |                    |                   | Coming soon                 |
+| datahub               |                                                                                                            |                    |                   | Coming soon                 |
+| Collibra              |                                                                                                            |                    |                   | Coming soon                 |
 
 If you are interested in further integration, please [contact us](https://entropy-data.atlassian.net/servicedesk/customer/portals).
 
@@ -90,10 +90,10 @@ public class MyAssetsProvider implements DataMeshManagerAssetsProvider {
 With this implementation, you can start an `DataMeshManagerAssetsSynchronizer`:
 
 ```java
-var agentid = "my-unique-assets-synchronization-agent-id";
+var connectorid = "my-unique-assets-synchronization-connector-id";
 var assetsProvider = new MyAssetsProvider();
-var assetsSynchronizer = new DataMeshManagerAssetsSynchronizer(agentid, client, assetsSupplier);
-assetsSynchronizer.start(); // This will start a long-running agent that calls the fetchAssets method periodically
+var assetsSynchronizer = new DataMeshManagerAssetsSynchronizer(connectorid, client, assetsSupplier);
+assetsSynchronizer.start(); // This will start a long-running connector that calls the fetchAssets method periodically
 ```
 
 ### Implement an EventListener (optional)
@@ -121,19 +121,19 @@ You can listen to any event from Data Mesh Manager. The SDK provides a method fo
 With this implementation, you can start an `DataMeshManagerEventListener`:
 
 ```java
-var agentid = "my-unique-event-listener-agent-id";
+var connectorid = "my-unique-event-listener-connector-id";
 var eventHandler = new MyEventHandler();
 var stateRepository = ... // see below
-var eventListener = new DataMeshManagerEventListener(agentid, client, eventHandler, stateRepository);
-eventListener.start(); // This will start a long-running agent that listens to events from Data Mesh Manager
+var eventListener = new DataMeshManagerEventListener(connectorid, client, eventHandler, stateRepository);
+eventListener.start(); // This will start a long-running connector that listens to events from Data Mesh Manager
 ```
 
-If you have multiple agents in an application, make sure to start the `start()` methods in separate threads.
+If you have multiple connectors in an application, make sure to start the `start()` methods in separate threads.
 
 ### State Repository
 
 The `DataMeshManagerEventListener` requires a `DataMeshManagerStateRepository` to store the `lastEventId` that has been processed.
-Also, you can use the state repository in other agents, if you need to store information what has been processed or what is the current state of your agent.
+Also, you can use the state repository in other connectors, if you need to store information what has been processed or what is the current state of your connector.
 You can implement this interface to store the state in a database, a file, or any other storage:
 
 ```java
@@ -146,8 +146,8 @@ public interface DataMeshManagerStateRepository {
 For your convenience, you can use the `DataMeshManagerStateRepositoryRemote` to store the state directly in the Data Mesh Manager:
 
 ```java
-var agentId = "my-unique-event-listener-agent-id";
-var stateRepository = new DataMeshManagerStateRepositoryRemote(agentId, client);
+var connectorId = "my-unique-event-listener-connector-id";
+var stateRepository = new DataMeshManagerStateRepositoryRemote(connectorId, client);
 ```
 
 and for testing there is also a `DataMeshManagerStateRepositoryInMemory`.

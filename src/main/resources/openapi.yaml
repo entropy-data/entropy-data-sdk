@@ -47,12 +47,14 @@ tags:
     description: EXPERIMENTAL Manage the policies of your data mesh. Policies are the rules of play of the data mesh.
   - name: Costs
     description: EXPERIMENTAL Expenses of data products, e.g., storage, compute, maintenance, and data transfer costs. The expenses can be automatically extracted from cloud provider billing APIs via our integrations.
-  - name: Integrations
-    description: EXPERIMENTAL Used by SDK and integration agents. Use this API to store state (such as the lastEventId) and update health information.
+  - name: Connectors
+    description: EXPERIMENTAL Used by SDK and connectors. Use this API to store state (such as the lastEventId) and update health information.
   - name: Test Results
     description: EXPERIMENTAL Results of test runs of a data contract against a server (e.g., output port of a data product). The test runs van be executed using the Data Contract CLI tool.
   - name: Events
     description: Events are emitted when one of the core resource are created, updated, or deleted. There may be additional events like special state changes, as well.
+  - name: Organization
+    description: Organization and its members.
 paths:
   /api/dataproducts:
     get:
@@ -61,6 +63,14 @@ paths:
       summary: Get all data products
       description: Get all data products of an organization.
       operationId: getDataProducts
+      parameters:
+        - in: query
+          name: p
+          schema:
+            type: integer
+            minimum: 0
+          required: false
+          description: The number of the requested page, starting from 0. Each page contains a maximum of 1000 data products, sorted by creation date ascending.
       responses:
         200:
           description: List of data products
@@ -125,6 +135,14 @@ paths:
         - Data Contracts
       summary: Get all data contracts
       operationId: getDataContracts
+      parameters:
+        - in: query
+          name: p
+          schema:
+            type: integer
+            minimum: 0
+          required: false
+          description: The number of the requested page, starting from 0. Each page contains a maximum of 1000 data contracts, sorted by creation date ascending.
       responses:
         200:
           description: List of data contracts
@@ -212,6 +230,14 @@ paths:
         - Access
       summary: Get all access resources
       operationId: getAccessList
+      parameters:
+        - in: query
+          name: p
+          schema:
+            type: integer
+            minimum: 0
+          required: false
+          description: The number of the requested page, starting from 0. Each page contains a maximum of 1000 access resources, sorted by creation date ascending.
       responses:
         200:
           description: List of access resources
@@ -232,7 +258,7 @@ paths:
     put:
       tags:
         - Access
-      summary: Add or update an access resource
+      summary: Add or update an access resource. Does not send notification emails.
       operationId: addAccess
       responses:
         200:
@@ -274,7 +300,7 @@ paths:
     post:
       tags:
         - Access
-      summary: Approve a requested access
+      summary: Approve a requested access. Does not send notification emails.
       operationId: approveAccess
       responses:
         200:
@@ -290,7 +316,7 @@ paths:
     post:
       tags:
         - Access
-      summary: Rejects an access request
+      summary: Rejects an access request. Does not send notification emails.
       operationId: rejectAcess
       responses:
         200:
@@ -306,7 +332,7 @@ paths:
     post:
       tags:
         - Access
-      summary: Cancels an approved access to get deacticated at a specified end date (can be now).
+      summary: Cancels an approved access to get deactivated at a specified end date (can be now). Does not send notification emails.
       operationId: cancelAccess
       responses:
         200:
@@ -317,6 +343,14 @@ paths:
         - Data Usage Agreements
       summary: Get all data usage agreements
       operationId: getDataUsageAgreements
+      parameters:
+        - in: query
+          name: p
+          schema:
+            type: integer
+            minimum: 0
+          required: false
+          description: The number of the requested page, starting from 0. Each page contains a maximum of 1000 data usage agreements, sorted by creation date ascending.
       responses:
         200:
           description: List of data usage agreements
@@ -337,7 +371,7 @@ paths:
     put:
       tags:
         - Data Usage Agreements
-      summary: Add or update a data usage agreement
+      summary: Add or update a data usage agreement. Does not send notification emails.
       operationId: addDataUsageAgreement
       responses:
         200:
@@ -379,7 +413,7 @@ paths:
     post:
       tags:
         - Data Usage Agreements
-      summary: Approve a requested data usage agreement
+      summary: Approve a requested data usage agreement. Does not send notification emails.
       operationId: approveDataUsageAgreement
       responses:
         200:
@@ -395,7 +429,7 @@ paths:
     post:
       tags:
         - Data Usage Agreements
-      summary: Rejects a requested data usage agreement
+      summary: Rejects a requested data usage agreement. Does not send notification emails.
       operationId: rejectDataUsageAgreement
       responses:
         200:
@@ -411,7 +445,7 @@ paths:
     post:
       tags:
         - Data Usage Agreements
-      summary: Cancels an approved data usage agreement
+      summary: Cancels an approved data usage agreement. Does not send notification emails.
       operationId: cancelDataUsageAgreement
       responses:
         200:
@@ -422,6 +456,14 @@ paths:
         - Teams
       summary: Get all teams
       operationId: getTeams
+      parameters:
+        - in: query
+          name: p
+          schema:
+            type: integer
+            minimum: 0
+          required: false
+          description: The number of the requested page, starting from 0. Each page contains a maximum of 1000 teams, sorted by creation date ascending.
       responses:
         200:
           description: List of teams
@@ -546,6 +588,14 @@ paths:
         - Definitions
       summary: Get all definitions
       operationId: getDefinitions
+      parameters:
+        - in: query
+          name: p
+          schema:
+            type: integer
+            minimum: 0
+          required: false
+          description: The number of the requested page, starting from 0. Each page contains a maximum of 1000 definitions, sorted by creation date ascending.
       responses:
         200:
           description: List of definitions
@@ -793,68 +843,112 @@ paths:
       responses:
         200:
           description: cost was deleted
-  /api/integrations/agents:
+  /api/organization/members:
     get:
       tags:
-        - Integrations
-      summary: Get all integration agents
-      description: Get all integration agents of an organization.
-      operationId: getIntegrationAgents
+        - Organization
+      summary: Get all organization members
+      description: Get all members of an organization.
+      operationId: getOrganizationMembers
+      parameters:
+        - in: query
+          name: p
+          schema:
+            type: integer
+            minimum: 0
+          required: false
+          description: The number of the requested page, starting from 0. Each page contains a maximum of 1000 organization members, sorted by creation date ascending.
       responses:
         200:
-          description: List of all integration agents
+          description: List of all members of an organization
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/IntegrationAgent'
-  /api/integrations/agents/{id}:
+                  $ref: '#/components/schemas/OrganizationMember'
+  /api/organization/members/{emailAddress}:
+    parameters:
+      - name: emailAddress
+        in: path
+        description: The emailAddress of an organization member
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Organization
+      summary: Get the current state of the organization member
+      operationId: getOrganizationMember
+      responses:
+        200:
+          description: The current state of the organization member
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/OrganizationMember'
+  /api/connectors:
+    get:
+      tags:
+        - Connectors
+      summary: Get all connectors
+      description: Get all connectors of an organization.
+      operationId: getConnectors
+      responses:
+        200:
+          description: List of all connectors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Connector'
+  /api/connectors/{id}:
     parameters:
       - name: id
         in: path
-        description: An organizational unique technical identifier for this integration agent, such as an UUID, URN, string, number.
+        description: An organizational unique technical identifier for this connector, such as an UUID, URN, string, number.
         required: true
         schema:
           type: string
     put:
       tags:
-        - Integrations
-      operationId: putIntegrationAgent
-      summary: Use this operation to store state of an integration agent (e.g. lastEventId).
+        - Connectors
+      operationId: putConnector
+      summary: Use this operation to store state of an connector (e.g. lastEventId).
       responses:
         200:
-          description: Integration agent created or updated
+          description: Connector created or updated
         422:
-          description: Integration agent cannot be updated due to invalid data
+          description: Connector cannot be updated due to invalid data
       requestBody:
         required: true
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/IntegrationAgent'
+              $ref: '#/components/schemas/Connector'
     get:
       tags:
-        - Integrations
-      summary: Get the current state of the integration agent
-      operationId: getIntegrationAgent
+        - Connectors
+      summary: Get the current state of the connector
+      operationId: getConnector
       responses:
         200:
-          description: The current state of the integration agent
+          description: The current state of the connector
           content:
             'application/json':
               schema:
-                $ref: '#/components/schemas/IntegrationAgent'
+                $ref: '#/components/schemas/Connector'
     delete:
-      summary: Delete an integration agent
-      operationId: deleteIntegrationAgent
+      summary: Delete an connector
+      operationId: deleteConnector
       tags:
-        - Integrations
+        - Connectors
       responses:
         200:
-          description: Integration agent  was deleted
+          description: Connector was deleted
         422:
-          description: Integration agent cannot be deleted
+          description: Connector cannot be deleted
   /api/test-results:
     post:
       tags:
@@ -914,7 +1008,7 @@ paths:
             type: string
         - name: longPolling
           in: query
-          description: "Flag to enable long polling. Should be set to false. Default: true for legacy reasons (will change to false in the future)."
+          description: "Flag to enable long polling. Should not be used anymore. Default: false."
           schema:
             type: boolean
       responses:
@@ -1318,6 +1412,24 @@ components:
                 type: string
                 description: The technical identifier of the data contract that is implemented by this output port
                 example: search-queries-all
+              assets:
+                type: array
+                description: Referenced assets
+                items:
+                  type: object
+                  properties:
+                    assetId:
+                      type: string
+                      description: ID of the asset
+                      example: "snowflake-mydatabase-myschema-mytable"
+                    tags:
+                      type: array
+                      description: tags for the asset reference
+                      example: [ "internal" ]
+                      items:
+                        type: string
+                        description: tag for the asset reference
+                        example: internal
               tags:
                 type: array
                 description: Tags are used to categorize output ports.
@@ -1325,6 +1437,24 @@ components:
                   type: string
                   example: snowflake
                 example: [ "snowflake", "search" ]
+        assets:
+          type: array
+          description: Referenced assets
+          items:
+            type: object
+            properties:
+              assetId:
+                type: string
+                description: ID of the asset
+                example: "snowflake-mydatabase-myschema-mytable"
+              tags:
+                type: array
+                description: tags for the asset reference
+                example: [ "internal" ]
+                items:
+                  type: string
+                  description: tag for the asset reference
+                  example: internal
         links:
           type: object
           description: Links are used to reference external resources, such as schemas or the dataset in a data catalog. You can add any links.
@@ -2453,7 +2583,7 @@ components:
           description: A link to the cost report.
           example: https://example.com/link-to-aws-costexplorer
 
-    IntegrationAgent:
+    Connector:
       type: object
       required:
         - id
@@ -2461,55 +2591,34 @@ components:
       properties:
         id:
           type: string
-          description: The identifier of the integration agent.
-          example: agent-123
+          description: The identifier of the connector.
+          example: connector-123
         info:
           type: object
           properties:
             type:
               type: string
-              description: The type of the integration agent.
+              description: The type of the connector.
               example: databricks
             description:
               type: string
-              description: A description of the integration agent.
-              example: "This is a databricks integration agent."
-            agentVersion:
+              description: A description of the connector.
+              example: "This is a databricks connector."
+            connectorVersion:
               type: string
-              description: The version of the integration agent.
+              description: The version of the connector.
               example: "1.0.0"
-        health:
-          type: object
-          properties:
-            status:
-              type: string
-              description: The health status of the integration agent.
-              example: running
-            startedAt:
-              type: string
-              format: date-time
-              description: The time when the health status started.
-              example: 2023-01-01T09:15:20.705Z
-            updatedAt:
-              type: string
-              format: date-time
-              description: The time when the health status was last updated.
-              example: 2023-01-01T09:15:20.705Z
-            errorMessage:
-              type: string
-              description: The error message if the agent is in an error state.
-              example: "Connection lost"
         state:
           type: object
           additionalProperties: true
-          description: The state of the integration agent.
+          description: The state of the connector.
           example:
             lastEventId: 95837f96-766f-4f8b-96f8-4f337f2a36a6
             lastHeartbeat: 2023-10-01T12:00:00Z
         custom:
           type: object
           additionalProperties: true
-          description: Custom fields for the integration agent.
+          description: Custom fields for the connector.
 
     TestResults:
       type: object
@@ -2610,6 +2719,33 @@ components:
                 type: string
                 format: date-time
                 example: 2024-07-03T10:46:29.083871Z
+    OrganizationMember:
+      type: object
+      description: An organization user
+      properties:
+        emailAddress:
+          type: string
+          description: The email address of the user
+          example: mail@example.com
+          readOnly: true
+        userId:
+          type: string
+          description: An internal unique identifier for the user. Typically starts with u.
+          example: u466b4c17a345e61
+          readOnly: true
+        role:
+          type: string
+          description: The role of the user of the organization.
+          example: Member
+          enum:
+            - Member
+            - Owner
+        custom:
+          type: object
+          description: Custom fields can be used to add additional information to the user.
+          additionalProperties: {
+            type: string
+          }
     DataProductCreatedEvent:
       type: object
       description: A data product was created.

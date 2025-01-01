@@ -3,7 +3,7 @@
     {
       "request" : {
         "method" : "PUT",
-        "urlPathTemplate" : "/api/integrations/agents/{agentId}"
+        "urlPathTemplate" : "/api/connectors/{connectorId}"
       },
       "response" : {
         "status" : 200,
@@ -15,7 +15,7 @@
     {
       "request" : {
         "method" : "GET",
-        "urlPathTemplate" : "/api/integrations/agents/{agentId}"
+        "urlPathTemplate" : "/api/connectors/{connectorId}"
       },
       "response" : {
         "status" : 200,
@@ -23,11 +23,11 @@
           "Content-Type" : "application/json"
         },
         "jsonBody" : {
-          "id": "agent-123",
+          "id": "connector-123",
           "info": {
             "type": "databricks",
-            "description": "This is a databricks integration agent.",
-            "agentVersion": "1.0.0"
+            "description": "This is a databricks connector.",
+            "connectorVersion": "1.0.0"
           },
           "health": {
             "status": "running",
