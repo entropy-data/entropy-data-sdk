@@ -23,10 +23,10 @@ We provide some connectors for commonly-used platforms that that use this SDK an
 
 | Platform              | Connector                                                                                                  | Synchronize Assets | Access Management | Remarks                     |
 |-----------------------|------------------------------------------------------------------------------------------------------------|--------------------|-------------------|-----------------------------|
-| Databricks            | [datamesh-manager-agent-databricks](https://github.com/datamesh-manager/datamesh-manager-agent-databricks) | ✅                  | ✅                 | Uses Unity Catalog APIs     |
-| Snowflake             | [datamesh-manager-agent-snowflake](https://github.com/datamesh-manager/datamesh-manager-agent-snowflake)   | ✅                  | ✅                 | Uses the Snowflake REST API | 
+| Databricks            | [datamesh-manager-connector-databricks](https://github.com/datamesh-manager/datamesh-manager-connector-databricks) | ✅                  | ✅                 | Uses Unity Catalog APIs     |
+| Snowflake             | [datamesh-manager-connector-snowflake](https://github.com/datamesh-manager/datamesh-manager-connector-snowflake)   | ✅                  | ✅                 | Uses the Snowflake REST API | 
 | AWS                   |                                                                                                            |                    |                   | Coming soon                 |
-| Google Cloud Platform | [datamesh-manager-agent-gcp](https://github.com/datamesh-manager/datamesh-manager-agent-gcp)               | ✅                  | ✅                 | Uses BigQuery APIs          |
+| Google Cloud Platform | [datamesh-manager-connector-gcp](https://github.com/datamesh-manager/datamesh-manager-connector-gcp)               | ✅                  | ✅                 | Uses BigQuery APIs          |
 | Azure                 |                                                                                                            |                    |                   | Coming soon                 |
 | datahub               |                                                                                                            |                    |                   | Coming soon                 |
 | Collibra              |                                                                                                            |                    |                   | Coming soon                 |
