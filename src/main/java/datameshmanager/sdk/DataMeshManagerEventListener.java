@@ -15,7 +15,6 @@ import datameshmanager.sdk.client.model.AssetCreatedEvent;
 import datameshmanager.sdk.client.model.AssetDeletedEvent;
 import datameshmanager.sdk.client.model.AssetUpdatedEvent;
 import datameshmanager.sdk.client.model.CloudEvent;
-import datameshmanager.sdk.client.model.CloudEventData;
 import datameshmanager.sdk.client.model.DataContractCreatedEvent;
 import datameshmanager.sdk.client.model.DataContractDeletedEvent;
 import datameshmanager.sdk.client.model.DataContractUpdatedEvent;
@@ -246,7 +245,7 @@ public class DataMeshManagerEventListener {
   }
 
   private <T> T convertPayload(datameshmanager.sdk.client.model.CloudEvent event, Class<T> payloadType) {
-    CloudEventData data = event.getData();
+    var data = event.getData();
     return objectMapper.convertValue(data, payloadType);
   }
 

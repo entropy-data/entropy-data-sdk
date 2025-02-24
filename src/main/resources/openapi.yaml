@@ -61,14 +61,49 @@ paths:
       tags:
         - Data Products
       summary: Get all data products
-      description: Get all data products of an organization.
+      description: Get all data products of an organization. For performance reasons, this endpoint may return only top-level properties of the data products. Use the GET /api/dataproducts/{id} endpoint to get all details.
       operationId: getDataProducts
       parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          required: false
+          example: my-dataproduct
+          description: Search term to filter data products. Searches in the id, title, and description. Multiple search terms are supported, separated by space.
+        - in: query
+          name: archetype
+          schema:
+            type: string
+          required: false
+          example: application
+          description: Filter for specific types.
+        - in: query
+          name: status
+          schema:
+            type: string
+          example: active
+          required: false
+          description: Filter for specific status.
+        - in: query
+          name: tag
+          schema:
+            type: string
+          required: false
+          description: Filter for specific tags.
+        - in: query
+          name: sort
+          schema:
+            type: string
+          example: name
+          required: false
+          description: Field to sort by, default is creation date.
         - in: query
           name: p
           schema:
             type: integer
             minimum: 0
+          example: 0
           required: false
           description: The number of the requested page, starting from 0. Each page contains a maximum of 1000 data products, sorted by creation date ascending.
       responses:
@@ -137,12 +172,45 @@ paths:
       operationId: getDataContracts
       parameters:
         - in: query
+          name: q
+          schema:
+            type: string
+          required: false
+          example: my-datacontract
+          description: Search term to filter data contracts. Searches in the id, title, and description. Multiple search terms are supported, separated by space
+        - in: query
+          name: owner
+          schema:
+            type: string
+          required: false
+          example: my-team
+          description: Filter for specific owners. Use the team name (not the ID).
+        - in: query
+          name: domain
+          schema:
+            type: string
+          required: false
+          description: Filter for specific domain. Use the domain name (not the ID).
+        - in: query
+          name: tag
+          schema:
+            type: string
+          required: false
+          description: Filter for specific tags.
+        - in: query
+          name: sort
+          schema:
+            type: string
+          required: false
+          description: Field to sort by, default is creation date.
+        - in: query
           name: p
           schema:
             type: integer
             minimum: 0
+          example: 0
           required: false
-          description: The number of the requested page, starting from 0. Each page contains a maximum of 1000 data contracts, sorted by creation date ascending.
+          description: The number of the requested page, starting from 0. Each page contains a maximum of 1000 data contracts, sorted by creation date ascending. The data contracts are the JSON structure of the internal YAML structure. It supports both Data Contract Specification and Open Data Contract Standard.
       responses:
         200:
           description: List of data contracts
@@ -164,7 +232,7 @@ paths:
       tags:
         - Data Contracts
       operationId: addDataContract
-      summary: Add or update a data contract
+      summary: Add or update a data contract. The data contract is the JSON structure of the internal YAML structure. It supports both Data Contract Specification and Open Data Contract Standard.
       responses:
         200:
           description: data contract successfully registered or updated
@@ -180,6 +248,7 @@ paths:
       tags:
         - Data Contracts
       summary: Get a data contract
+      description: Get a data contract by its ID. The data contract is the JSON structure of the internal YAML structure. It supports both Data Contract Specification and Open Data Contract Standard.
       operationId: getDataContract
       responses:
         200:
@@ -209,7 +278,7 @@ paths:
     get:
       tags:
         - Data Contracts
-      summary: Get the datacontract.yaml for a data contract
+      summary: Get the datacontract.yaml for a data contract depending on the data contract specification type (Data Contract Specification or Open Data Contract Standard)
       operationId: getDataContractYaml
       responses:
         200:
@@ -1030,7 +1099,7 @@ paths:
                     type:
                       type: string
                       description: "CloudEvents 'type' attribute. The event type."
-                      example: com.datamesh-manager.events.DataProductCreatedEvent
+                      example: com.datamesh-manager.events.AccessActivatedEvent
                       x-extensible-enum:
                         - com.datamesh-manager.events.DataProductCreatedEvent
                         - com.datamesh-manager.events.DataProductUpdatedEvent
@@ -1105,55 +1174,114 @@ paths:
                       format: uri
                       nullable: true
                       example: "https://app.datamesh-manager.com/openapi.yaml/#/components/schemas/AccessActivatedEvent"
+                    principal:
+                      type: string
+                      description: "The principal that triggered the event. This can be a user, an api key, or system (e.g., for scheduled events). Examples: 'user:u123123123123', 'api-key:8db3b740-1099-475b-b82a-18a0f7a73aa9', 'system', 'anonymous'."
+                      nullable: true
+                      example: "user:u123123123123"
                     data:
                       title: CloudEventData
                       type: object
                       additionalProperties: false
                       description: "CloudEvent 'data' content. The event payload. The payload depends on the type."
                       nullable: true
-                      oneOf:
-                        - $ref: '#/components/schemas/DataProductCreatedEvent'
-                        - $ref: '#/components/schemas/DataProductUpdatedEvent'
-                        - $ref: '#/components/schemas/DataProductDeletedEvent'
-                        - $ref: '#/components/schemas/OutputPortCreatedEvent'
-                        - $ref: '#/components/schemas/OutputPortUpdatedEvent'
-                        - $ref: '#/components/schemas/OutputPortDeletedEvent'
-                        - $ref: '#/components/schemas/DataContractCreatedEvent'
-                        - $ref: '#/components/schemas/DataContractUpdatedEvent'
-                        - $ref: '#/components/schemas/DataContractDeletedEvent'
-                        - $ref: '#/components/schemas/AccessCreatedEvent'
-                        - $ref: '#/components/schemas/AccessUpdatedEvent'
-                        - $ref: '#/components/schemas/AccessDeletedEvent'
-                        - $ref: '#/components/schemas/AccessRequestedEvent'
-                        - $ref: '#/components/schemas/AccessApprovedEvent'
-                        - $ref: '#/components/schemas/AccessRejectedEvent'
-                        - $ref: '#/components/schemas/AccessActivatedEvent'
-                        - $ref: '#/components/schemas/AccessDeactivatedEvent'
-                        - $ref: '#/components/schemas/DataUsageAgreementCreatedEvent'
-                        - $ref: '#/components/schemas/DataUsageAgreementUpdatedEvent'
-                        - $ref: '#/components/schemas/DataUsageAgreementDeletedEvent'
-                        - $ref: '#/components/schemas/DataUsageAgreementRequestedEvent'
-                        - $ref: '#/components/schemas/DataUsageAgreementApprovedEvent'
-                        - $ref: '#/components/schemas/DataUsageAgreementRejectedEvent'
-                        - $ref: '#/components/schemas/DataUsageAgreementActivatedEvent'
-                        - $ref: '#/components/schemas/DataUsageAgreementDeactivatedEvent'
-                        - $ref: '#/components/schemas/SourceSystemCreatedEvent'
-                        - $ref: '#/components/schemas/SourceSystemUpdatedEvent'
-                        - $ref: '#/components/schemas/SourceSystemDeletedEvent'
-                        - $ref: '#/components/schemas/TeamCreatedEvent'
-                        - $ref: '#/components/schemas/TeamUpdatedEvent'
-                        - $ref: '#/components/schemas/TeamDeletedEvent'
-                        - $ref: '#/components/schemas/DefinitionCreatedEvent'
-                        - $ref: '#/components/schemas/DefinitionUpdatedEvent'
-                        - $ref: '#/components/schemas/DefinitionDeletedEvent'
-                        - $ref: '#/components/schemas/TagCreatedEvent'
-                        - $ref: '#/components/schemas/TagUpdatedEvent'
-                        - $ref: '#/components/schemas/TagDeletedEvent'
-                        - $ref: '#/components/schemas/AssetCreatedEvent'
-                        - $ref: '#/components/schemas/AssetUpdatedEvent'
-                        - $ref: '#/components/schemas/AssetDeletedEvent'
-                        - $ref: '#/components/schemas/TestResultsCreatedEvent'
-                        - $ref: '#/components/schemas/TestResultsDeletedEvent'
+  /api/search:
+    get:
+      tags:
+        - Search Results
+      summary: Query the AI Search feature
+      description: |
+        This endpoint allows querying the AI Search feature to retrieve answers, sources, and search results.
+        It requires an API key scoped to a Team. This team will be used as the identity of the user eg. when asking for "my" datacontracts.
+      operationId: getSearch
+      parameters:
+        - name: query
+          in: query
+          description: The user query to use as basis for the search.
+          required: true
+          example: "Give me all data contracts owned by team Marketing."
+          schema:
+            type: string
+        - name: searchMode
+          in: query
+          description: |
+            Can be used to constrain the AI Search to a mode, which is otherwise based on a best-guess of the users intention in the query text. These modes correspond to the detected "userIntention" in the response object.
+            DISCOVER is an explorative mode that uses hybrid search as well as LLM reasoning to answer a user query.
+            FIND is a filtered search that can retrieve resources by id, title, ownership or an expanding set of search criteria.
+            GET_HELP is an assistant mode that also uses LLM interaction to explain business context, application usage and workflows to the user, based on Business Definitions and (in the future) online documentation. 
+            Possible values:
+            - DISCOVER
+            - FIND ("Find" in the UI)
+            - GET_HELP
+          required: false
+          schema:
+            type: string
+            example: DISCOVER
+        - name: resourceType
+          in: query
+          description: |
+            Can be used as a filter to constrain the search to a specific type of searchable resource.
+            Possible values include:
+            - DATA_PRODUCT
+            - DATA_CONTRACT
+            - DATA_ASSET
+            - DEFINITION
+            - TEAM
+            - TAG
+          required: false
+          schema:
+            type: string
+            example: DATA_CONTRACT
+        - name: diagnostics
+          in: query
+          description: Adds the fields `sources`, `userIntention` and `searchCriteria` to the response.
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: Search results successfully retrieved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  query:
+                    type: string
+                    description: The original query submitted by the user.
+                    example: "Show me metadata connected to medical studies."
+                  answer:
+                    type: string
+                    description: The AI-generated answer to the query.
+                    example: "Here are data products and data contracts on medical studies."
+                  results:
+                    type: array
+                    description: A list of up to 60 search results matching the query.
+                    items:
+                      $ref: '#/components/schemas/ApiSearchResource'
+                  userIntention:
+                    type: object
+                    description: The parsed user intention (only when diagnostics=true)
+                  searchCriteria:
+                    type: object
+                    description: The search criteria used (only when diagnostics=true)
+                  sources:
+                    type: array
+                    description: A list of up to 60 sources used for the response (only when diagnostics=true). May be identical to `results`.
+                    items:
+                      $ref: '#/components/schemas/ApiSearchResource'
+        422:
+          description: Query could not be processed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message explaining why the query could not be processed
+                    example: "Unable to parse user intention from query"
+
 components:
   securitySchemes:
     ApiKeyAuth:
@@ -1190,6 +1318,11 @@ components:
               description:
                 The technical id of the team that owns the data product
               example: search-team
+            domain:
+              type: string
+              description:
+                The technical id of the domain
+              example: ecommerce-shop
             description:
               type: string
               example: All search queries with user interactions
@@ -1204,11 +1337,13 @@ components:
               example: active
             archetype:
               type: string
-              description: The domain data archetype of the data product, such as consumer-aligned, aggregate, source-aligned.
+              description: The domain data archetype of the data product, such as consumer-aligned, aggregate, source-aligned, application, and dataconsumer.
               x-extensible-enum:
                 - consumer-aligned
                 - aggregate
                 - source-aligned
+                - application
+                - dataconsumer
               example: consumer-aligned
             maturity:
               type: string
@@ -1218,6 +1353,10 @@ components:
                 - defined
                 - managed
               example: managed
+            icon:
+              type: string
+              description: Icon name or url to custom icon
+              example: kafka
         inputPorts:
           type: array
           items:
@@ -1315,6 +1454,14 @@ components:
                   - deprecated
                   - retired
                 example: active
+              environment:
+                type: string
+                description: The name of the environment. Only necessary if one has more than one environment in an organization. Examples are 'prod', 'dev', 'sit', 'int', etc.
+                example: prod
+              version:
+                type: string
+                description: The version of the output port. It is recommended to use only a major version for this.
+                example: 1
               location:
                 type: string
                 description: DEPRECATED. Use the appropriate fields in server instead.
@@ -1878,6 +2025,10 @@ components:
               type: string
               description: The ID of the team responsible for managing the data contract and providing the data.
               example: "search-team"
+            domain:
+              type: string
+              description: The ID of a domain. Must be an existing domain.
+              example: "ecommerce-shop"
             contact:
               type: object
               properties:
@@ -3474,5 +3625,44 @@ components:
           format: date-time
           description: The business time when the test result was deleted
           example: 2023-01-01T09:15:20.705Z
+    ApiSearchResource:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the resource.
+          example: "medical-study-123"
+        url:
+          type: string
+          format: uri
+          description: The URL to access the resource.
+          example: "https://example.com/datacontracts/medical-study-123"
+          nullable: true
+        ownerId:
+          type: string
+          description: Identifier of the owner of the resource.
+        ownerName:
+          type: string
+          description: Name of the owner of the resource.
+        name:
+          type: string
+          description: The name of the resource.
+          example: "Medical Studies 2023"
+        resourceType:
+          type: string
+          description: | 
+            The type of the searchable resource.
+            Possible values include:
+            - DATA_PRODUCT
+            - DATA_CONTRACT
+            - DATA_ASSET
+            - DEFINITION
+            - TEAM
+            - TAG
+          example: DATA_CONTRACT
+        description:
+          type: string
+          description: Additional details about the resource.
+          nullable: true
 security:
   - ApiKeyAuth: [ ]
