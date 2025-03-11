@@ -2,3 +2,8 @@
 set -ex
 
 curl -v -o src/main/resources/openapi.yaml https://api.datamesh-manager.com/openapi.yaml
+schemas=("datacontract-1.1.0.json")
+mkdir -p src/main/resources/schemas
+for schema in "${schemas[@]}"; do
+  curl -v -o src/main/resources/schemas/"$schema" https://api.datamesh-manager.com/schemas/"$schema"
+done

@@ -2616,7 +2616,7 @@ components:
                   type: string
         relationships:
           type: array
-          description: The relationships of the asset to other assets.
+          description: The relationships of the asset to other assets. A relationship from a child to its parent with relationshipType `parent` allows you to generate a datacontract with this relationship represented. Children will appear as such in the UI automatically.
           items:
             type: object
             properties:
