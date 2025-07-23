@@ -30,6 +30,8 @@ We provide some connectors for commonly-used platforms that that use this SDK an
 | Azure                 |                                                                                                            |                    |                   | Coming soon                 |
 | datahub               |                                                                                                            |                    |                   | Coming soon                 |
 | Collibra              |                                                                                                            |                    |                   | Coming soon                 |
+| Iceberg Catalog              |                                                                                                            |                    |                   | Coming soon                 |
+
 
 If you are interested in further integration, please [contact us](https://entropy-data.atlassian.net/servicedesk/customer/portals).
 
