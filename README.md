@@ -27,6 +27,8 @@ We provide some connectors for commonly-used platforms that that use this SDK an
 | Snowflake             | [datamesh-manager-connector-snowflake](https://github.com/datamesh-manager/datamesh-manager-connector-snowflake)   | ✅                  | ✅                 | Uses the Snowflake REST API | 
 | AWS                   |                                                                                                            |                    |                   | Coming soon                 |
 | Google Cloud Platform | [datamesh-manager-connector-gcp](https://github.com/datamesh-manager/datamesh-manager-connector-gcp)               | ✅                  | ✅                 | Uses BigQuery APIs          |
+| Hive                 | [datamesh-manager-connector-hive](https://github.com/datamesh-manager/datamesh-manager-connector-hive)                                                                                                           |   ✅                  |                   | Uses Hive JDBC (also supports Impala and Cloudera)                 |
+
 | Azure                 |                                                                                                            |                    |                   | Coming soon                 |
 | datahub               |                                                                                                            |                    |                   | Coming soon                 |
 | Collibra              |                                                                                                            |                    |                   | Coming soon                 |
