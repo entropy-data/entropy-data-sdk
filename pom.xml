@@ -6,7 +6,7 @@
 
   <groupId>com.datamesh-manager</groupId>
   <artifactId>datamesh-manager-sdk</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.4-SNAPSHOT</version>
 
   <name>datamesh-manager-sdk</name>
   <description>SDK for Data Mesh Manager</description>

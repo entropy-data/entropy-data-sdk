@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.1
 info:
   description: |
     The [Data Mesh Manager](https://www.datamesh-manager.com) / [Data Contract Manager](https://www.datacontract-manager.com) API allows you to integrate with your data platform.
@@ -25,7 +25,7 @@ tags:
   - name: Data Products
     description: Data Products implement Data Contracts. They provide the actual data via output ports, and link to source systems via input ports.
   - name: Data Contracts
-    description: Data Contracts are the API for Data. An output port can implement a data contract. A data contract can be implemented by multiple output ports.
+    description: Data Contracts are the API for Data. An output port can implement a data contract. A data contract can be implemented by multiple output ports. Data Mesh Manager supports the Data Contract Specification and the Open Data Contract Standard (https://bitol-io.github.io/open-data-contract-standard). In this API docs, the Data Contract Specification is used.
     externalDocs:
       description: Data Contract Specification
       url: https://datacontract.com
@@ -37,6 +37,8 @@ tags:
     description: Source Systems are the systems that provide data to the data products. They are connected to the data products via input ports.
   - name: Teams
     description: Teams are the organizational unit in the Data Mesh Manager. They own data products, source systems, data contracts, and definitions.
+  - name: Notification Channels
+    description: Team-scoped notification channels for receiving alerts about data platform events. Each team can configure channels for different event types.
   - name: Definitions
     description: Definitions specify a reusable business or technical term, including its type, description, examples, and classifications. Definitions can be referenced from within Data Contracts.
   - name: Assets
@@ -47,6 +49,8 @@ tags:
     description: EXPERIMENTAL Manage the policies of your data mesh. Policies are the rules of play of the data mesh.
   - name: Costs
     description: EXPERIMENTAL Expenses of data products, e.g., storage, compute, maintenance, and data transfer costs. The expenses can be automatically extracted from cloud provider billing APIs via our integrations.
+  - name: SCIM
+    description: System for Cross-domain Identity Management (SCIM) endpoints for user and group provisioning and management.
   - name: Connectors
     description: EXPERIMENTAL Used by SDK and connectors. Use this API to store state (such as the lastEventId) and update health information.
   - name: Test Results
@@ -218,6 +222,274 @@ paths:
             application/json:
               schema:
                 type: array
+                example: [
+                  {
+                    "dataContractSpecification": "1.1.0",
+                    "id": "customer-cohorts",
+                    "info": {
+                      "title": "Customer Cohorts",
+                      "version": "1.0.0",
+                      "description": "A table with customer cohorts and their properties",
+                      "status": "active",
+                      "owner": "marketing",
+                      "contact": {
+                        "name": "Justice Sukie",
+                        "email": "justice.sukie@demo5jGf8I0v7bMRIU33qRdaY2.datamesh-manager.com"
+                      }
+                    },
+                    "terms": {
+                      "usage": "Max. 10x queries per day",
+                      "limitations": "Not suitable for real-time use cases",
+                      "billing": "$1000 / month",
+                      "noticePeriod": "P3M"
+                    },
+                    "models": {
+                      "customer_cohorts": {
+                        "description": "Table containing customer cohorts information.",
+                        "title": "Customer Cohorts",
+                        "fields": {
+                          "customer_id": {
+                            "$ref": "http://localhost:8080/demo121630567063/definitions/sales/customer_id",
+                            "required": true
+                          },
+                          "cohort_id": {
+                            "type": "string",
+                            "description": "Identifier for the cohort the customer belongs to.",
+                            "required": true
+                          },
+                          "cohort_name": {
+                            "type": "string",
+                            "description": "Name of the cohort."
+                          },
+                          "start_date": {
+                            "type": "date",
+                            "description": "Start date of the cohort."
+                          },
+                          "end_date": {
+                            "type": "date",
+                            "description": "End date of the cohort."
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Additional description or notes about the cohort."
+                          }
+                        }
+                      }
+                    },
+                    "examples": [
+                      {
+                        "type": "csv",
+                        "model": "customer_cohorts",
+                        "description": "my description",
+                        "data": "customer_id,cohort_id,cohort_name,start_date,end_date,description\n101,1,Cohort A,2023-01-01,2023-06-30,First-time customers in H1 2023\n102,2,Cohort B,2023-02-01,2023-07-31,Returning customers in H1 2023\n103,1,Cohort A,2023-01-01,2023-06-30,First-time customers in H1 2023\n104,3,Cohort C,2023-03-01,2023-08-31,New customers in H1 2023\n105,2,Cohort B,2023-02-01,2023-07-31,Returning customers in H1 2023\n106,4,Cohort D,2023-04-01,2023-09-30,High-value customers in H1 2023\n107,3,Cohort C,2023-03-01,2023-08-31,New customers in H1 2023\n108,5,Cohort E,2023-05-01,2023-10-31,Loyal customers in H1 2023\n109,6,Cohort F,2023-06-01,2023-11-30,Inactive customers in H1 2023\n110,4,Cohort D,2023-04-01,2023-09-30,High-value customers in H1 2023\n"
+                      }
+                    ]
+                  },
+                  {
+                    "apiVersion": "v3.0.0",
+                    "kind": "DataContract",
+                    "id": "fulfillment_shipments_v1",
+                    "name": "Shipments",
+                    "version": "1.0.0",
+                    "domain": "sales-team",
+                    "status": "draft",
+                    "description": {
+                      "purpose": "This data can be used for analytical purposes",
+                      "usage": "Use this to analyze shipments",
+                      "limitations": "Not suitable for real-time use cases",
+                      "authoritativeDefinitions": [
+                        {
+                          "type": "Data Guidelines",
+                          "url": "https://example.com/data-guidelines.html"
+                        }
+                      ],
+                      "customProperties": [
+                        {
+                          "property": "github_link",
+                          "value": "https://github.example.com/shipment-specification.yaml"
+                        }
+                      ]
+                    },
+                    "customProperties": [
+                      {
+                        "property": "additionalField",
+                        "value": "some value"
+                      },
+                      {
+                        "property": "owner",
+                        "value": "controlling-team"
+                      }
+                    ],
+                    "schema": [
+                      {
+                        "name": "shipments",
+                        "physicalType": "table",
+                        "physicalName": "shipments",
+                        "tags": [
+                          "shipments",
+                          "datacontracttests:enabled"
+                        ],
+                        "quality": [
+                          {
+                            "type": "sql",
+                            "description": "Table shall contain at least 1 row",
+                            "query": "SELECT COUNT(*) FROM shipments",
+                            "thresholdType": "mustBeGreaterThanOrEqualTo",
+                            "mustBeGreaterThanOrEqualTo": 1
+                          }
+                        ],
+                        "properties": [
+                          {
+                            "name": "shipment_id",
+                            "logicalType": "string",
+                            "description": "Unique identifier for each shipment.",
+                            "required": false,
+                            "unique": false,
+                            "physicalType": "uuid",
+                            "primaryKey": true,
+                            "partitioned": false,
+                            "criticalDataElement": false,
+                            "quality": []
+                          },
+                          {
+                            "name": "order_id",
+                            "logicalType": "string",
+                            "description": "Identifier for the order associated with the shipment.",
+                            "required": true,
+                            "unique": false,
+                            "physicalType": "text",
+                            "primaryKey": false,
+                            "partitioned": false,
+                            "criticalDataElement": false,
+                            "quality": []
+                          },
+                          {
+                            "name": "delivery_date",
+                            "logicalType": "date",
+                            "description": "The actual or expected delivery date of the shipment.",
+                            "required": false,
+                            "unique": false,
+                            "physicalType": "timestamp_tz",
+                            "primaryKey": false,
+                            "partitioned": false,
+                            "criticalDataElement": false,
+                            "quality": []
+                          },
+                          {
+                            "name": "carrier",
+                            "logicalType": "string",
+                            "description": "The shipping carrier used for the delivery.",
+                            "required": false,
+                            "unique": false,
+                            "physicalType": "text",
+                            "primaryKey": false,
+                            "partitioned": false,
+                            "criticalDataElement": false,
+                            "quality": []
+                          },
+                          {
+                            "name": "tracking_number",
+                            "logicalType": "string",
+                            "description": "Tracking number provided by the carrier.",
+                            "required": false,
+                            "unique": false,
+                            "physicalType": "text",
+                            "primaryKey": false,
+                            "partitioned": false,
+                            "classification": "restricted",
+                            "criticalDataElement": false,
+                            "quality": [],
+                            "customProperties": [
+                              {
+                                "property": "external",
+                                "value": "true"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "status",
+                            "logicalType": "string",
+                            "description": "Current status of the shipment.",
+                            "required": false,
+                            "unique": false,
+                            "physicalType": "text",
+                            "primaryKey": false,
+                            "partitioned": false,
+                            "criticalDataElement": false,
+                            "quality": []
+                          },
+                          {
+                            "name": "inline_object_definition",
+                            "logicalType": "object",
+                            "description": "A JSON representation of additional shipment info",
+                            "required": false,
+                            "unique": false,
+                            "physicalType": "json",
+                            "primaryKey": false,
+                            "partitioned": false,
+                            "partitionKeyPosition": -1,
+                            "criticalDataElement": false,
+                            "quality": [
+                              {
+                                "type": "text",
+                                "description": "{field} must contain the field \"destination\""
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "servers": [
+                      {
+                        "server": "production",
+                        "type": "bigquery",
+                        "environment": "production",
+                        "dataset": "shipments_v1",
+                        "project": "acme_shipments_prod"
+                      }
+                    ],
+                    "support": [
+                      {
+                        "channel": "slackname",
+                        "url": "http://find.me.here",
+                        "tool": "slack",
+                        "scope": "interactive"
+                      }
+                    ],
+                    "authoritativeDefinitions": [
+                      {
+                        "type": "Guidelines",
+                        "url": "https://example.com/guidelines"
+                      }
+                    ],
+                    "price": {
+                      "priceAmount": 1,
+                      "priceCurrency": "EUR",
+                      "priceUnit": "Per 1000 requests"
+                    },
+                    "team": [
+                      {
+                        "username": "vimportant",
+                        "role": "administrator",
+                        "dateIn": "2020-01-01"
+                      },
+                      {
+                        "username": "nimportant",
+                        "role": "reader",
+                        "dateIn": "2020-01-01",
+                        "dateOut": "2024-10-10"
+                      }
+                    ],
+                    "slaProperties": [
+                      {
+                        "property": "availability",
+                        "value": "95%",
+                        "unit": "%",
+                        "driver": "operational"
+                      }
+                    ]
+                  },
+                ]
                 items:
                   $ref: '#/components/schemas/DataContract'
   /api/datacontracts/{id}:
@@ -243,6 +515,68 @@ paths:
         content:
           'application/json':
             schema:
+              example: {
+                "dataContractSpecification": "1.1.0",
+                "id": "customer-cohorts",
+                "info": {
+                  "title": "Customer Cohorts",
+                  "version": "1.0.0",
+                  "description": "A table with customer cohorts and their properties",
+                  "status": "active",
+                  "owner": "marketing",
+                  "contact": {
+                    "name": "Justice Sukie",
+                    "email": "justice.sukie@demo5jGf8I0v7bMRIU33qRdaY2.datamesh-manager.com"
+                  }
+                },
+                "terms": {
+                  "usage": "Max. 10x queries per day",
+                  "limitations": "Not suitable for real-time use cases",
+                  "billing": "$1000 / month",
+                  "noticePeriod": "P3M"
+                },
+                "models": {
+                  "customer_cohorts": {
+                    "description": "Table containing customer cohorts information.",
+                    "title": "Customer Cohorts",
+                    "fields": {
+                      "customer_id": {
+                        "$ref": "http://localhost:8080/demo121630567063/definitions/sales/customer_id",
+                        "required": true
+                      },
+                      "cohort_id": {
+                        "type": "string",
+                        "description": "Identifier for the cohort the customer belongs to.",
+                        "required": true
+                      },
+                      "cohort_name": {
+                        "type": "string",
+                        "description": "Name of the cohort."
+                      },
+                      "start_date": {
+                        "type": "date",
+                        "description": "Start date of the cohort."
+                      },
+                      "end_date": {
+                        "type": "date",
+                        "description": "End date of the cohort."
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Additional description or notes about the cohort."
+                      }
+                    }
+                  }
+                },
+                "examples": [
+                  {
+                    "type": "csv",
+                    "model": "customer_cohorts",
+                    "description": "my description",
+                    "data": "customer_id,cohort_id,cohort_name,start_date,end_date,description\n101,1,Cohort A,2023-01-01,2023-06-30,First-time customers in H1 2023\n102,2,Cohort B,2023-02-01,2023-07-31,Returning customers in H1 2023\n103,1,Cohort A,2023-01-01,2023-06-30,First-time customers in H1 2023\n104,3,Cohort C,2023-03-01,2023-08-31,New customers in H1 2023\n105,2,Cohort B,2023-02-01,2023-07-31,Returning customers in H1 2023\n106,4,Cohort D,2023-04-01,2023-09-30,High-value customers in H1 2023\n107,3,Cohort C,2023-03-01,2023-08-31,New customers in H1 2023\n108,5,Cohort E,2023-05-01,2023-10-31,Loyal customers in H1 2023\n109,6,Cohort F,2023-06-01,2023-11-30,Inactive customers in H1 2023\n110,4,Cohort D,2023-04-01,2023-09-30,High-value customers in H1 2023\n"
+                  }
+                ]
+              }
               $ref: '#/components/schemas/DataContract'
     get:
       tags:
@@ -256,6 +590,68 @@ paths:
           content:
             'application/json':
               schema:
+                example: {
+                  "dataContractSpecification": "1.1.0",
+                  "id": "customer-cohorts",
+                  "info": {
+                    "title": "Customer Cohorts",
+                    "version": "1.0.0",
+                    "description": "A table with customer cohorts and their properties",
+                    "status": "active",
+                    "owner": "marketing",
+                    "contact": {
+                      "name": "Justice Sukie",
+                      "email": "justice.sukie@demo5jGf8I0v7bMRIU33qRdaY2.datamesh-manager.com"
+                    }
+                  },
+                  "terms": {
+                    "usage": "Max. 10x queries per day",
+                    "limitations": "Not suitable for real-time use cases",
+                    "billing": "$1000 / month",
+                    "noticePeriod": "P3M"
+                  },
+                  "models": {
+                    "customer_cohorts": {
+                      "description": "Table containing customer cohorts information.",
+                      "title": "Customer Cohorts",
+                      "fields": {
+                        "customer_id": {
+                          "$ref": "http://localhost:8080/demo121630567063/definitions/sales/customer_id",
+                          "required": true
+                        },
+                        "cohort_id": {
+                          "type": "string",
+                          "description": "Identifier for the cohort the customer belongs to.",
+                          "required": true
+                        },
+                        "cohort_name": {
+                          "type": "string",
+                          "description": "Name of the cohort."
+                        },
+                        "start_date": {
+                          "type": "date",
+                          "description": "Start date of the cohort."
+                        },
+                        "end_date": {
+                          "type": "date",
+                          "description": "End date of the cohort."
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Additional description or notes about the cohort."
+                        }
+                      }
+                    }
+                  },
+                  "examples": [
+                    {
+                      "type": "csv",
+                      "model": "customer_cohorts",
+                      "description": "my description",
+                      "data": "customer_id,cohort_id,cohort_name,start_date,end_date,description\n101,1,Cohort A,2023-01-01,2023-06-30,First-time customers in H1 2023\n102,2,Cohort B,2023-02-01,2023-07-31,Returning customers in H1 2023\n103,1,Cohort A,2023-01-01,2023-06-30,First-time customers in H1 2023\n104,3,Cohort C,2023-03-01,2023-08-31,New customers in H1 2023\n105,2,Cohort B,2023-02-01,2023-07-31,Returning customers in H1 2023\n106,4,Cohort D,2023-04-01,2023-09-30,High-value customers in H1 2023\n107,3,Cohort C,2023-03-01,2023-08-31,New customers in H1 2023\n108,5,Cohort E,2023-05-01,2023-10-31,Loyal customers in H1 2023\n109,6,Cohort F,2023-06-01,2023-11-30,Inactive customers in H1 2023\n110,4,Cohort D,2023-04-01,2023-09-30,High-value customers in H1 2023\n"
+                    }
+                  ]
+                }
                 $ref: '#/components/schemas/DataContract'
     delete:
       summary: Delete a data contract
@@ -419,7 +815,15 @@ paths:
             type: integer
             minimum: 0
           required: false
-          description: The number of the requested page, starting from 0. Each page contains a maximum of 1000 data usage agreements, sorted by creation date ascending.
+          description: The number of the requested page, starting from 0. Each page contains a maximum of pageSize data usage agreements, sorted by creation date ascending.
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 2
+            maximum: 10000
+          required: false
+          description: The size of the requested page. Each page contains a maximum of pageSize data usage agreements, sorted by creation date ascending. Default is 1000.
       responses:
         200:
           description: List of data usage agreements
@@ -585,6 +989,56 @@ paths:
       responses:
         200:
           description: Team was deleted
+  /api/teams/{teamId}/notification-channels/{channelId}:
+    parameters:
+      - name: teamId
+        in: path
+        description: Team identifier
+        required: true
+        example: marketing
+        schema:
+          type: string
+      - name: channelId
+        in: path
+        description: Notification channel identifier
+        required: true
+        example: slack-alerts
+        schema:
+          type: string
+    put:
+      tags:
+        - Notification Channels
+      summary: Add or update a notification channel for a team
+      operationId: putNotificationChannel
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/NotificationChannel'
+      responses:
+        200:
+          description: Notification channel successfully created or updated
+    get:
+      tags:
+        - Notification Channels
+      summary: Get a team's notification channel
+      operationId: getNotificationChannel
+      responses:
+        200:
+          description: The notification channel
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/NotificationChannel'
+    delete:
+      tags:
+        - Notification Channels
+      summary: Delete a team's notification channel
+      operationId: deleteNotificationChannel
+      responses:
+        200:
+          description: Notification channel was deleted
   /api/sourcesystems:
     get:
       tags:
@@ -787,6 +1241,62 @@ paths:
           description: Data asset was deleted
         422:
           description: Data asset cannot be deleted, e.g. when it is still used in a data product
+  /api/assets/{id}/assigned-tags:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this assets, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Assets
+      summary: Get assigned tags of an asset
+      operationId: getAssetTags
+      responses:
+        200:
+          description: The tags manually assigned to the asset
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/AssetTags'
+        404:
+          description: Data asset does not exist
+  /api/assets/{id}/assigned-tags/{tagId}:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this assets, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+      - name: tagId
+        in: path
+        description: An organizational unique technical identifier for this tag, such as "governance". Format must be a valid path parameter for GET and DELETE requests, it can be hierarchical using "/", for example "governance/PII".
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - Assets
+      summary: Add an assigned tag to an asset
+      operationId: putAssetTag
+      responses:
+        200:
+          description: The tag was successfully assigned to the asset
+        422:
+          description: Data asset does not exist
+    delete:
+      tags:
+        - Assets
+      summary: Delete an assigned tag from an asset
+      operationId: deleteAssetTag
+      responses:
+        200:
+          description: The tag was successfully deleted from the asset
+        422:
+          description: Data asset does not exist
   /api/tags:
     get:
       tags:
@@ -801,6 +1311,13 @@ paths:
             minimum: 0
           required: false
           description: The number of the requested page, starting from 0. Each page contains a maximum of 1000 tags, sorted by creation date ascending.
+        - in: query
+          name: owner
+          schema:
+            type: string
+          required: false
+          example: my-team
+          description: Filter for specific owners. Use the team name (not the ID).
       responses:
         200:
           description: List of tags
@@ -811,15 +1328,16 @@ paths:
                 items:
                   $ref: '#/components/schemas/Tag'
   /api/tags/{id}:
-    parameters:
-      - name: id
-        in: path
-        description: An organizational unique technical identifier for this tag. Can contain "/" and is used for GET, PUT and DELETE requests.
-        required: true
-        example: Governance/PII
-        schema:
-          type: string
     put:
+      parameters:
+        - name: id
+          in: path
+          description: An organizational unique technical identifier for this tag. Can contain "/" and is used for GET, PUT and DELETE requests.
+          required: true
+          example: Governance/PII
+          schema:
+            type: string
+          allowReserved: true
       tags:
         - Tags
       summary: Add or update a tag
@@ -828,7 +1346,7 @@ paths:
         200:
           description: tag successfully created or updated
         422:
-          description: tag not created or updated, due to a required field.
+          description: tag not created or updated, due to a required field. This error is also thrown if the tag is already existing using another case. E.g. "tag/A" and "tag/a".
       requestBody:
         required: true
         content:
@@ -840,6 +1358,15 @@ paths:
         - Tags
       summary: Get a tag
       operationId: getTag
+      parameters:
+        - name: id
+          in: path
+          description: An organizational unique technical identifier for this tag. Can contain "/" and is used for GET, PUT and DELETE requests.
+          required: true
+          example: Governance/PII
+          schema:
+            type: string
+          allowReserved: true
       responses:
         200:
           description: The tag exists
@@ -848,6 +1375,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/Tag'
     delete:
+      parameters:
+        - name: id
+          in: path
+          description: An organizational unique technical identifier for this tag. Can contain "/" and is used for GET, PUT and DELETE requests.
+          required: true
+          example: Governance/PII
+          schema:
+            type: string
+          allowReserved: true
       summary: Delete a tag
       operationId: deleteTag
       tags:
@@ -1282,6 +1818,494 @@ paths:
                     description: Error message explaining why the query could not be processed
                     example: "Unable to parse user intention from query"
 
+  /api/scim/v2/Users:
+    get:
+      tags:
+        - SCIM
+      summary: List SCIM Users
+      description: Get all SCIM users with support for filtering and pagination.
+      operationId: getScimUsers
+      parameters:
+        - in: query
+          name: startIndex
+          schema:
+            type: integer
+            default: 1
+          required: false
+          description: The 1-based index of the first query result.
+        - in: query
+          name: count
+          schema:
+            type: integer
+            default: 1000
+          required: false
+          description: The maximum number of resources to return.
+        - in: query
+          name: filter
+          schema:
+            type: string
+          required: false
+          description: The filter string used to request a subset of resources.
+      responses:
+        '200':
+          description: Successfully retrieved users list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScimListResponseUsers'
+    post:
+      tags:
+        - SCIM
+      summary: Create SCIM User
+      description: Create a new SCIM user.
+      operationId: createScimUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScimUser'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScimUser'
+        '409':
+          description: User already exists with the same ID, or invalid userName.
+  /api/scim/v2/Users/{id}:
+    get:
+      tags:
+        - SCIM
+      summary: Get SCIM User
+      description: Get a specific SCIM user by ID.
+      operationId: getScimUser
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The ID of the SCIM user.
+          example: "123e4567-e89b-12d3-a456-426614174000"
+      responses:
+        '200':
+          description: Successfully retrieved user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScimUser'
+              example:
+                schemas:
+                  - "urn:ietf:params:scim:schemas:core:2.0:User"
+                id: "123e4567-e89b-12d3-a456-426614174000"
+                externalId: "employee-0001"
+                userName: "jane.doe@example.com"
+                displayName: "Jane Doe"
+                emails:
+                  - value: "jane.doe@example.com"
+                    type: "work"
+                    primary: true
+                active: true
+                meta:
+                  resourceType: "User"
+                  created: "2023-01-15T16:22:31.123Z"
+                  lastModified: "2023-07-20T09:43:12.679Z"
+                  location: "https://api.datamesh-manager.com/api/scim/v2/Users/123e4567-e89b-12d3-a456-426614174000"
+        '404':
+          description: User not found
+    put:
+      tags:
+        - SCIM
+      summary: Replace SCIM User
+      description: Replace an existing SCIM user with a new representation.
+      operationId: replaceScimUser
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The ID of the SCIM user to replace.
+          example: "123e4567-e89b-12d3-a456-426614174000"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScimUser'
+            example:
+              schemas:
+                - "urn:ietf:params:scim:schemas:core:2.0:User"
+              userName: "jane.doe@example.com"
+              externalId: "employee-0001-updated"
+              displayName: "Jane Doe Updated"
+              emails:
+                - value: "jane.doe@example.com"
+                  type: "work"
+                  primary: true
+                - value: "jane.personal@example.com"
+                  type: "home"
+                  primary: false
+              active: true
+      responses:
+        '200':
+          description: User replaced successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScimUser'
+              example:
+                schemas:
+                  - "urn:ietf:params:scim:schemas:core:2.0:User"
+                id: "123e4567-e89b-12d3-a456-426614174000"
+                externalId: "employee-0001-updated"
+                userName: "jane.doe@example.com"
+                displayName: "Jane Doe Updated"
+                emails:
+                  - value: "jane.doe@example.com"
+                    type: "work"
+                    primary: true
+                  - value: "jane.personal@example.com"
+                    type: "home"
+                    primary: false
+                active: true
+                meta:
+                  resourceType: "User"
+                  created: "2023-01-15T16:22:31.123Z"
+                  lastModified: "2023-08-10T14:27:45.892Z"
+                  location: "https://api.datamesh-manager.com/api/scim/v2/Users/123e4567-e89b-12d3-a456-426614174000"
+        '404':
+          description: User not found
+    patch:
+      tags:
+        - SCIM
+      summary: Update SCIM User
+      description: Update specific attributes of an existing SCIM user.
+      operationId: updateScimUser
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The ID of the SCIM user to update.
+          example: "123e4567-e89b-12d3-a456-426614174000"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScimPatchRequest'
+            example:
+              schemas:
+                - "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+              Operations:
+                - op: "replace"
+                  path: "displayName"
+                  value: "Jane Smith"
+                - op: "replace"
+                  value:
+                    active: false
+                - op: "add"
+                  path: "emails"
+                  value:
+                    - value: "jane.new@example.com"
+                      type: "work"
+                      primary: true
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScimUser'
+              example:
+                schemas:
+                  - "urn:ietf:params:scim:schemas:core:2.0:User"
+                id: "123e4567-e89b-12d3-a456-426614174000"
+                externalId: "employee-0001-updated"
+                userName: "jane.doe@example.com"
+                displayName: "Jane Smith"
+                emails:
+                  - value: "jane.new@example.com"
+                    type: "work"
+                    primary: true
+                active: false
+                meta:
+                  resourceType: "User"
+                  created: "2023-01-15T16:22:31.123Z"
+                  lastModified: "2023-08-10T15:03:21.456Z"
+                  location: "https://api.datamesh-manager.com/api/scim/v2/Users/123e4567-e89b-12d3-a456-426614174000"
+        '404':
+          description: User not found
+    delete:
+      tags:
+        - SCIM
+      summary: Delete SCIM User
+      description: Delete a SCIM user.
+      operationId: deleteScimUser
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The ID of the SCIM user to delete.
+          example: "123e4567-e89b-12d3-a456-426614174000"
+      responses:
+        '204':
+          description: User deleted successfully
+        '404':
+          description: User not found
+
+  /api/scim/v2/Groups:
+    get:
+      tags:
+        - SCIM
+      summary: List SCIM Groups
+      description: Get all SCIM groups with support for filtering and pagination.
+      operationId: getScimGroups
+      parameters:
+        - in: query
+          name: startIndex
+          schema:
+            type: integer
+            default: 1
+          required: false
+          description: The 1-based index of the first query result.
+        - in: query
+          name: count
+          schema:
+            type: integer
+            default: 1000
+          required: false
+          description: The maximum number of resources to return.
+        - in: query
+          name: filter
+          schema:
+            type: string
+          required: false
+          description: The filter string used to request a subset of resources.
+      responses:
+        '200':
+          description: Successfully retrieved groups list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScimListResponseGroups'
+    post:
+      tags:
+        - SCIM
+      summary: Create SCIM Group
+      description: Create a new SCIM group.
+      operationId: createScimGroup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScimGroup'
+      responses:
+        '201':
+          description: Group created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScimGroup'
+
+  /api/scim/v2/Groups/{id}:
+    get:
+      tags:
+        - SCIM
+      summary: Get SCIM Group
+      description: Get a specific SCIM group by ID.
+      operationId: getScimGroup
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The ID of the SCIM group.
+      responses:
+        '200':
+          description: Successfully retrieved group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScimGroup'
+        '404':
+          description: Group not found
+    put:
+      tags:
+        - SCIM
+      summary: Replace SCIM Group
+      description: Replace an existing SCIM group with a new representation.
+      operationId: replaceScimGroup
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The ID of the SCIM group to replace.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScimGroup'
+      responses:
+        '200':
+          description: Group replaced successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScimGroup'
+        '404':
+          description: Group not found
+    patch:
+      tags:
+        - SCIM
+      summary: Update SCIM Group
+      description: Update specific attributes of an existing SCIM group.
+      operationId: updateScimGroup
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The ID of the SCIM group to update.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScimPatchRequest'
+      responses:
+        '200':
+          description: Group updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScimGroup'
+        '404':
+          description: Group not found
+    delete:
+      tags:
+        - SCIM
+      summary: Delete SCIM Group
+      description: Delete a SCIM group.
+      operationId: deleteScimGroup
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The ID of the SCIM group to delete.
+      responses:
+        '204':
+          description: Group deleted successfully
+        '404':
+          description: Group not found
+
+  /api/scim/v2/ServiceProviderConfig:
+    get:
+      tags:
+        - SCIM
+      summary: Get SCIM Service Provider Configuration
+      description: Retrieves information about the SCIM service provider's configuration.
+      operationId: getScimServiceProviderConfig
+      responses:
+        '200':
+          description: Successfully retrieved service provider configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScimServiceProviderConfig'
+
+  /api/scim/v2/ResourceTypes:
+    get:
+      tags:
+        - SCIM
+      summary: List SCIM Resource Types
+      description: Retrieves all available SCIM resource types.
+      operationId: getScimResourceTypes
+      responses:
+        '200':
+          description: Successfully retrieved resource types
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScimListResponseResourceTypes'
+
+  /api/scim/v2/ResourceTypes/{resourceType}:
+    get:
+      tags:
+        - SCIM
+      summary: Get SCIM Resource Type
+      description: Retrieves a specific SCIM resource type.
+      operationId: getScimResourceType
+      parameters:
+        - in: path
+          name: resourceType
+          schema:
+            type: string
+          required: true
+          description: The name of the resource type (e.g., User, Group).
+      responses:
+        '200':
+          description: Successfully retrieved resource type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScimResourceType'
+        '404':
+          description: Resource type not found
+
+  /api/scim/v2/Schemas:
+    get:
+      tags:
+        - SCIM
+      summary: List SCIM Schemas
+      description: Retrieves all available SCIM schemas.
+      operationId: getScimSchemas
+      responses:
+        '200':
+          description: Successfully retrieved schemas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScimListResponseSchemas'
+
+  /api/scim/v2/Schemas/{schemaId}:
+    get:
+      tags:
+        - SCIM
+      summary: Get SCIM Schema
+      description: Retrieves a specific SCIM schema.
+      operationId: getScimSchema
+      parameters:
+        - in: path
+          name: schemaId
+          schema:
+            type: string
+          required: true
+          description: The ID of the schema (e.g., urn:ietf:params:scim:schemas:core:2.0:User).
+      responses:
+        '200':
+          description: Successfully retrieved schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScimSchema'
+        '404':
+          description: Schema not found
+
 components:
   securitySchemes:
     ApiKeyAuth:
@@ -1289,6 +2313,10 @@ components:
       description: You need to authenticate every API request with your secret API key as as a header field. Each API key is bound to an organization. See the [documentation](https://docs.datamesh-manager.com/authentication) for more details on how to generate an API key for your organization.
       in: header
       name: x-api-key
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: The API key. Each API key is bound to an organization. See the [documentation](https://docs.datamesh-manager.com/authentication) for more details on how to generate an API key for your organization.
 
   schemas:
     DataProduct:
@@ -1813,11 +2841,11 @@ components:
           properties:
             dataProductId:
               type: string
-              description: A technical identifier for the provided data product.
+              description: A technical identifier for the provided data product. ! If the provider dataproduct is deleted, "unknown" is returned.
               example: snowflake_orders_v2
             outputPortId:
               type: string
-              description: A technical identifier for the provided output port.
+              description: A technical identifier for the provided output port. ! If the provider outputport is deleted, "unknown" is returned.
               example: snowflake_search_queries_all_npii_v1
             teamId:
               type: string
@@ -1994,443 +3022,39 @@ components:
           example: {
             "slack-channel": "checkout-public"
           }
-    DataContract:
+    NotificationChannel:
       type: object
+      required:
+        - id
+        - name
+        - type
+        - endpoint
+        - enabled
       properties:
-        dataContractSpecification:
-          type: string
-          description: Specifies the Data Contract Specification being used.
-          default: "1.1.0"
-          example: "1.1.0"
         id:
           type: string
-          description: Specifies the identifier of the data contract.
-          example: "search-queries-all-v1"
-        info:
-          type: object
-          properties:
-            title:
-              type: string
-              description: The title of the data contract.
-              example: "Search Queries all"
-            version:
-              type: string
-              description: The version of the data contract document (which is distinct from the Data Contract Specification version or the Data Product implementation version).
-              example: "1.0.0"
-            description:
-              type: string
-              description: A description of the data contract.
-              example: "All search queries with user interactions"
-            owner:
-              type: string
-              description: The ID of the team responsible for managing the data contract and providing the data.
-              example: "search-team"
-            domain:
-              type: string
-              description: The ID of a domain. Must be an existing domain.
-              example: "ecommerce-shop"
-            contact:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: The identifying name of the contact person/organization.
-                  example: "John Doe"
-                url:
-                  type: string
-                  format: uri
-                  description: The URL pointing to the contact information. This MUST be in the form of a URL.
-                  example: "https://example.com/contact"
-                email:
-                  type: string
-                  format: email
-                  description: The email address of the contact person/organization. This MUST be in the form of an email address.
-                  example: "mail@example.com"
-              description: Contact information for the data contract.
-              additionalProperties: true
-          required:
-            - title
-            - version
-          description: Metadata and life cycle information about the data contract.
-          additionalProperties: true
-        servers:
-          type: object
-          additionalProperties:
-            discriminator:
-              propertyName: type
-            oneOf:
-              - type: object
-                properties:
-                  type:
-                    type: string
-                    enum:
-                      - bigquery
-                      - BigQuery
-                    description: The type of the data product technology that implements the data contract.
-                  project:
-                    type: string
-                    description: An optional string describing the server.
-                  dataset:
-                    type: string
-                    description: An optional string describing the server.
-                additionalProperties: true
-                required:
-                  - type
-                  - project
-                  - dataset
-              - type: object
-                properties:
-                  type:
-                    type: string
-                    enum:
-                      - s3
-                    description: The type of the data product technology that implements the data contract.
-                  location:
-                    type: string
-                    format: uri
-                    description: An optional string describing the server. Must be in the form of a URL.
-                additionalProperties: true
-                required:
-                  - type
-                  - location
-              - type: object
-                properties:
-                  type:
-                    type: string
-                    enum:
-                      - redshift
-                    description: The type of the data product technology that implements the data contract.
-                  account:
-                    type: string
-                    description: An optional string describing the server.
-                  database:
-                    type: string
-                    description: An optional string describing the server.
-                  schema:
-                    type: string
-                    description: An optional string describing the server.
-                additionalProperties: true
-                required:
-                  - type
-                  - account
-                  - database
-                  - schema
-              - type: object
-                properties:
-                  type:
-                    type: string
-                    enum:
-                      - snowflake
-                    description: The type of the data product technology that implements the data contract.
-                  account:
-                    type: string
-                    description: An optional string describing the server.
-                  database:
-                    type: string
-                    description: An optional string describing the server.
-                  schema:
-                    type: string
-                    description: An optional string describing the server.
-                additionalProperties: true
-                required:
-                  - type
-                  - account
-                  - database
-                  - schema
-              - type: object
-                properties:
-                  type:
-                    type: string
-                    enum:
-                      - databricks
-                    description: The type of the data product technology that implements the data contract.
-                  share:
-                    type: string
-                    description: An optional string describing the server.
-                additionalProperties: true
-                required:
-                  - type
-                  - share
-              - type: object
-                properties:
-                  type:
-                    type: string
-                    enum:
-                      - kafka
-                    description: The type of the data product technology that implements the data contract.
-                  host:
-                    type: string
-                    description: An optional string describing the server.
-                  topic:
-                    type: string
-                    description: An optional string describing the server.
-                additionalProperties: true
-                required:
-                  - type
-                  - host
-                  - topic
-          description: Information about the servers.
-        terms:
-          type: object
-          description: The terms and conditions of the data contract.
-          properties:
-            usage:
-              type: string
-              description: The usage describes the way the data is expected to be used. Can contain business and technical information.
-            limitations:
-              type: string
-              description: The limitations describe the restrictions on how the data can be used, can be technical or restrictions on what the data may not be used for.
-            billing:
-              type: string
-              description: The billing describes the pricing model for using the data, such as whether it's free, having a monthly fee, or metered pay-per-use.
-            noticePeriod:
-              type: string
-              description: The period of time that must be given by either party to terminate or modify a data usage agreement. Uses ISO-8601 period format, e.g., 'P3M' for a period of three months.
-        models:
-          description: Specifies the logical data model. Use the models name (e.g., the table name) as the key.
-          type: object
-          minProperties: 1
-          additionalProperties:
-            type: object
-            properties:
-              description:
-                type: string
-              type:
-                description: 'The type of the model. Examples: table, object. Default: table.'
-                type: string
-                default: table
-              fields:
-                description: Specifies a field in the data model. Use the field name (e.g., the column name) as the key.
-                type: object
-                additionalProperties:
-                  type: object
-                  properties:
-                    description:
-                      type: string
-                      description: An optional string describing the semantic of the data in this field.
-                    type:
-                      type: string
-                      description: The logical data type of the field.
-                      enum:
-                        - number
-                        - decimal
-                        - numeric
-                        - int
-                        - integer
-                        - long
-                        - bigint
-                        - float
-                        - double
-                        - string
-                        - text
-                        - varchar
-                        - boolean
-                        - timestamp
-                        - timestamp_tz
-                        - timestamp_ntz
-                        - date
-                        - array
-                        - object
-                        - record
-                        - struct
-                        - bytes
-                        - "null"
-                    required:
-                      type: boolean
-                      default: false
-                      description: An indication, if this field must contain a value and may not be null.
-                    unique:
-                      type: boolean
-                      default: false
-                      description: An indication, if the value must be unique within the model.
-                    enum:
-                      type: array
-                      items:
-                        type: string
-                      uniqueItems: true
-                      description: A value must be equal to one of the elements in this array value. Only evaluated if the value is not null.
-                    minLength:
-                      type: number
-                      description: A value must greater than, or equal to, the value of this. Only applies to string types.
-                    maxLength:
-                      type: number
-                      description: A value must less than, or equal to, the value of this. Only applies to string types.
-                    format:
-                      type: string
-                      description: A specific format the value must comply with (e.g., 'email', 'uri', 'uuid').
-                    pattern:
-                      type: string
-                      description: A regular expression the value must match. Only applies to string types.
-                    minimum:
-                      type: number
-                      description: A value of a number must greater than, or equal to, the value of this. Only evaluated if the value is not null. Only applies to numeric values.
-                    exclusiveMinimum:
-                      type: number
-                      description: A value of a number must greater than the value of this. Only evaluated if the value is not null. Only applies to numeric values.
-                    maximum:
-                      type: number
-                      description: A value of a number must less than, or equal to, the value of this. Only evaluated if the value is not null. Only applies to numeric values.
-                    exclusiveMaximum:
-                      type: number
-                      description: A value of a number must less than the value of this. Only evaluated if the value is not null. Only applies to numeric values.
-                    example:
-                      type: string
-                      description: An example value for this field.
-                    pii:
-                      type: boolean
-                      description: An indication, if this field contains Personal Identifiable Information (PII).
-                    classification:
-                      type: string
-                      description: The data class defining the sensitivity level for this field, according to the organization's classification scheme.
-                      example: sensitive
-                    tags:
-                      type: array
-                      items:
-                        type: string
-                      description: Custom metadata to provide additional context.
-                    $ref:
-                      type: string
-                      description: A reference URI to a definition in the specification, internally or externally. Properties will be inherited from the definition.
-          x-propertyNames:
-            pattern: ^[a-zA-Z0-9_-]+$
-        definitions:
-          description: Clear and concise explanations of syntax, semantic, and classification of business objects in a given domain.
-          type: object
-          additionalProperties:
-            type: object
-            properties:
-              domain:
-                type: string
-                description: The domain in which this definition is valid.
-                default: global
-              name:
-                type: string
-                description: The technical name of this definition.
-              title:
-                type: string
-                description: The business name of this definition.
-              description:
-                type: string
-                description: Clear and concise explanations related to the domain.
-              type:
-                type: string
-                description: The logical data type.
-              minLength:
-                type: number
-                description: A value must be greater than or equal to this value. Applies only to string types.
-              maxLength:
-                type: number
-                description: A value must be less than or equal to this value. Applies only to string types.
-              format:
-                type: string
-                description: Specific format requirements for the value (e.g., 'email', 'uri', 'uuid').
-              pattern:
-                type: string
-                description: A regular expression pattern the value must match. Applies only to string types.
-              example:
-                type: string
-                description: An example value.
-              pii:
-                type: boolean
-                description: Indicates if the field contains Personal Identifiable Information (PII).
-              classification:
-                type: string
-                description: The data class defining the sensitivity level for this field.
-              tags:
-                type: array
-                items:
-                  type: string
-                description: Custom metadata to provide additional context.
-            required:
-              - name
-              - type
-          x-propertyNames:
-            pattern: ^[a-zA-Z0-9_-]+$
-        schema:
-          type: object
-          properties:
-            type:
-              type: string
-              enum:
-                - dbt
-                - bigquery
-                - json-schema
-                - sql-ddl
-                - avro
-                - protobuf
-                - custom
-              description:
-                The type of the schema. Typical values are dbt, bigquery, json-schema, sql-ddl, avro, protobuf, custom.
-            specification:
-              oneOf:
-                - type: string
-                  description: The specification of the schema as a string.
-                - type: object
-                  description: The specification of the schema as an object.
-          required:
-            - type
-            - specification
-          description: The schema of the data contract describes the syntax and semantics of provided data sets. It supports different schema types.
-        examples:
-          type: array
-          items:
-            type: object
-            properties:
-              type:
-                type: string
-                enum:
-                  - csv
-                  - json
-                  - yaml
-                  - custom
-                description: The type of the example data. Well-known types are csv, json, yaml, custom.
-                example: csv
-              model:
-                type: string
-                description: The reference to the model in the schema, e.g., a table name.
-                example: search_queries
-              data:
-                type: string
-                description: Example data for this model.
-                example: |
-                  id,query,timestamp
-                  1,hello world,2021-01-01T00:00:00Z
-                  2,hello world,2021-01-01T00:00:00Z
-                  3,hello world,2021-01-01T00:00:00Z
-              description:
-                type: string
-                description: An optional string describing the example.
-                example: "Example data for the search queries table."
-            required:
-              - type
-              - model
-              - data
-          description: The Examples Object is an array of Example Objects.
-        quality:
-          type: object
-          properties:
-            type:
-              type: string
-              enum:
-                - SodaCL
-                - montecarlo
-                - custom
-              description: The type of the quality check. Typical values are SodaCL, montecarlo, custom.
-            specification:
-              oneOf:
-                - type: string
-                  description: The specification of the quality attributes as a string.
-                - type: object
-                  description: The specification of the quality attributes as an object.
-          required:
-            - type
-            - specification
-          description: The quality object contains quality attributes and checks.
-          additionalProperties: true
-      required:
-        - dataContractSpecification
-        - id
-        - info
+          description: An organizational unique technical identifier for this notification channel. Must be same as the path parameter.
+          example: slack-alerts
+        name:
+          type: string
+          description: The display name of this notification channel
+          example: "Slack Alerts"
+        type:
+          type: string
+          description: The type of notification channel
+          enum: ["slack", "teams", "googlechat"]
+          example: "slack"
+        endpoint:
+          type: string
+          format: uri
+          description: The webhook endpoint URL for the notification channel
+          example: "https://hooks.slack.com/services/T123/B456/xyz"
+        enabled:
+          type: boolean
+          description: Whether the notification channel is enabled
+          example: true
+    DataContract:
+      $ref: "schemas/datacontract-1.1.0.json"
     Definition:
       type: object
       required:
@@ -2579,8 +3203,8 @@ components:
             owner: "John.Doe@example.com"
             objectType: "U"
             Business Attributes:
-                Business Name: "Customer"
-                Business Description: "Customer Information"
+              Business Name: "Customer"
+              Business Description: "Customer Information"
         columns:
           type: array
           description: If the asset type has a schema (such as a table or structured files), define the columns.
@@ -2634,6 +3258,13 @@ components:
           items:
             type: string
           example: ["pii:true", "classification:Full Name"]
+        assignedTags:
+          type: array
+          description: Tags associated with the asset via UI.
+          readOnly: true
+          items:
+            type: string
+          example: [ "pii:true", "governance/internal" ]
         links:
           type: object
           description: Links associated with the asset.
@@ -2642,7 +3273,9 @@ components:
           example:
             "Purview Data Map": "https://link1.com"
             "Azure SQL Explorer": "https://link2.com"
-
+    AssetTags:
+      type: array
+      example: [ "pii:true", "governance/internal" ]
     Tag:
       type: object
       required:
@@ -2665,6 +3298,14 @@ components:
               type: string
               description: "Clear and concise explanations related to the tag."
               example: "This tag is used to categorize an entity as pii."
+        links:
+          type: object
+          description: Links associated with the tag.
+          additionalProperties:
+            type: string
+          example:
+            "Purview Data Map": "https://link1.com"
+            "Azure SQL Explorer": "https://link2.com"
         properties:
           type: object
           description: Properties can be used to add additional information to the tag.
@@ -2797,7 +3438,7 @@ components:
           example: 1.0.0
         server:
           type: string
-          description: The server that was tested. A server with this key must be defined in the data contract in the system.
+          description: The server that was tested. A server with this key must be defined in the data contract in the system. If the data contract is linked to a output port of a data product, the server is defined by '${dataProductId}/${outputPortId}'.
           example: production
         timestampStart:
           type: string
@@ -3604,6 +4245,10 @@ components:
           type: string
           description: The identifier of the test results.
           example: 2f0720d5-e7b2-4b83-90d3-421fda9be54b
+        status:
+            type: string
+            description: The status of the test result.
+            example: passed
         timestamp:
           type: string
           format: date-time
@@ -3650,7 +4295,7 @@ components:
           example: "Medical Studies 2023"
         resourceType:
           type: string
-          description: | 
+          description: |
             The type of the searchable resource.
             Possible values include:
             - DATA_PRODUCT
@@ -3664,5 +4309,397 @@ components:
           type: string
           description: Additional details about the resource.
           nullable: true
+    ScimListResponseUsers:
+      allOf:
+        - $ref: '#/components/schemas/ScimListResponse'
+        - type: object
+          properties:
+            resources:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScimUser'
+
+    ScimListResponseGroups:
+      allOf:
+        - $ref: '#/components/schemas/ScimListResponse'
+        - type: object
+          properties:
+            resources:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScimGroup'
+
+    ScimListResponse:
+      type: object
+      properties:
+        totalResults:
+          type: integer
+          description: The total number of resources returned by the query.
+        itemsPerPage:
+          type: integer
+          description: The number of resources returned per page.
+        startIndex:
+          type: integer
+          description: The 1-based index of the first resource in the returned page.
+        schemas:
+          type: array
+          items:
+            type: string
+          default: ["urn:ietf:params:scim:api:messages:2.0:ListResponse"]
+    ScimUser:
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          default: ["urn:ietf:params:scim:schemas:core:2.0:User"]
+        id:
+          type: string
+          description: The unique identifier of the user. This is generated by the system.
+        externalId:
+          type: string
+          description: The external identifier of the user.
+        userName:
+          type: string
+          format: email
+          description: The user's username. This must be the user's email address.
+        displayName:
+          type: string
+          description: The display name of the user.
+        emails:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScimEmail'
+        active:
+          type: boolean
+          description: Indicates if the user is active. A soft-delete is currently not supported.
+          default: true
+        meta:
+          $ref: '#/components/schemas/ScimMeta'
+      required:
+        - userName
+    ScimEmail:
+      type: object
+      properties:
+        value:
+          type: string
+          format: email
+          description: The email address.
+        type:
+          type: string
+          description: The type of email address. This should be "work"
+          example: work
+        primary:
+          type: boolean
+          description: Indicates if this is the primary email address.
+          default: true
+      required:
+        - value
+    ScimPatchRequest:
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          default: ["urn:ietf:params:scim:api:messages:2.0:PatchOp"]
+        operations:
+          type: array
+          items:
+            type: object
+            properties:
+              op:
+                type: string
+                description: The operation to perform (add, replace, remove).
+                enum: [add, replace, remove]
+              path:
+                type: string
+                description: The path to the property to update.
+              value:
+                type: object
+                description: The value to set for the property.
+            required:
+              - op
+              - path
+      required:
+        - operations
+    ScimGroup:
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          default: ["urn:ietf:params:scim:schemas:core:2.0:Group"]
+        id:
+          type: string
+          description: The unique identifier of the group.
+        displayName:
+          type: string
+          description: The display name of the group.
+        members:
+          type: array
+          items:
+            type: object
+            properties:
+              value:
+                type: string
+                description: The member identifier.
+              display:
+                type: string
+                description: The display name of the member.
+              type:
+                type: string
+                description: The type of member (User).
+                default: "User"
+            required:
+              - value
+        meta:
+          $ref: '#/components/schemas/ScimMeta'
+      required:
+        - displayName
+    ScimMeta:
+      type: object
+      properties:
+        resourceType:
+          type: string
+          description: The type of the resource.
+          default: "User"
+        created:
+          type: string
+          format: date-time
+          description: The date and time the resource was created.
+        lastModified:
+          type: string
+          format: date-time
+          description: The date and time the resource was last modified.
+        location:
+          type: string
+          description: The location of the resource.
+        version:
+          type: string
+          description: The version of the resource.
+
+    ScimServiceProviderConfig:
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          default: ["urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig"]
+        documentationUri:
+          type: string
+          description: A URI pointing to human-readable documentation of the service provider.
+        patch:
+          $ref: '#/components/schemas/ScimSupportedFeature'
+        bulk:
+          $ref: '#/components/schemas/ScimSupportedFeature'
+        filter:
+          $ref: '#/components/schemas/ScimFilterConfig'
+        changePassword:
+          $ref: '#/components/schemas/ScimSupportedFeature'
+        sort:
+          $ref: '#/components/schemas/ScimSupportedFeature'
+        etag:
+          $ref: '#/components/schemas/ScimSupportedFeature'
+        authenticationSchemes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScimAuthenticationScheme'
+        meta:
+          $ref: '#/components/schemas/ScimMeta'
+
+    ScimSupportedFeature:
+      type: object
+      properties:
+        supported:
+          type: boolean
+          description: Whether the feature is supported.
+          example: false
+
+    ScimFilterConfig:
+      type: object
+      properties:
+        supported:
+          type: boolean
+          description: Whether filtering is supported.
+          example: true
+        maxResults:
+          type: integer
+          description: The maximum number of results the server will return.
+          example: 200
+
+    ScimAuthenticationScheme:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the authentication scheme.
+          example: OAuth Bearer Token
+        description:
+          type: string
+          description: A description of the authentication scheme.
+          example: Authentication scheme using the OAuth Bearer Token Standard
+        specUri:
+          type: string
+          description: A URI pointing to the specification of this authentication scheme.
+          example: https://tools.ietf.org/html/rfc6750
+        type:
+          type: string
+          description: The type of authentication (e.g., oauth, oauth2, oauthbearertoken).
+          example: oauthbearertoken
+        primary:
+          type: boolean
+          description: Whether this is the primary authentication scheme.
+          example: true
+
+    ScimResourceType:
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          default: ["urn:ietf:params:scim:schemas:core:2.0:ResourceType"]
+        id:
+          type: string
+          description: The ID of the resource type.
+          example: User
+        name:
+          type: string
+          description: The name of the resource type.
+          example: User
+        description:
+          type: string
+          description: A description of the resource type.
+          example: User Account
+        endpoint:
+          type: string
+          description: The endpoint where this resource type can be accessed.
+          example: "/Users"
+        schema:
+          type: string
+          description: The schema associated with this resource type.
+          example: "urn:ietf:params:scim:schemas:core:2.0:User"
+        schemaExtensions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScimSchemaExtension'
+        meta:
+          $ref: '#/components/schemas/ScimMeta'
+
+    ScimSchemaExtension:
+      type: object
+      properties:
+        schema:
+          type: string
+          description: The schema extension URI.
+        required:
+          type: boolean
+          description: Whether this schema extension is required.
+
+    ScimSchema:
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          default: ["urn:ietf:params:scim:schemas:core:2.0:Schema"]
+        id:
+          type: string
+          description: The ID of the schema.
+        name:
+          type: string
+          description: The name of the schema.
+        description:
+          type: string
+          description: A description of the schema.
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScimSchemaAttribute'
+        meta:
+          $ref: '#/components/schemas/ScimMeta'
+
+    ScimSchemaAttribute:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the attribute.
+          example: userName
+        type:
+          type: string
+          description: The data type of the attribute.
+          example: string
+        multiValued:
+          type: boolean
+          description: Whether the attribute can have multiple values.
+          example: false
+        description:
+          type: string
+          description: A description of the attribute.
+          example: Email address of the user
+        required:
+          type: boolean
+          description: Whether the attribute is required.
+          example: true
+        caseExact:
+          type: boolean
+          description: Whether case must be matched exactly.
+          example: false
+        mutability:
+          type: string
+          description: The mutability of the attribute (readOnly, readWrite, immutable, writeOnly).
+          example: readOnly
+        returned:
+          type: string
+          description: When the attribute is returned (always, never, default, request).
+          example: default
+        uniqueness:
+          type: string
+          description: Whether the attribute value must be unique (none, server, global).
+          example: server
+        subAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScimSchemaAttribute'
+        canonicalValues:
+          type: array
+          items:
+            type: string
+          description: A list of canonical values.
+        referenceTypes:
+          type: array
+          items:
+            type: string
+          description: A list of reference types.
+
+    ScimListResponseResourceTypes:
+      allOf:
+        - $ref: '#/components/schemas/ScimListResponse'
+        - type: object
+          properties:
+            Resources:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScimResourceType'
+
+    ScimListResponseSchemas:
+      allOf:
+        - $ref: '#/components/schemas/ScimListResponse'
+        - type: object
+          properties:
+            Resources:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScimSchema'
+
 security:
   - ApiKeyAuth: [ ]
+  - BearerAuth: [ ]
+
+
