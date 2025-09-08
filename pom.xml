@@ -40,7 +40,7 @@
     <java.version>17</java.version>
     <maven.compiler.target>17</maven.compiler.target>
     <maven.compiler.source>17</maven.compiler.source>
-    <jackson.version>2.19.1</jackson.version>
+    <jackson.version>2.20.0</jackson.version>
     <junit-jupiter.version>5.13.2</junit-jupiter.version>
   </properties>
 
