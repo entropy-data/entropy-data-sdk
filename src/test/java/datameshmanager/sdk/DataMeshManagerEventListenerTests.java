@@ -3,6 +3,8 @@ package datameshmanager.sdk;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import datameshmanager.sdk.client.ApiException;
 import datameshmanager.sdk.client.api.AccessApi;
 import datameshmanager.sdk.client.api.DataProductsApi;
@@ -60,7 +62,12 @@ class DataMeshManagerEventListenerTests {
           log.info("Getting data product: {}", access.getProvider().getDataProductId());
           var providerDataProduct = dataProductApi.getDataProduct(access.getProvider().getDataProductId());
           assertThat(providerDataProduct).isNotNull();
-          dataPlatformRole[0] = providerDataProduct.getCustom().get("platformRole");
+          log.info("Got data product: {}", providerDataProduct);
+          var objectMapper = new ObjectMapper();
+          objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES); // is needed, because DataProductSpecification is not part of generated class
+          var parsedProviderDataProduct = objectMapper.convertValue(providerDataProduct, datameshmanager.sdk.client.model.DataProduct.class);
+          assert parsedProviderDataProduct.getCustom() != null;
+          dataPlatformRole[0] = parsedProviderDataProduct.getCustom().get("platformRole");
         } catch (ApiException e) {
           log.error("Error getting access", e);
         }
