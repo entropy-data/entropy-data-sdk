@@ -1,22 +1,22 @@
-package datameshmanager.sdk;
+package entropydata.sdk;
 
-import datameshmanager.sdk.client.ApiException;
-import datameshmanager.sdk.client.model.Connector;
+import entropydata.sdk.client.ApiException;
+import entropydata.sdk.client.model.Connector;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Uses Data Mesh Manager Connector API to store the state
+ * Uses Entropy Data Connector API to store the state
  */
-public class DataMeshManagerStateRepositoryRemote implements DataMeshManagerStateRepository {
+public class EntropyDataStateRepositoryRemote implements EntropyDataStateRepository {
 
-  private static final Logger log = LoggerFactory.getLogger(DataMeshManagerConnectorRegistration.class);
+  private static final Logger log = LoggerFactory.getLogger(EntropyDataConnectorRegistration.class);
 
   private final String connectorId;
-  private final DataMeshManagerClient client;
+  private final EntropyDataClient client;
 
-  public DataMeshManagerStateRepositoryRemote(String connectorId, DataMeshManagerClient client) {
+  public EntropyDataStateRepositoryRemote(String connectorId, EntropyDataClient client) {
     this.connectorId = connectorId;
     this.client = client;
   }

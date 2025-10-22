@@ -1,7 +1,7 @@
 openapi: 3.1.1
 info:
   description: |
-    The [Data Mesh Manager](https://www.datamesh-manager.com) / [Data Contract Manager](https://www.datacontract-manager.com) API allows you to integrate with your data platform.
+    The [Entropy Data](https://www.entropy-data.com) API allows you to integrate with your data platform.
     
     You can manage data products, data usage agreements, data contracts, and teams. You can also approve, reject, or cancel data usage agreements. 
     
@@ -25,18 +25,16 @@ tags:
   - name: Data Products
     description: Data Products implement Data Contracts. They provide the actual data via output ports, and link to source systems via input ports.
   - name: Data Contracts
-    description: Data Contracts are the API for Data. An output port can implement a data contract. A data contract can be implemented by multiple output ports. Data Mesh Manager supports the Data Contract Specification and the Open Data Contract Standard (https://bitol-io.github.io/open-data-contract-standard). In this API docs, the Data Contract Specification is used.
+    description: Data Contracts are the API for Data. An output port can implement a data contract. A data contract can be implemented by multiple output ports. Entropy Data supports the Data Contract Specification and the Open Data Contract Standard (https://bitol-io.github.io/open-data-contract-standard). In this API docs, the Data Contract Specification is used.
     externalDocs:
       description: Data Contract Specification
       url: https://datacontract.com
   - name: Access
     description: Access (formerly known as "Data Usage Agreements") represents the edges in the graph. They connect a consuming data product with an output port of a providing data product. When active, the consumer should be able to access the data.
-  - name: Data Usage Agreements
-    description: Deprecated. Use the "Access" instead.
   - name: Source Systems
     description: Source Systems are the systems that provide data to the data products. They are connected to the data products via input ports.
   - name: Teams
-    description: Teams are the organizational unit in the Data Mesh Manager. They own data products, source systems, data contracts, and definitions.
+    description: Teams are the organizational unit in the Entropy Data. They own data products, source systems, data contracts, and definitions.
   - name: Notification Channels
     description: Team-scoped notification channels for receiving alerts about data platform events. Each team can configure channels for different event types.
   - name: Definitions
@@ -49,6 +47,8 @@ tags:
     description: EXPERIMENTAL Manage the policies of your data mesh. Policies are the rules of play of the data mesh.
   - name: Costs
     description: EXPERIMENTAL Expenses of data products, e.g., storage, compute, maintenance, and data transfer costs. The expenses can be automatically extracted from cloud provider billing APIs via our integrations.
+  - name: Usage
+    description: EXPERIMENTAL Usage information data product usage and query activity. Submit traces via OpenTelemetry/JSON format to monitor queries, consumers, and access patterns.
   - name: SCIM
     description: System for Cross-domain Identity Management (SCIM) endpoints for user and group provisioning and management.
   - name: Connectors
@@ -981,127 +981,6 @@ paths:
       responses:
         200:
           description: Access successfully canceled
-  /api/datausageagreements:
-    get:
-      tags:
-        - Data Usage Agreements
-      summary: Get all data usage agreements
-      operationId: getDataUsageAgreements
-      parameters:
-        - in: query
-          name: p
-          schema:
-            type: integer
-            minimum: 0
-          required: false
-          description: The number of the requested page, starting from 0. Each page contains a maximum of pageSize data usage agreements, sorted by creation date ascending.
-        - in: query
-          name: pageSize
-          schema:
-            type: integer
-            minimum: 2
-            maximum: 10000
-          required: false
-          description: The size of the requested page. Each page contains a maximum of pageSize data usage agreements, sorted by creation date ascending. Default is 1000.
-      responses:
-        200:
-          description: List of data usage agreements
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DataUsageAgreement'
-  /api/datausageagreements/{id}:
-    parameters:
-      - name: id
-        in: path
-        description: An organizational unique technical identifier for this data usage agreement, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
-        required: true
-        schema:
-          type: string
-    put:
-      tags:
-        - Data Usage Agreements
-      summary: Add or update a data usage agreement. Does not send notification emails.
-      operationId: addDataUsageAgreement
-      responses:
-        200:
-          description: data usage agreement successfully created or updated
-      requestBody:
-        required: true
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/DataUsageAgreement'
-    get:
-      tags:
-        - Data Usage Agreements
-      summary: Get a data usage agreement
-      operationId: getDataUsageAgreement
-      responses:
-        200:
-          description: The data usage agreement
-          content:
-            'application/json':
-              schema:
-                $ref: '#/components/schemas/DataUsageAgreement'
-    delete:
-      summary: Delete a data usage agreement
-      operationId: deleteDataUsageAgreement
-      tags:
-        - Data Usage Agreements
-      responses:
-        200:
-          description: Data usage agreement was deleted
-  /api/datausageagreements/{id}/approve:
-    parameters:
-      - name: id
-        in: path
-        description: An organizational unique technical identifier for this data usage agreement, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
-        required: true
-        schema:
-          type: string
-    post:
-      tags:
-        - Data Usage Agreements
-      summary: Approve a requested data usage agreement. Does not send notification emails.
-      operationId: approveDataUsageAgreement
-      responses:
-        200:
-          description: data usage agreement successfully approved
-  /api/datausageagreements/{id}/reject:
-    parameters:
-      - name: id
-        in: path
-        description: An organizational unique technical identifier for this data usage agreement, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
-        required: true
-        schema:
-          type: string
-    post:
-      tags:
-        - Data Usage Agreements
-      summary: Rejects a requested data usage agreement. Does not send notification emails.
-      operationId: rejectDataUsageAgreement
-      responses:
-        200:
-          description: data usage agreement successfully rejected
-  /api/datausageagreements/{id}/cancel:
-    parameters:
-      - name: id
-        in: path
-        description: An organizational unique technical identifier for this data usage agreement, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
-        required: true
-        schema:
-          type: string
-    post:
-      tags:
-        - Data Usage Agreements
-      summary: Cancels an approved data usage agreement. Does not send notification emails.
-      operationId: cancelDataUsageAgreement
-      responses:
-        200:
-          description: data usage agreement successfully canceled
   /api/teams:
     get:
       tags:
@@ -1627,6 +1506,154 @@ paths:
       responses:
         200:
           description: cost was deleted
+  /api/v1/traces:
+    get:
+      tags:
+        - Usage
+      summary: Get traces
+      description: Retrieve OpenTelemetry traces filtered by scope name, data product ID, or data contract ID. Returns traces in OTLP/JSON format.
+      operationId: getTraces
+      parameters:
+        - name: scopeName
+          in: query
+          description: Filter traces by scope name (e.g., "usage")
+          required: false
+          schema:
+            type: string
+            example: usage
+        - name: dataProductId
+          in: query
+          description: Filter traces by data product external ID
+          required: false
+          schema:
+            type: string
+            example: orders
+        - name: dataContractId
+          in: query
+          description: Filter traces by data contract external ID
+          required: false
+          schema:
+            type: string
+            example: snowflake_orders_pii_v2
+      responses:
+        200:
+          description: Traces in OTLP/JSON format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OtelTracesRequest'
+    post:
+      tags:
+        - Usage
+      summary: Submit traces
+      description: |
+        Submit OpenTelemetry traces in OTLP/JSON format to track data product usage. Traces should include:
+        - Resource attributes: `service.name`, `dataproduct.id`, `outputport.name`
+        - Span attributes: `user`, `role`, `type`, `query`, `rows`, `result`, `access.id`
+
+        Traces older than 30 days are automatically deleted. Spans with duplicate `spanId` values are updated (upserted).
+      operationId: postTraces
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OtelTracesRequest'
+            example:
+              resourceSpans:
+                - resource:
+                    attributes:
+                      - key: service.name
+                        value:
+                          stringValue: snowflake
+                      - key: dataproduct.id
+                        value:
+                          stringValue: orders
+                      - key: outputport.name
+                        value:
+                          stringValue: snowflake_orders_pii_v2
+                  scopeSpans:
+                    - scope:
+                        name: usage
+                        version: 1.0.0
+                      spans:
+                        - traceId: trace001
+                          spanId: span001
+                          kind: SPAN_KIND_INTERNAL
+                          startTimeUnixNano: 1704067200000000000
+                          endTimeUnixNano: 1704067260000000000
+                          attributes:
+                            - key: user
+                              value:
+                                stringValue: ANALYTICS_TEAM
+                            - key: role
+                              value:
+                                stringValue: ANALYST
+                            - key: type
+                              value:
+                                stringValue: query
+                            - key: query
+                              value:
+                                stringValue: SELECT * FROM orders WHERE date > '2024-01-01'
+                            - key: rows
+                              value:
+                                intValue: 1523
+                            - key: result
+                              value:
+                                stringValue: success
+                            - key: access.id
+                              value:
+                                stringValue: access-abc123
+      responses:
+        200:
+          description: Traces successfully submitted
+    delete:
+      tags:
+        - Usage
+      summary: Delete traces
+      description: Delete traces filtered by scope name, data product ID, data contract ID, or span ID. If no filters are provided, all traces for the organization are deleted.
+      operationId: deleteTraces
+      parameters:
+        - name: scopeName
+          in: query
+          description: Delete traces with this scope name
+          required: false
+          schema:
+            type: string
+            example: usage
+        - name: dataProductId
+          in: query
+          description: Delete traces for this data product external ID
+          required: false
+          schema:
+            type: string
+            example: orders
+        - name: dataContractId
+          in: query
+          description: Delete traces for this data contract external ID
+          required: false
+          schema:
+            type: string
+            example: snowflake_orders_pii_v2
+        - name: spanId
+          in: query
+          description: Delete a specific trace by span ID
+          required: false
+          schema:
+            type: string
+            example: span001
+      responses:
+        200:
+          description: Traces deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deletedCount:
+                    type: integer
+                    description: Number of traces deleted
+                    example: 42
   /api/organization/members:
     get:
       tags:
@@ -2499,706 +2526,9 @@ components:
 
   schemas:
     DataProduct:
-      type: object
-      description: Data product description, including the output ports. It is based on the [Data Product Specification](https://dataproduct-specification.com/).
-      required:
-        - id
-        - info
-      properties:
-        id:
-          type: string
-          description: An organizational unique technical identifier for this data product, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
-          example: search-queries-all
-        info:
-          type: object
-          description: Information about the data product
-          required:
-            - title
-            - owner
-          properties:
-            title:
-              type: string
-              description: The display name of this data product
-              example: Search Queries all
-            owner:
-              type: string
-              description:
-                The technical id of the team that owns the data product
-              example: search-team
-            domain:
-              type: string
-              description:
-                The technical id of the domain
-              example: ecommerce-shop
-            description:
-              type: string
-              example: All search queries with user interactions
-            status:
-              type: string
-              x-extensible-enum:
-                - proposed
-                - in development
-                - active
-                - deprecated
-                - retired
-              example: active
-            archetype:
-              type: string
-              description: The domain data archetype of the data product, such as consumer-aligned, aggregate, source-aligned, application, and dataconsumer.
-              x-extensible-enum:
-                - consumer-aligned
-                - aggregate
-                - source-aligned
-                - application
-                - dataconsumer
-              example: consumer-aligned
-            maturity:
-              type: string
-              description: The maturity level of the data product.
-              x-extensible-enum:
-                - raw
-                - defined
-                - managed
-              example: managed
-            icon:
-              type: string
-              description: Icon name or url to custom icon
-              example: kafka
-        inputPorts:
-          type: array
-          items:
-            type: object
-            required:
-              - id
-              - name
-              - sourceSystemId
-            properties:
-              id:
-                type: string
-                description: A technical identifier for this input port, such as an UUID, URN, string, number.
-                example: kafka_search_topic
-              name:
-                type: string
-                description: The display name for this input port.
-                example: kafka_search_topic
-              description:
-                type: string
-                description: The description for this input port.
-                example: Kafka Topic with search events
-              sourceSystemId:
-                type: string
-                description: A technical identifier for the source system connected to this input port
-                example: search-service
-              type:
-                type: string
-                description: The technical type of the output port
-                example: Kafka
-              location:
-                type: string
-                description: The location with the actual data
-                example: search topic
-              links:
-                type: object
-                description: Links are used to reference external resources, such as schemas or the dataset in a data catalog. You can add any links.
-                additionalProperties: {
-                  type: string
-                }
-                example: {
-                  schema: "https://catalog.example.com/search/search-queries",
-                  catalog: "https://catalog.example.com/search/search-queries/"
-                }
-              custom:
-                type: object
-                description: Custom fields can be used to add additional information to the input port.
-                additionalProperties: {
-                  type: string
-                }
-              tags:
-                type: array
-                description: Tags are used to categorize input ports.
-                items:
-                  type: string
-                  example: kafka
-                example: [ "kafka", "search" ]
-        outputPorts:
-          type: array
-          items:
-            type: object
-            required:
-              - id
-              - name
-            properties:
-              id:
-                type: string
-                description: A technical identifier for this output port, such as an UUID, URN, string, number.
-                example: snowflake_search_queries_all_npii_v1
-              name:
-                type: string
-                description: The display name for this output port.
-                example: snowflake_search_queries_all_npii_v1
-              description:
-                type: string
-                description: The description for this output port.
-                example: All search queries and result sets with PII removed.
-              type:
-                type: string
-                description: The technical type of the output port
-                example: snowflake
-                x-extensible-enum:
-                  - snowflake
-                  - kafka
-                  - bigquery
-                  - s3
-                  - postgres
-                  - redshift
-              status:
-                type: string
-                description: The status of the output port implementation. The allowed status values might be customized for your organization.
-                x-extensible-enum:
-                  - proposed
-                  - in development
-                  - active
-                  - deprecated
-                  - retired
-                example: active
-              environment:
-                type: string
-                description: The name of the environment. Only necessary if one has more than one environment in an organization. Examples are 'prod', 'dev', 'sit', 'int', etc.
-                example: prod
-              version:
-                type: string
-                description: The version of the output port. It is recommended to use only a major version for this.
-                example: 1
-              location:
-                type: string
-                description: DEPRECATED. Use the appropriate fields in server instead.
-                example: SEARCH_DB.SEARCH_QUERIES_ALL_NPII_V1
-                deprecated: true
-              server:
-                type: object
-                properties:
-                  project:
-                    type: string
-                    description: The project name (bigquery)
-                    example: dp-search
-                  dataset:
-                    type: string
-                    description: The dataset name (bigquery)
-                    example: search-queries
-                  account:
-                    type: string
-                    description: The account name (snowflake)
-                    example: https://acme-test_aws_us_east_2.snowflakecomputing.com
-                  database:
-                    type: string
-                    description: The database name (snowflake,postgres)
-                    example: SEARCH_DB
-                  schema:
-                    type: string
-                    description: The schema name (snowflake,postgres)
-                    example: SEARCH_QUERIES_ALL_NPII_V1
-                  host:
-                    type: string
-                    description: The host name (kafka)
-                    example: kafka.acme.com
-                  catalog:
-                    type: string
-                    description: The catalog name (databricks)
-                    example: acme
-                  topic:
-                    type: string
-                    description: The topic name (kafka)
-                    example: search-queries
-                  location:
-                    type: string
-                    description: The location url (s3)
-                    example: s3://acme-search-queries
-                  delimiter:
-                    type: string
-                    description: The delimiter (s3)
-                    example: "newline"
-                  format:
-                    type: string
-                    description: The format of the data, e.g., csv, json, parquet, delta (s3)
-                    example: "json"
-                  table:
-                    type: string
-                    description: The table name (postgres)
-                    example: search_queries
-                  view:
-                    type: string
-                    description: The view name (postgres)
-                    example: search_queries
-                  share:
-                    type: string
-                    description: The share name (databricks)
-                additionalProperties: {
-                  type: string
-                }
-                description: The server contains all connection details to find the actual data. Depending on the output port type, this might be different attributes. The main ones are listed explicitly, but feel free to add your own server info.
-              links:
-                type: object
-                description: Links are used to reference external resources, such as schemas or the dataset in a data catalog. You can add any links.
-                additionalProperties: {
-                  type: string
-                }
-                example: {
-                  schema: "https://catalog.example.com/search/search-queries",
-                  catalog: "https://catalog.example.com/search/search-queries/"
-                }
-              custom:
-                type: object
-                description: Custom fields can be used to add additional information to the output port.
-                additionalProperties: {
-                  type: string
-                }
-              containsPii:
-                type: boolean
-                description: Flag, if this output port contains personally identifiable information (PII)
-                example: false
-                default: false
-              autoApprove:
-                type: boolean
-                description: Automatically approve requested data usage agreements towards this output port. You might want to use this for public or internal data that is not sensitive.
-                example: false
-                default: false
-              dataContractId:
-                type: string
-                description: The technical identifier of the data contract that is implemented by this output port
-                example: search-queries-all
-              assets:
-                type: array
-                description: Referenced assets
-                items:
-                  type: object
-                  properties:
-                    assetId:
-                      type: string
-                      description: ID of the asset
-                      example: "snowflake-mydatabase-myschema-mytable"
-                    tags:
-                      type: array
-                      description: tags for the asset reference
-                      example: [ "internal" ]
-                      items:
-                        type: string
-                        description: tag for the asset reference
-                        example: internal
-              tags:
-                type: array
-                description: Tags are used to categorize output ports.
-                items:
-                  type: string
-                  example: snowflake
-                example: [ "snowflake", "search" ]
-        assets:
-          type: array
-          description: Referenced assets
-          items:
-            type: object
-            properties:
-              assetId:
-                type: string
-                description: ID of the asset
-                example: "snowflake-mydatabase-myschema-mytable"
-              tags:
-                type: array
-                description: tags for the asset reference
-                example: [ "internal" ]
-                items:
-                  type: string
-                  description: tag for the asset reference
-                  example: internal
-        links:
-          type: object
-          description: Links are used to reference external resources, such as schemas or the dataset in a data catalog. You can add any links.
-          additionalProperties: {
-            type: string
-          }
-          example: {
-            dataProduct: "https://example.com/dataproducts/search-queries",
-            documentation: "https://git.example.com/search/search-queries/README.md",
-            catalog: "https://catalog.example.com/search/search-queries/",
-            repository: "https://git.example.com/search/search-queries"
-          }
-        custom:
-          type: object
-          description: Custom fields can be used to add additional information to the data product.
-          additionalProperties: {
-            type: string
-          }
-        tags:
-          type: array
-          description: Tags are used to categorize data products.
-          items:
-            type: string
-            example: high-quality
-          example: [ "high-quality", "marketing" ]
+      $ref: "schemas/dataproduct-0.0.1.json"
     OpenDataProductStandard:
-      type: object
-      description: Data product description, including the output ports. It is based on the [Open Data Product Standard](https://github.com/bitol-io/open-data-product-standard)
-      required:
-        - apiVersion
-        - kind
-        - id
-        - status
-      properties:
-        apiVersion:
-          type: string
-          minLength: 1
-          default: "v1.0.0"
-        kind:
-          type: string
-          minLength: 1
-          default: "DataProduct"
-        id:
-          type: string
-          minLength: 1
-        name:
-          type: string
-          nullable: true
-        version:
-          type: string
-          nullable: true
-        status:
-          type: string
-          minLength: 1
-        domain:
-          type: string
-          nullable: true
-        tenant:
-          type: string
-          nullable: true
-        authoritativeDefinitions:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/AuthoritativeDefinition'
-        description:
-          $ref: '#/components/schemas/Description'
-          nullable: true
-        customProperties:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/CustomProperty'
-        tags:
-          type: array
-          nullable: true
-          items:
-            type: string
-        inputPorts:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/InputPort'
-        outputPorts:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/OutputPort'
-        managementPorts:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/ManagementPort'
-        support:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/Support'
-        team:
-          $ref: '#/components/schemas/OpenDataProductSpecificationTeam'
-          nullable: true
-        productCreatedTs:
-          type: string
-          nullable: true
-
-    Description:
-      type: object
-      properties:
-        purpose:
-          type: string
-          nullable: true
-        limitations:
-          type: string
-          nullable: true
-        usage:
-          type: string
-          nullable: true
-        authoritativeDefinitions:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/AuthoritativeDefinition'
-        customProperties:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/CustomProperty'
-
-    CustomProperty:
-      type: object
-      required:
-        - property
-        - value
-      properties:
-        property:
-          type: string
-          minLength: 1
-        value:
-          oneOf:
-            - type: string
-            - type: number
-            - type: boolean
-            - type: object
-            - type: array
-        description:
-          type: string
-          nullable: true
-
-    AuthoritativeDefinition:
-      type: object
-      required:
-        - type
-        - url
-      properties:
-        type:
-          type: string
-          minLength: 1
-          nullable: true
-        url:
-          type: string
-          nullable: true
-        description:
-          type: string
-          nullable: true
-
-    InputPort:
-      type: object
-      required:
-        - name
-        - version
-        - contractId
-      properties:
-        name:
-          type: string
-          minLength: 1
-        version:
-          type: string
-          minLength: 1
-        contractId:
-          type: string
-          minLength: 1
-
-    OutputPort:
-      type: object
-      required:
-        - name
-        - version
-      properties:
-        name:
-          type: string
-          minLength: 1
-        version:
-          type: string
-          minLength: 1
-        description:
-          type: string
-          nullable: true
-        type:
-          type: string
-          nullable: true
-        contractId:
-          type: string
-          nullable: true
-        sbom:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/SBOM'
-        inputContracts:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/InputContract'
-        authoritativeDefinitions:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/AuthoritativeDefinition'
-        customProperties:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/CustomProperty'
-        tags:
-          type: array
-          nullable: true
-          items:
-            type: string
-
-    SBOM:
-      type: object
-      required:
-        - url
-      properties:
-        url:
-          type: string
-          format: uri
-        type:
-          type: string
-          default: "external"
-
-    InputContract:
-      type: object
-      required:
-        - id
-        - version
-      properties:
-        id:
-          type: string
-          minLength: 1
-        version:
-          type: string
-          minLength: 1
-
-    ManagementPort:
-      type: object
-      required:
-        - name
-        - content
-      properties:
-        name:
-          type: string
-          minLength: 1
-        content:
-          type: string
-          minLength: 1
-        type:
-          type: string
-          default: "rest"
-        url:
-          type: string
-          format: uri
-          nullable: true
-        channel:
-          type: string
-          nullable: true
-        description:
-          type: string
-          nullable: true
-        tags:
-          type: array
-          nullable: true
-          items:
-            type: string
-        customProperties:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/CustomProperty'
-        authoritativeDefinitions:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/AuthoritativeDefinition'
-    Support:
-      type: object
-      required:
-        - channel
-        - url
-      properties:
-        channel:
-          type: string
-          minLength: 1
-        url:
-          type: string
-          format: uri
-        description:
-          type: string
-          nullable: true
-        tool:
-          type: string
-          nullable: true
-        scope:
-          type: string
-          nullable: true
-        invitationUrl:
-          type: string
-          format: uri
-          nullable: true
-        tags:
-          type: array
-          nullable: true
-          items:
-            type: string
-        customProperties:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/CustomProperty'
-        authoritativeDefinitions:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/AuthoritativeDefinition'
-    TeamMember:
-      type: object
-      properties:
-        username:
-          type: string
-          nullable: true
-        name:
-          type: string
-          nullable: true
-        description:
-          type: string
-          nullable: true
-        role:
-          type: string
-          nullable: true
-        dateIn:
-          type: string
-          format: date
-          nullable: true
-        dateOut:
-          type: string
-          format: date
-          nullable: true
-        replacedByUsername:
-          type: string
-          nullable: true
-        tags:
-          type: array
-          nullable: true
-          items:
-            type: string
-        customProperties:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/CustomProperty'
-        authoritativeDefinitions:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/AuthoritativeDefinition'
-
-    OpenDataProductSpecificationTeam:
-      type: object
-      properties:
-        name:
-          type: string
-          nullable: true
-        description:
-          type: string
-          nullable: true
-        members:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/TeamMember'
+      $ref: "schemas/odps-json-schema-v1.0.0.json"
     DataUsageAgreement:
       type: object
       deprecated: true
@@ -3233,12 +2563,12 @@ components:
                 - requested
                 - approved
                 - rejected
-              description: Approval workflow status of the usage agreement. Managed by Data Mesh Manager
+              description: Approval workflow status of the usage agreement. Managed by Entropy Data
               readOnly: true
             active:
               type: boolean
               example: true
-              description: The data usage agreement is active if it is approved and the current date is between start and end date. Managed by Data Mesh Manager
+              description: The data usage agreement is active if it is approved and the current date is between start and end date. Managed by Entropy Data
               readOnly: true
             startDate:
               type: string
@@ -3355,12 +2685,12 @@ components:
                 - requested
                 - approved
                 - rejected
-              description: Approval workflow status of the usage agreement. Managed by Data Mesh Manager
+              description: Approval workflow status of the usage agreement. Managed by Entropy Data
               readOnly: true
             active:
               type: boolean
               example: true
-              description: The data usage agreement is active if it is approved and the current date is between start and end date. Managed by Data Mesh Manager
+              description: The data usage agreement is active if it is approved and the current date is between start and end date. Managed by Entropy Data
               readOnly: true
             startDate:
               type: string
@@ -3870,7 +3200,7 @@ components:
           type: string
           format: uuid
           readOnly: true
-          description: The unique identifier of the cost. Is automatically generated by the Data Mesh Manager.
+          description: The unique identifier of the cost. Is automatically generated by the Entropy Data.
           example: 640864de-83d4-4619-afba-ccea8037ed3a
         dataProductId:
           type: string
@@ -4055,6 +3385,119 @@ components:
                 type: string
                 format: date-time
                 example: 2024-07-03T10:46:29.083871Z
+    OtelTracesRequest:
+      type: object
+      description: OpenTelemetry trace data in OTLP/JSON format for tracking data product usage and query activity.
+      properties:
+        resourceSpans:
+          type: array
+          description: Array of resource spans, each containing trace data grouped by resource attributes.
+          items:
+            type: object
+            properties:
+              resource:
+                type: object
+                description: Resource attributes that apply to all spans in this group.
+                properties:
+                  attributes:
+                    type: array
+                    description: Key-value attributes describing the resource (service, data product, output port).
+                    items:
+                      $ref: '#/components/schemas/OtlpAttribute'
+              scopeSpans:
+                type: array
+                description: Array of scope spans, each containing spans grouped by instrumentation scope.
+                items:
+                  type: object
+                  properties:
+                    scope:
+                      type: object
+                      description: Instrumentation scope information.
+                      properties:
+                        name:
+                          type: string
+                          description: Name of the instrumentation scope.
+                          example: usage
+                        version:
+                          type: string
+                          description: Version of the instrumentation scope.
+                          example: 1.0.0
+                    spans:
+                      type: array
+                      description: Array of spans representing individual operations or queries.
+                      items:
+                        $ref: '#/components/schemas/OtlpSpan'
+    OtlpSpan:
+      type: object
+      description: An OpenTelemetry span representing a single operation or query.
+      properties:
+        traceId:
+          type: string
+          description: Unique identifier for the trace.
+          example: trace001
+        spanId:
+          type: string
+          description: Unique identifier for the span within the organization. Used for upsert operations.
+          example: span001
+        name:
+          type: string
+          description: Optional human-readable name for the span.
+          example: Query execution
+        kind:
+          type: string
+          description: The kind of span (e.g., SPAN_KIND_INTERNAL, SPAN_KIND_CLIENT).
+          example: SPAN_KIND_INTERNAL
+        startTimeUnixNano:
+          type: integer
+          format: int64
+          description: Start time of the span in Unix nanoseconds.
+          example: 1704067200000000000
+        endTimeUnixNano:
+          type: integer
+          format: int64
+          description: End time of the span in Unix nanoseconds.
+          example: 1704067260000000000
+        attributes:
+          type: array
+          description: Span attributes containing query details (user, role, type, query, rows, result, access.id).
+          items:
+            $ref: '#/components/schemas/OtlpAttribute'
+    OtlpAttribute:
+      type: object
+      description: A key-value attribute in OpenTelemetry format.
+      properties:
+        key:
+          type: string
+          description: The attribute key.
+          example: user
+        value:
+          type: object
+          description: The attribute value, which can be a string, int, double, bool, or array.
+          properties:
+            stringValue:
+              type: string
+              description: String value.
+              example: ANALYTICS_TEAM
+            intValue:
+              type: integer
+              format: int64
+              description: Integer value.
+              example: 1523
+            doubleValue:
+              type: number
+              format: double
+              description: Double value.
+            boolValue:
+              type: boolean
+              description: Boolean value.
+            arrayValue:
+              type: object
+              description: Array value containing multiple values.
+              properties:
+                values:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/OtlpAttribute'
     OrganizationMember:
       type: object
       description: An organization user

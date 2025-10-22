@@ -4,13 +4,13 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.datamesh-manager</groupId>
-  <artifactId>datamesh-manager-sdk</artifactId>
-  <version>0.0.4-SNAPSHOT</version>
+  <groupId>com.entropy-data</groupId>
+  <artifactId>entropy-data-sdk</artifactId>
+  <version>0.1.1-SNAPSHOT</version>
 
-  <name>datamesh-manager-sdk</name>
-  <description>SDK for Data Mesh Manager</description>
-  <url>https://github.com/datamesh-manager/datamesh-manager-sdk</url>
+  <name>entropy-data-sdk</name>
+  <description>SDK for Entropy Data</description>
+  <url>https://github.com/entropy-data/entropy-data-sdk</url>
 
   <licenses>
     <license>
@@ -22,16 +22,16 @@
   <developers>
     <developer>
       <name>Jochen Christ</name>
-      <email>jochen.christ@datamesh-manager.com</email>
-      <organization>Data Mesh Manager</organization>
-      <organizationUrl>https://datamesh-manager.com/</organizationUrl>
+      <email>jochen.christ@entropy-data.com</email>
+      <organization>Entropy Data</organization>
+      <organizationUrl>https://entropy-data.com/</organizationUrl>
     </developer>
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/datamesh-manager/datamesh-manager-sdk.git</connection>
-    <developerConnection>scm:git:ssh://github.com/datamesh-manager/datamesh-manager-sdk.git</developerConnection>
-    <url>http://github.com/datamesh-manager/datamesh-manager-sdk/tree/main</url>
+    <connection>scm:git:git://github.com/entropy-data/entropy-data-sdk.git</connection>
+    <developerConnection>scm:git:ssh://github.com/entropy-data/entropy-data-sdk.git</developerConnection>
+    <url>http://github.com/entropy-data/entropy-data-sdk/tree/main</url>
   </scm>
 
   <properties>
@@ -121,7 +121,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-<!--              <inputSpec>https://api.datamesh-manager.com/openapi.yaml</inputSpec>-->
+<!--              <inputSpec>https://api.entropy-data.com/openapi.yaml</inputSpec>-->
               <inputSpec>src/main/resources/openapi.yaml</inputSpec>
               <generatorName>java</generatorName>
               <library>apache-httpclient</library>
@@ -133,9 +133,9 @@
                 <hideGenerationTimestamp>true</hideGenerationTimestamp>
                 <sourceFolder>src/gen/java/main</sourceFolder>
                 <generateBuilders>false</generateBuilders>
-                <apiPackage>datameshmanager.sdk.client.api</apiPackage>
-                <invokerPackage>datameshmanager.sdk.client</invokerPackage>
-                <modelPackage>datameshmanager.sdk.client.model</modelPackage>
+                <apiPackage>entropydata.sdk.client.api</apiPackage>
+                <invokerPackage>entropydata.sdk.client</invokerPackage>
+                <modelPackage>entropydata.sdk.client.model</modelPackage>
                 <useRuntimeException>true</useRuntimeException>
               </configOptions>
               <generateModelTests>false</generateModelTests>

@@ -1,18 +1,18 @@
-package datameshmanager.sdk;
+package entropydata.sdk;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A simple in-memory implementation of DataMeshManagerStateRepository.
+ * A simple in-memory implementation of EntropyDataStateRepository.
  */
-public class DataMeshManagerStateRepositoryInMemory implements DataMeshManagerStateRepository {
+public class EntropyDataStateRepositoryInMemory implements EntropyDataStateRepository {
 
   private final String connectorId;
 
   private final Map<String, Map<String, Object>> state = new HashMap<>(); // key: connectorId, value: state
 
-  public DataMeshManagerStateRepositoryInMemory(String connectorId) {
+  public EntropyDataStateRepositoryInMemory(String connectorId) {
     this.connectorId = connectorId;
   }
 
