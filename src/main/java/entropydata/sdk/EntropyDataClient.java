@@ -1,20 +1,20 @@
-package datameshmanager.sdk;
+package entropydata.sdk;
 
-import datameshmanager.sdk.client.ApiClient;
-import datameshmanager.sdk.client.api.AccessApi;
-import datameshmanager.sdk.client.api.AssetsApi;
-import datameshmanager.sdk.client.api.ConnectorsApi;
-import datameshmanager.sdk.client.api.CostsApi;
-import datameshmanager.sdk.client.api.DataContractsApi;
-import datameshmanager.sdk.client.api.DataProductsApi;
-import datameshmanager.sdk.client.api.DefinitionsApi;
-import datameshmanager.sdk.client.api.EventsApi;
-import datameshmanager.sdk.client.api.SourceSystemsApi;
-import datameshmanager.sdk.client.api.TagsApi;
-import datameshmanager.sdk.client.api.TeamsApi;
-import datameshmanager.sdk.client.api.TestResultsApi;
+import entropydata.sdk.client.ApiClient;
+import entropydata.sdk.client.api.AccessApi;
+import entropydata.sdk.client.api.AssetsApi;
+import entropydata.sdk.client.api.ConnectorsApi;
+import entropydata.sdk.client.api.CostsApi;
+import entropydata.sdk.client.api.DataContractsApi;
+import entropydata.sdk.client.api.DataProductsApi;
+import entropydata.sdk.client.api.DefinitionsApi;
+import entropydata.sdk.client.api.EventsApi;
+import entropydata.sdk.client.api.SourceSystemsApi;
+import entropydata.sdk.client.api.TagsApi;
+import entropydata.sdk.client.api.TeamsApi;
+import entropydata.sdk.client.api.TestResultsApi;
 
-public class DataMeshManagerClient {
+public class EntropyDataClient {
 
   private final ApiClient apiClient;
 
@@ -31,7 +31,7 @@ public class DataMeshManagerClient {
   private final TestResultsApi testResultsApi;
   private final ConnectorsApi connectorsApi;
 
-  public DataMeshManagerClient(String host, String apiKey) {
+  public EntropyDataClient(String host, String apiKey) {
     var apiClient = new ApiClient();
     apiClient.setBasePath(host);
     apiClient.setApiKey(apiKey);

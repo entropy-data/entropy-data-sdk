@@ -1,34 +1,34 @@
-package datameshmanager.sdk;
+package entropydata.sdk;
 
-import datameshmanager.sdk.DataMeshManagerAssetsProvider.AssetCallback;
-import datameshmanager.sdk.client.ApiException;
-import datameshmanager.sdk.client.model.Asset;
+import entropydata.sdk.EntropyDataAssetsProvider.AssetCallback;
+import entropydata.sdk.client.ApiException;
+import entropydata.sdk.client.model.Asset;
 import java.time.Duration;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class DataMeshManagerAssetsSynchronizer {
+public class EntropyDataAssetsSynchronizer {
 
-  private static final Logger log = LoggerFactory.getLogger(DataMeshManagerAssetsSynchronizer.class);
+  private static final Logger log = LoggerFactory.getLogger(EntropyDataAssetsSynchronizer.class);
 
   private final String connectorId;
-  private final DataMeshManagerClient client;
-  private final DataMeshManagerConnectorRegistration connectorRegistration;
-  private final DataMeshManagerAssetsProvider assetsProvider;
+  private final EntropyDataClient client;
+  private final EntropyDataConnectorRegistration connectorRegistration;
+  private final EntropyDataAssetsProvider assetsProvider;
   private volatile boolean stopped = false;
 
   private Duration delay = Duration.parse("PT60M");
 
-  public DataMeshManagerAssetsSynchronizer(
+  public EntropyDataAssetsSynchronizer(
       String connectorId,
-      DataMeshManagerClient client,
-      DataMeshManagerAssetsProvider assetsProvider) {
+      EntropyDataClient client,
+      EntropyDataAssetsProvider assetsProvider) {
     this.connectorId = connectorId;
     this.client = client;
     this.assetsProvider = assetsProvider;
-    this.connectorRegistration = new DataMeshManagerConnectorRegistration(client, connectorId, "assets-synchronizer");
+    this.connectorRegistration = new EntropyDataConnectorRegistration(client, connectorId, "assets-synchronizer");
 
     this.connectorRegistration.register();
   }

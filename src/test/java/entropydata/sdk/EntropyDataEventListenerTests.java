@@ -1,13 +1,15 @@
-package datameshmanager.sdk;
+package entropydata.sdk;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import datameshmanager.sdk.client.ApiException;
-import datameshmanager.sdk.client.api.AccessApi;
-import datameshmanager.sdk.client.api.DataProductsApi;
-import datameshmanager.sdk.client.model.Access;
-import datameshmanager.sdk.client.model.AccessActivatedEvent;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import entropydata.sdk.client.ApiException;
+import entropydata.sdk.client.api.AccessApi;
+import entropydata.sdk.client.api.DataProductsApi;
+import entropydata.sdk.client.model.Access;
+import entropydata.sdk.client.model.AccessActivatedEvent;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -17,13 +19,13 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.wiremock.integrations.testcontainers.WireMockContainer;
 
 /**
- * A full integration test that starts the DataMeshManagerEventListener, polls for events and gets the Access and DataProduct resources via
- * API calls. The Data Mesh Manager API is mocked with WireMock.
+ * A full integration test that starts the EntropyDataEventListener, polls for events and gets the Access and DataProduct resources via
+ * API calls. The Entropy Data API is mocked with WireMock.
  */
 @Testcontainers
-class DataMeshManagerEventListenerTests {
+class EntropyDataEventListenerTests {
 
-  private static final Logger log = LoggerFactory.getLogger(DataMeshManagerEventListenerTests.class);
+  private static final Logger log = LoggerFactory.getLogger(EntropyDataEventListenerTests.class);
 
   @Container
   WireMockContainer wiremockServer = new WireMockContainer("wiremock/wiremock:3.9.2")
@@ -38,11 +40,11 @@ class DataMeshManagerEventListenerTests {
     var eventsCount = new AtomicInteger(0);
     var dataPlatformRole = new String[1];
 
-    var client = new DataMeshManagerClient(
+    var client = new EntropyDataClient(
         wiremockServer.getBaseUrl(),
         "APIKEY"
     );
-    DataMeshManagerEventHandler testEventHandler = new DataMeshManagerEventHandler() {
+    EntropyDataEventHandler testEventHandler = new EntropyDataEventHandler() {
       @Override
       public void onAccessActivatedEvent(AccessActivatedEvent event) {
         assertNotNull(event);
@@ -60,14 +62,19 @@ class DataMeshManagerEventListenerTests {
           log.info("Getting data product: {}", access.getProvider().getDataProductId());
           var providerDataProduct = dataProductApi.getDataProduct(access.getProvider().getDataProductId());
           assertThat(providerDataProduct).isNotNull();
-          dataPlatformRole[0] = providerDataProduct.getCustom().get("platformRole");
+          log.info("Got data product: {}", providerDataProduct);
+          var objectMapper = new ObjectMapper();
+          objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES); // is needed, because DataProductSpecification is not part of generated class
+          var parsedProviderDataProduct = objectMapper.convertValue(providerDataProduct, entropydata.sdk.client.model.DataProduct.class);
+          assert parsedProviderDataProduct.getCustom() != null;
+          dataPlatformRole[0] = parsedProviderDataProduct.getCustom().get("platformRole");
         } catch (ApiException e) {
           log.error("Error getting access", e);
         }
       }
     };
-    DataMeshManagerStateRepositoryInMemory stateRepository = new DataMeshManagerStateRepositoryInMemory("unittest");
-    var eventListener = new DataMeshManagerEventListener("unittest","event-listener", client, testEventHandler, stateRepository);
+    EntropyDataStateRepositoryInMemory stateRepository = new EntropyDataStateRepositoryInMemory("unittest");
+    var eventListener = new EntropyDataEventListener("unittest","event-listener", client, testEventHandler, stateRepository);
 
     new Thread(eventListener::start).start();
     Thread.sleep(1000);

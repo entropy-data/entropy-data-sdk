@@ -1,21 +1,21 @@
-package datameshmanager.sdk;
+package entropydata.sdk;
 
-import datameshmanager.sdk.client.ApiException;
-import datameshmanager.sdk.client.model.Connector;
-import datameshmanager.sdk.client.model.ConnectorInfo;
+import entropydata.sdk.client.ApiException;
+import entropydata.sdk.client.model.Connector;
+import entropydata.sdk.client.model.ConnectorInfo;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DataMeshManagerConnectorRegistration {
+public class EntropyDataConnectorRegistration {
 
-  private static final Logger log = LoggerFactory.getLogger(DataMeshManagerConnectorRegistration.class);
+  private static final Logger log = LoggerFactory.getLogger(EntropyDataConnectorRegistration.class);
 
-  private final DataMeshManagerClient client;
+  private final EntropyDataClient client;
 
   /**
    * The unique identifier of the connector.
-   * This is used to identify the connector in the Data Mesh Manager and to exchange state.
+   * This is used to identify the connector in the Entropy Data and to exchange state.
    * The identifier should be constant across restarts of the connector.
    */
   private final String id;
@@ -25,7 +25,7 @@ public class DataMeshManagerConnectorRegistration {
    */
   private final String type;
 
-  public DataMeshManagerConnectorRegistration(DataMeshManagerClient client, String connectorId, String type) {
+  public EntropyDataConnectorRegistration(EntropyDataClient client, String connectorId, String type) {
     this.client = client;
     this.id = Objects.requireNonNull(connectorId, "Connector ID is required");
     this.type = Objects.requireNonNull(type, "Connector type is required");

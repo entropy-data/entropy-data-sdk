@@ -1,43 +1,43 @@
-package datameshmanager.sdk;
+package entropydata.sdk;
 
-import datameshmanager.sdk.client.model.AccessActivatedEvent;
-import datameshmanager.sdk.client.model.AccessApprovedEvent;
-import datameshmanager.sdk.client.model.AccessCreatedEvent;
-import datameshmanager.sdk.client.model.AccessDeactivatedEvent;
-import datameshmanager.sdk.client.model.AccessDeletedEvent;
-import datameshmanager.sdk.client.model.AccessRejectedEvent;
-import datameshmanager.sdk.client.model.AccessRequestedEvent;
-import datameshmanager.sdk.client.model.AccessUpdatedEvent;
-import datameshmanager.sdk.client.model.AssetCreatedEvent;
-import datameshmanager.sdk.client.model.AssetDeletedEvent;
-import datameshmanager.sdk.client.model.AssetUpdatedEvent;
-import datameshmanager.sdk.client.model.CloudEvent;
-import datameshmanager.sdk.client.model.DataContractCreatedEvent;
-import datameshmanager.sdk.client.model.DataContractDeletedEvent;
-import datameshmanager.sdk.client.model.DataContractUpdatedEvent;
-import datameshmanager.sdk.client.model.DataProductCreatedEvent;
-import datameshmanager.sdk.client.model.DataProductDeletedEvent;
-import datameshmanager.sdk.client.model.DataProductUpdatedEvent;
-import datameshmanager.sdk.client.model.DefinitionCreatedEvent;
-import datameshmanager.sdk.client.model.DefinitionDeletedEvent;
-import datameshmanager.sdk.client.model.DefinitionUpdatedEvent;
-import datameshmanager.sdk.client.model.OutputPortCreatedEvent;
-import datameshmanager.sdk.client.model.OutputPortDeletedEvent;
-import datameshmanager.sdk.client.model.OutputPortUpdatedEvent;
-import datameshmanager.sdk.client.model.SourceSystemCreatedEvent;
-import datameshmanager.sdk.client.model.SourceSystemDeletedEvent;
-import datameshmanager.sdk.client.model.SourceSystemUpdatedEvent;
-import datameshmanager.sdk.client.model.TagCreatedEvent;
-import datameshmanager.sdk.client.model.TagDeletedEvent;
-import datameshmanager.sdk.client.model.TagUpdatedEvent;
-import datameshmanager.sdk.client.model.TeamCreatedEvent;
-import datameshmanager.sdk.client.model.TeamDeletedEvent;
-import datameshmanager.sdk.client.model.TeamUpdatedEvent;
-import datameshmanager.sdk.client.model.TestResultsCreatedEvent;
-import datameshmanager.sdk.client.model.TestResultsDeletedEvent;
+import entropydata.sdk.client.model.AccessActivatedEvent;
+import entropydata.sdk.client.model.AccessApprovedEvent;
+import entropydata.sdk.client.model.AccessCreatedEvent;
+import entropydata.sdk.client.model.AccessDeactivatedEvent;
+import entropydata.sdk.client.model.AccessDeletedEvent;
+import entropydata.sdk.client.model.AccessRejectedEvent;
+import entropydata.sdk.client.model.AccessRequestedEvent;
+import entropydata.sdk.client.model.AccessUpdatedEvent;
+import entropydata.sdk.client.model.AssetCreatedEvent;
+import entropydata.sdk.client.model.AssetDeletedEvent;
+import entropydata.sdk.client.model.AssetUpdatedEvent;
+import entropydata.sdk.client.model.CloudEvent;
+import entropydata.sdk.client.model.DataContractCreatedEvent;
+import entropydata.sdk.client.model.DataContractDeletedEvent;
+import entropydata.sdk.client.model.DataContractUpdatedEvent;
+import entropydata.sdk.client.model.DataProductCreatedEvent;
+import entropydata.sdk.client.model.DataProductDeletedEvent;
+import entropydata.sdk.client.model.DataProductUpdatedEvent;
+import entropydata.sdk.client.model.DefinitionCreatedEvent;
+import entropydata.sdk.client.model.DefinitionDeletedEvent;
+import entropydata.sdk.client.model.DefinitionUpdatedEvent;
+import entropydata.sdk.client.model.OutputPortCreatedEvent;
+import entropydata.sdk.client.model.OutputPortDeletedEvent;
+import entropydata.sdk.client.model.OutputPortUpdatedEvent;
+import entropydata.sdk.client.model.SourceSystemCreatedEvent;
+import entropydata.sdk.client.model.SourceSystemDeletedEvent;
+import entropydata.sdk.client.model.SourceSystemUpdatedEvent;
+import entropydata.sdk.client.model.TagCreatedEvent;
+import entropydata.sdk.client.model.TagDeletedEvent;
+import entropydata.sdk.client.model.TagUpdatedEvent;
+import entropydata.sdk.client.model.TeamCreatedEvent;
+import entropydata.sdk.client.model.TeamDeletedEvent;
+import entropydata.sdk.client.model.TeamUpdatedEvent;
+import entropydata.sdk.client.model.TestResultsCreatedEvent;
+import entropydata.sdk.client.model.TestResultsDeletedEvent;
 
 
-public interface DataMeshManagerEventHandler {
+public interface EntropyDataEventHandler {
 
   /**
    * This callback function is called for every event.

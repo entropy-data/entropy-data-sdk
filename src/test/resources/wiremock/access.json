@@ -25,7 +25,7 @@
             "outputPortId": "snowflake"
           },
           "consumer": {
-            "userId": "demo.user@demo3K2ZPgN1InUIVJpIsrNzQu.datamesh-manager.com"
+            "userId": "demo.user@demo3K2ZPgN1InUIVJpIsrNzQu.entropy-data.com"
           },
           "tags": [],
           "links": {},
