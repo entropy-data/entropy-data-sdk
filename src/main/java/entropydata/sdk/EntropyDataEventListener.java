@@ -158,86 +158,89 @@ public class EntropyDataEventListener {
     this.pollInterval = pollInterval;
   }
 
+  private String extractEventName(String eventType) {
+    int lastDot = eventType.lastIndexOf('.');
+    return lastDot >= 0 ? eventType.substring(lastDot + 1) : eventType;
+  }
+
   private void processEvent(entropydata.sdk.client.model.CloudEvent event) {
     log.info("Processing event {} of type {}", event.getId(), event.getType());
     this.eventHandler.onEvent(event);
-    switch (Objects.requireNonNull(event.getType())) {
-      case "com.entropy-data.events.DataProductCreatedEvent" ->
+    var eventName = extractEventName(Objects.requireNonNull(event.getType()));
+    switch (eventName) {
+      case "DataProductCreatedEvent" ->
           this.eventHandler.onDataProductCreatedEvent(convertPayload(event, DataProductCreatedEvent.class));
-      case "com.entropy-data.events.DataProductUpdatedEvent" ->
+      case "DataProductUpdatedEvent" ->
           this.eventHandler.onDataProductUpdatedEvent(convertPayload(event, DataProductUpdatedEvent.class));
-      case "com.entropy-data.events.DataProductDeletedEvent" ->
+      case "DataProductDeletedEvent" ->
           this.eventHandler.onDataProductDeletedEvent(convertPayload(event, DataProductDeletedEvent.class));
-      case "com.entropy-data.events.OutputPortCreatedEvent" ->
+      case "OutputPortCreatedEvent" ->
           this.eventHandler.onOutputPortCreatedEvent(convertPayload(event, OutputPortCreatedEvent.class));
-      case "com.entropy-data.events.OutputPortUpdatedEvent" ->
+      case "OutputPortUpdatedEvent" ->
           this.eventHandler.onOutputPortUpdatedEvent(convertPayload(event, OutputPortUpdatedEvent.class));
-      case "com.entropy-data.events.OutputPortDeletedEvent" ->
+      case "OutputPortDeletedEvent" ->
           this.eventHandler.onOutputPortDeletedEvent(convertPayload(event, OutputPortDeletedEvent.class));
-      case "com.entropy-data.events.DataContractCreatedEvent" ->
+      case "DataContractCreatedEvent" ->
           this.eventHandler.onDataContractCreatedEvent(convertPayload(event, DataContractCreatedEvent.class));
-      case "com.entropy-data.events.DataContractUpdatedEvent" ->
+      case "DataContractUpdatedEvent" ->
           this.eventHandler.onDataContractUpdatedEvent(convertPayload(event, DataContractUpdatedEvent.class));
-      case "com.entropy-data.events.DataContractDeletedEvent" ->
+      case "DataContractDeletedEvent" ->
           this.eventHandler.onDataContractDeletedEvent(convertPayload(event, DataContractDeletedEvent.class));
-      case "com.entropy-data.events.AccessCreatedEvent" ->
+      case "AccessCreatedEvent" ->
           this.eventHandler.onAccessCreatedEvent(convertPayload(event, AccessCreatedEvent.class));
-      case "com.entropy-data.events.AccessUpdatedEvent" ->
+      case "AccessUpdatedEvent" ->
           this.eventHandler.onAccessUpdatedEvent(convertPayload(event, AccessUpdatedEvent.class));
-      case "com.entropy-data.events.AccessDeletedEvent" ->
+      case "AccessDeletedEvent" ->
           this.eventHandler.onAccessDeletedEvent(convertPayload(event, AccessDeletedEvent.class));
-      case "com.entropy-data.events.AccessRequestedEvent" ->
+      case "AccessRequestedEvent" ->
           this.eventHandler.onAccessRequestedEvent(convertPayload(event, AccessRequestedEvent.class));
-      case "com.entropy-data.events.AccessApprovedEvent" ->
+      case "AccessApprovedEvent" ->
           this.eventHandler.onAccessApprovedEvent(convertPayload(event, AccessApprovedEvent.class));
-      case "com.entropy-data.events.AccessRejectedEvent" ->
+      case "AccessRejectedEvent" ->
           this.eventHandler.onAccessRejectedEvent(convertPayload(event, AccessRejectedEvent.class));
-      case "com.entropy-data.events.AccessActivatedEvent" ->
+      case "AccessActivatedEvent" ->
           this.eventHandler.onAccessActivatedEvent(convertPayload(event, AccessActivatedEvent.class));
-      case "com.entropy-data.events.AccessDeactivatedEvent" ->
+      case "AccessDeactivatedEvent" ->
           this.eventHandler.onAccessDeactivatedEvent(convertPayload(event, AccessDeactivatedEvent.class));
-      case "com.entropy-data.events.SourceSystemCreatedEvent" ->
+      case "SourceSystemCreatedEvent" ->
           this.eventHandler.onSourceSystemCreatedEvent(convertPayload(event, SourceSystemCreatedEvent.class));
-      case "com.entropy-data.events.SourceSystemUpdatedEvent" ->
+      case "SourceSystemUpdatedEvent" ->
           this.eventHandler.onSourceSystemUpdatedEvent(convertPayload(event, SourceSystemUpdatedEvent.class));
-      case "com.entropy-data.events.SourceSystemDeletedEvent" ->
+      case "SourceSystemDeletedEvent" ->
           this.eventHandler.onSourceSystemDeletedEvent(convertPayload(event, SourceSystemDeletedEvent.class));
-      case "com.entropy-data.events.TeamCreatedEvent" ->
+      case "TeamCreatedEvent" ->
           this.eventHandler.onTeamCreatedEvent(convertPayload(event, TeamCreatedEvent.class));
-      case "com.entropy-data.events.TeamUpdatedEvent" ->
+      case "TeamUpdatedEvent" ->
           this.eventHandler.onTeamUpdatedEvent(convertPayload(event, TeamUpdatedEvent.class));
-      case "com.entropy-data.events.TeamDeletedEvent" ->
+      case "TeamDeletedEvent" ->
           this.eventHandler.onTeamDeletedEvent(convertPayload(event, TeamDeletedEvent.class));
-      case "com.entropy-data.events.DefinitionCreatedEvent" ->
+      case "DefinitionCreatedEvent" ->
           this.eventHandler.onDefinitionCreatedEvent(convertPayload(event, DefinitionCreatedEvent.class));
-      case "com.entropy-data.events.DefinitionUpdatedEvent" ->
+      case "DefinitionUpdatedEvent" ->
           this.eventHandler.onDefinitionUpdatedEvent(convertPayload(event, DefinitionUpdatedEvent.class));
-      case "com.entropy-data.events.DefinitionDeletedEvent" ->
+      case "DefinitionDeletedEvent" ->
           this.eventHandler.onDefinitionDeletedEvent(convertPayload(event, DefinitionDeletedEvent.class));
-      case "com.entropy-data.events.TagCreatedEvent" ->
+      case "TagCreatedEvent" ->
           this.eventHandler.onTagCreatedEvent(convertPayload(event, TagCreatedEvent.class));
-      case "com.entropy-data.events.TagUpdatedEvent" ->
+      case "TagUpdatedEvent" ->
           this.eventHandler.onTagUpdatedEvent(convertPayload(event, TagUpdatedEvent.class));
-      case "com.entropy-data.events.TagDeletedEvent" ->
+      case "TagDeletedEvent" ->
           this.eventHandler.onTagDeletedEvent(convertPayload(event, TagDeletedEvent.class));
-      case "com.entropy-data.events.AssetCreatedEvent" ->
+      case "AssetCreatedEvent" ->
           this.eventHandler.onAssetCreatedEvent(convertPayload(event, AssetCreatedEvent.class));
-      case "com.entropy-data.events.AssetUpdatedEvent" ->
+      case "AssetUpdatedEvent" ->
           this.eventHandler.onAssetUpdatedEvent(convertPayload(event, AssetUpdatedEvent.class));
-      case "com.entropy-data.events.AssetDeletedEvent" ->
+      case "AssetDeletedEvent" ->
           this.eventHandler.onAssetDeletedEvent(convertPayload(event, AssetDeletedEvent.class));
-      case "com.entropy-data.events.TestResultsCreatedEvent" -> this.eventHandler.onTestResultsCreatedEvent(
+      case "TestResultsCreatedEvent" -> this.eventHandler.onTestResultsCreatedEvent(
           convertPayload(event, entropydata.sdk.client.model.TestResultsCreatedEvent.class));
-      case "com.entropy-data.events.TestResultsDeletedEvent" -> this.eventHandler.onTestResultsDeletedEvent(
+      case "TestResultsDeletedEvent" -> this.eventHandler.onTestResultsDeletedEvent(
           convertPayload(event, entropydata.sdk.client.model.TestResultsDeletedEvent.class));
-      case "com.entropy-data.events.DataUsageAgreementCreatedEvent" -> log.debug("Ignore deprecated event");
-      case "com.entropy-data.events.DataUsageAgreementUpdatedEvent" -> log.debug("Ignore deprecated event");
-      case "com.entropy-data.events.DataUsageAgreementDeletedEvent" -> log.debug("Ignore deprecated event");
-      case "com.entropy-data.events.DataUsageAgreementRequestedEvent" -> log.debug("Ignore deprecated event");
-      case "com.entropy-data.events.DataUsageAgreementApprovedEvent" -> log.debug("Ignore deprecated event");
-      case "com.entropy-data.events.DataUsageAgreementRejectedEvent" -> log.debug("Ignore deprecated event");
-      case "com.entropy-data.events.DataUsageAgreementActivatedEvent" -> log.debug("Ignore deprecated event");
-      case "com.entropy-data.events.DataUsageAgreementDeactivatedEvent" -> log.debug("Ignore deprecated event");
+      case "DataUsageAgreementCreatedEvent", "DataUsageAgreementUpdatedEvent",
+           "DataUsageAgreementDeletedEvent", "DataUsageAgreementRequestedEvent",
+           "DataUsageAgreementApprovedEvent", "DataUsageAgreementRejectedEvent",
+           "DataUsageAgreementActivatedEvent", "DataUsageAgreementDeactivatedEvent" ->
+          log.debug("Ignore deprecated event");
       default -> log.warn("Unknown event type: {}", event.getType());
 
     }
