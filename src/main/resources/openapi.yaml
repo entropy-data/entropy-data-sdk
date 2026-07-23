@@ -1686,6 +1686,271 @@ paths:
         404:
           $ref: "#/components/responses/NotFound"
           description: Access not found
+  /api/access/{id}/provisioning/provisioning-started:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this access resource, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Access
+      summary: Report that provisioning has started
+      description: |
+        Records that the external component has begun creating the grant in the data platform.
+
+        Accepted from any provisioning state: the reporting component owns this state, so no
+        transition is ever rejected as illegal and the latest report wins. Fields omitted from the
+        body keep their previous value.
+      operationId: reportProvisioningStarted
+      requestBody:
+        required: false
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/AccessProvisioningStartedReport'
+      responses:
+        200:
+          description: The updated provisioning state.
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/AccessProvisioning'
+        404:
+          $ref: "#/components/responses/NotFound"
+          description: Access not found
+  /api/access/{id}/provisioning/provisioning-succeeded:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this access resource, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Access
+      summary: Report that provisioning succeeded
+      description: |
+        Records that the grant now exists and the consumer can access the data.
+
+        Accepted from any provisioning state: the reporting component owns this state, so no
+        transition is ever rejected as illegal and the latest report wins. Fields omitted from the
+        body keep their previous value.
+      operationId: reportProvisioningSucceeded
+      requestBody:
+        required: false
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/AccessProvisioningSucceededReport'
+      responses:
+        200:
+          description: The updated provisioning state.
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/AccessProvisioning'
+        404:
+          $ref: "#/components/responses/NotFound"
+          description: Access not found
+  /api/access/{id}/provisioning/provisioning-failed:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this access resource, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Access
+      summary: Report that provisioning failed
+      description: |
+        Records that the grant could not be created. Send the reason in `diagnostics`; it is shown on the access page and mailed to the provider team.
+
+        Accepted from any provisioning state: the reporting component owns this state, so no
+        transition is ever rejected as illegal and the latest report wins. Fields omitted from the
+        body keep their previous value.
+      operationId: reportProvisioningFailed
+      requestBody:
+        required: false
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/AccessProvisioningFailedReport'
+      responses:
+        200:
+          description: The updated provisioning state.
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/AccessProvisioning'
+        404:
+          $ref: "#/components/responses/NotFound"
+          description: Access not found
+  /api/access/{id}/provisioning/deprovisioning-started:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this access resource, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Access
+      summary: Report that deprovisioning has started
+      description: |
+        Records that the external component has begun removing the grant.
+
+        Accepted from any provisioning state: the reporting component owns this state, so no
+        transition is ever rejected as illegal and the latest report wins. Fields omitted from the
+        body keep their previous value.
+      operationId: reportDeprovisioningStarted
+      requestBody:
+        required: false
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/AccessProvisioningStartedReport'
+      responses:
+        200:
+          description: The updated provisioning state.
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/AccessProvisioning'
+        404:
+          $ref: "#/components/responses/NotFound"
+          description: Access not found
+  /api/access/{id}/provisioning/deprovisioning-succeeded:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this access resource, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Access
+      summary: Report that deprovisioning succeeded
+      description: |
+        Records that the grant has been removed and the consumer no longer has access.
+
+        Accepted from any provisioning state: the reporting component owns this state, so no
+        transition is ever rejected as illegal and the latest report wins. Fields omitted from the
+        body keep their previous value.
+      operationId: reportDeprovisioningSucceeded
+      requestBody:
+        required: false
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/AccessDeprovisioningSucceededReport'
+      responses:
+        200:
+          description: The updated provisioning state.
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/AccessProvisioning'
+        404:
+          $ref: "#/components/responses/NotFound"
+          description: Access not found
+  /api/access/{id}/provisioning/deprovisioning-failed:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this access resource, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Access
+      summary: Report that deprovisioning failed
+      description: |
+        Records that the grant could not be removed, so access may still exist. Send the reason in `diagnostics`; it is mailed to the provider team.
+
+        Accepted from any provisioning state: the reporting component owns this state, so no
+        transition is ever rejected as illegal and the latest report wins. Fields omitted from the
+        body keep their previous value.
+      operationId: reportDeprovisioningFailed
+      requestBody:
+        required: false
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/AccessProvisioningFailedReport'
+      responses:
+        200:
+          description: The updated provisioning state.
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/AccessProvisioning'
+        404:
+          $ref: "#/components/responses/NotFound"
+          description: Access not found
+  /api/access/{id}/provisioning:
+    parameters:
+      - name: id
+        in: path
+        description: An organizational unique technical identifier for this access resource, such as an UUID, URN, string, number. Format must be a valid path parameter for GET and DELETE requests, so no URI or '/' allowed.
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Access
+      summary: Get the provisioning state of an access resource
+      description: Returns the provisioning state most recently reported by the external component that creates the grant.
+      operationId: getAccessProvisioning
+      responses:
+        200:
+          description: The current provisioning state.
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/AccessProvisioning'
+        404:
+          $ref: "#/components/responses/NotFound"
+          description: Access not found, or no provisioning has been reported for it.
+    put:
+      tags:
+        - Access
+      summary: Replace the provisioning state of an access resource
+      description: |
+        Replaces the whole provisioning record. Unlike the transition endpoints, fields absent from
+        the payload are cleared — this is for components that reconcile against their platform and
+        then declare the resulting state rather than reporting individual transitions.
+
+        A payload whose `status` differs from the stored one emits the same event and writes the same
+        audit-trail entry as the equivalent transition endpoint. A payload with an unchanged `status`
+        is treated as a metadata correction: no event, no audit-trail entry.
+      operationId: putAccessProvisioning
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/AccessProvisioningReport'
+      responses:
+        200:
+          description: The updated provisioning state.
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/AccessProvisioning'
+        400:
+          description: The status is missing or not one of the known provisioning states.
+        404:
+          $ref: "#/components/responses/NotFound"
+          description: Access not found
   /api/teams:
     get:
       tags:
@@ -1700,6 +1965,13 @@ paths:
             minimum: 0
           required: false
           description: The number of the requested page, starting from 0. Each page contains a maximum of 1000 teams, sorted by creation date ascending. Use the Link header with rel="next" to navigate to the next page.
+        - in: query
+          name: email
+          schema:
+            type: string
+          required: false
+          example: jane.doe@example.com
+          description: Only return teams the user with this email address is a direct member of (case-insensitive). Parent or child teams are not included. Returns an empty list if no user with this email address exists.
       responses:
         200:
           description: List of teams
@@ -4120,6 +4392,13 @@ paths:
                         - com.datamesh-manager.events.AccessRejectedEvent
                         - com.datamesh-manager.events.AccessActivatedEvent
                         - com.datamesh-manager.events.AccessDeactivatedEvent
+                        - com.datamesh-manager.events.AccessCanceledEvent
+                        - com.datamesh-manager.events.AccessProvisioningStartedEvent
+                        - com.datamesh-manager.events.AccessProvisionedEvent
+                        - com.datamesh-manager.events.AccessProvisioningFailedEvent
+                        - com.datamesh-manager.events.AccessDeprovisioningStartedEvent
+                        - com.datamesh-manager.events.AccessDeprovisionedEvent
+                        - com.datamesh-manager.events.AccessDeprovisioningFailedEvent
 
                         - com.datamesh-manager.events.SourceSystemCreatedEvent
                         - com.datamesh-manager.events.SourceSystemUpdatedEvent
@@ -4542,7 +4821,13 @@ paths:
           schema:
             type: string
           required: false
-          description: The filter string used to request a subset of resources.
+          description: >-
+            The filter string used to request a subset of resources.
+            Supported expressions: `displayName eq "value"` and the member filter forms
+            `members eq "value"`, `members.value eq "value"`, and `members[value eq "value"]`,
+            combinable with `and`. The member value is the SCIM user id; an email address is
+            also accepted and resolved to the matching user. Unsupported filter expressions
+            are rejected with 400 invalidFilter.
       responses:
         '200':
           description: Successfully retrieved groups list
@@ -4550,6 +4835,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScimListResponseGroups'
+        '400':
+          description: Unsupported filter expression (SCIM error response with scimType invalidFilter)
     post:
       tags:
         - SCIM
@@ -4848,7 +5135,9 @@ paths:
       description: >-
         EXPERIMENTAL Returns the entire namespace (concepts, shared properties, groups and
         relationships) as one OSI-compliant ontology YAML document — the natural unit for copying a
-        namespace between instances.
+        namespace between instances. The namespace's own metadata travels in the document's root
+        `custom_properties`: `display_name`, `read_only` and `owner` (the owning team's external id).
+        Keys are omitted when unset.
       operationId: getSemanticOntologyYaml
       responses:
         200:
@@ -4867,7 +5156,11 @@ paths:
       description: >-
         EXPERIMENTAL Imports a whole OSI ontology YAML document into the namespace, upserting its
         concepts and relationships in dependency order (groups before members, concepts before
-        relationships). The namespace must already exist (except `main`, which is created on demand).
+        relationships). The namespace is created if it does not exist yet, from the metadata in the
+        document's root `custom_properties` (`display_name`, `read_only`, `owner`) and the root
+        `description`. Keys the document omits leave stored values unchanged, so applying a plain OSI
+        document does not clear a namespace's configuration. Changing `owner` requires edit
+        permission on both the current and the new owning team.
       operationId: putSemanticOntologyYaml
       requestBody:
         required: true
@@ -4878,9 +5171,12 @@ paths:
       responses:
         200:
           description: The ontology was imported
+        403:
+          $ref: "#/components/responses/Forbidden"
+          description: Insufficient permission on the current or the requested owning team
         422:
           $ref: "#/components/responses/UnprocessableEntity"
-          description: The namespace does not exist, or the YAML is invalid
+          description: The YAML is invalid, or the requested owning team does not exist
   /api/semantics/experimental/namespaces/{namespace}/concepts:
     parameters:
       - name: namespace
@@ -5470,6 +5766,14 @@ components:
                   example: user-123
               required:
                 - userId
+        provisioning:
+          allOf:
+            - $ref: '#/components/schemas/AccessProvisioning'
+          description: |
+            The provisioning state reported by the external component that creates the grant.
+            Absent until something has been reported. Read-only: write it through the
+            /api/access/{id}/provisioning endpoints; anything sent here on a PUT is ignored.
+          readOnly: true
         tags:
           type: array
           description: Tags are used to categorize data usage agreements.
@@ -5608,6 +5912,14 @@ components:
                   example: user-123
               required:
                 - userId
+        provisioning:
+          allOf:
+            - $ref: '#/components/schemas/AccessProvisioning'
+          description: |
+            The provisioning state reported by the external component that creates the grant.
+            Absent until something has been reported. Read-only: write it through the
+            /api/access/{id}/provisioning endpoints; anything sent here on a PUT is ignored.
+          readOnly: true
         tags:
           type: array
           description: Tags are used to categorize data usage agreements.
@@ -7034,10 +7346,6 @@ components:
           type: string
           description: A description of the namespace.
           example: The default namespace for the organization.
-        uri:
-          type: string
-          description: An optional URI identifying the namespace (e.g., the IRI base for concepts in this namespace).
-          example: https://example.com/semantics/main
         read_only:
           type: boolean
           default: false
@@ -7736,6 +8044,300 @@ components:
           format: date-time
           description: The business time when the data contract was deleted
           example: 2023-01-01T09:15:20.705Z
+    AccessProvisioningStartedReport:
+      type: object
+      description: |
+        Reported when work on the grant begins. Carries only context — there is no reference yet,
+        because the grant does not exist, and no diagnostics, because nothing has failed.
+      properties:
+        platform:
+          type: string
+          description: The data platform the grant is being created in.
+          example: bigquery
+        executor:
+          type: string
+          description: The component performing the work.
+          example: Custom Connector BigQuery V1
+        customProperties:
+          type: array
+          description: Additional connector-specific values, in the same shape as customProperties elsewhere in the API.
+          items:
+            type: object
+            properties:
+              property:
+                type: string
+                example: grantId
+              value:
+                type: string
+                example: g-9f2c41ab
+        links:
+          type: object
+          description: Named links related to this provisioning, e.g. the connector's run log.
+          additionalProperties:
+            type: string
+          example:
+            Grant run log: https://connector.example.com/runs/8412
+    AccessProvisioningSucceededReport:
+      type: object
+      description: |
+        Reported when the grant exists. `reference` is the point of this call — it records where the
+        grant actually lives.
+      properties:
+        platform:
+          type: string
+          description: The data platform the grant is being created in.
+          example: bigquery
+        executor:
+          type: string
+          description: The component performing the work.
+          example: Custom Connector BigQuery V1
+        reference:
+          type: string
+          description: Identifies the grant in the data platform, e.g. an IAM role or ARN.
+          example: projects/acme-prod/roles/search_queries_all_v1_reader
+        customProperties:
+          type: array
+          description: Additional connector-specific values, in the same shape as customProperties elsewhere in the API.
+          items:
+            type: object
+            properties:
+              property:
+                type: string
+                example: grantId
+              value:
+                type: string
+                example: g-9f2c41ab
+        links:
+          type: object
+          description: Named links related to this provisioning, e.g. the connector's run log.
+          additionalProperties:
+            type: string
+          example:
+            Grant run log: https://connector.example.com/runs/8412
+    AccessProvisioningFailedReport:
+      type: object
+      description: |
+        Reported when the attempt failed. `diagnostics` is the point of this call — it is shown on
+        the access page and mailed to the providing team.
+      properties:
+        platform:
+          type: string
+          description: The data platform the grant is being created in.
+          example: bigquery
+        executor:
+          type: string
+          description: The component performing the work.
+          example: Custom Connector BigQuery V1
+        diagnostics:
+          type: string
+          description: What went wrong. Free text, shown verbatim.
+          example: 'PermissionDenied: caller lacks bigquery.datasets.update on projects/acme-prod/datasets/search_queries_all.'
+        customProperties:
+          type: array
+          description: Additional connector-specific values, in the same shape as customProperties elsewhere in the API.
+          items:
+            type: object
+            properties:
+              property:
+                type: string
+                example: grantId
+              value:
+                type: string
+                example: g-9f2c41ab
+        links:
+          type: object
+          description: Named links related to this provisioning, e.g. the connector's run log.
+          additionalProperties:
+            type: string
+          example:
+            Grant run log: https://connector.example.com/runs/8412
+    AccessDeprovisioningSucceededReport:
+      type: object
+      description: Reported when the grant has been removed and the consumer no longer has access.
+      properties:
+        platform:
+          type: string
+          description: The data platform the grant is being created in.
+          example: bigquery
+        executor:
+          type: string
+          description: The component performing the work.
+          example: Custom Connector BigQuery V1
+        reference:
+          type: string
+          description: The grant that was removed. Retained as a record of what existed.
+          example: projects/acme-prod/roles/search_queries_all_v1_reader
+        customProperties:
+          type: array
+          description: Additional connector-specific values, in the same shape as customProperties elsewhere in the API.
+          items:
+            type: object
+            properties:
+              property:
+                type: string
+                example: grantId
+              value:
+                type: string
+                example: g-9f2c41ab
+        links:
+          type: object
+          description: Named links related to this provisioning, e.g. the connector's run log.
+          additionalProperties:
+            type: string
+          example:
+            Grant run log: https://connector.example.com/runs/8412
+    AccessProvisioning:
+      type: object
+      description: |
+        The provisioning state of an access resource, as reported by the external component that
+        creates the actual grant in the data platform. It is a projection of the latest report, not
+        a history — the sequence of transitions is available in the audit trail and the event feed.
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          example: provisioned
+          enum:
+            - provisioning
+            - provisioned
+            - provisioning-failed
+            - deprovisioning
+            - deprovisioned
+            - deprovisioning-failed
+        platform:
+          type: string
+          nullable: true
+          description: The data platform the grant was created in.
+          example: bigquery
+        executor:
+          type: string
+          nullable: true
+          description: The component that performed the work.
+          example: Custom Connector BigQuery V1
+        reference:
+          type: string
+          nullable: true
+          description: An identifier for the grant in the data platform, e.g. an IAM role or ARN.
+          example: projects/acme-prod/roles/search_queries_all_v1_reader
+        diagnostics:
+          type: string
+          nullable: true
+          description: Free text explaining a failure. Cleared by the next successful transition.
+        note:
+          type: string
+          nullable: true
+          description: |
+            Free text from a person, typically why the state was recorded by hand. Unlike
+            diagnostics it survives a later successful transition.
+        provisioningStartedAt:
+          type: string
+          format: date-time
+          nullable: true
+        provisionedAt:
+          type: string
+          format: date-time
+          nullable: true
+        deprovisioningStartedAt:
+          type: string
+          format: date-time
+          nullable: true
+        deprovisionedAt:
+          type: string
+          format: date-time
+          nullable: true
+        failedAt:
+          type: string
+          format: date-time
+          nullable: true
+        customProperties:
+          type: array
+          description: Additional connector-specific values, in the same shape as customProperties elsewhere in the API.
+          items:
+            type: object
+            properties:
+              property:
+                type: string
+                example: grantId
+              value:
+                type: string
+                example: g-9f2c41ab
+        links:
+          type: object
+          description: Named links related to this provisioning, e.g. the connector's run log.
+          additionalProperties:
+            type: string
+          example:
+            Grant run log: https://connector.example.com/runs/8412
+    AccessProvisioningReport:
+      type: object
+      description: |
+        A provisioning report. Every field is optional on the transition endpoints, where the URL
+        carries the transition and anything omitted keeps its previous value. On `PUT` the `status`
+        is required and omitted fields are cleared.
+      properties:
+        status:
+          type: string
+          description: Required on PUT, ignored by the transition endpoints (the URL determines the status).
+          example: provisioned
+          enum:
+            - provisioning
+            - provisioned
+            - provisioning-failed
+            - deprovisioning
+            - deprovisioned
+            - deprovisioning-failed
+        platform:
+          type: string
+          example: bigquery
+        executor:
+          type: string
+          example: Custom Connector BigQuery V1
+        reference:
+          type: string
+          example: projects/acme-prod/roles/search_queries_all_v1_reader
+        diagnostics:
+          type: string
+          example: 'PermissionDenied: caller lacks bigquery.datasets.update on projects/acme-prod/datasets/search_queries_all.'
+        note:
+          type: string
+          description: Free text from a person. Survives a later successful transition.
+          example: Granted by hand while the connector is being set up
+        provisioningStartedAt:
+          type: string
+          format: date-time
+          description: Only honoured on PUT, so a reconciling component can back-fill when the work actually happened.
+        provisionedAt:
+          type: string
+          format: date-time
+          description: Only honoured on PUT.
+        deprovisioningStartedAt:
+          type: string
+          format: date-time
+          description: Only honoured on PUT.
+        deprovisionedAt:
+          type: string
+          format: date-time
+          description: Only honoured on PUT.
+        customProperties:
+          type: array
+          description: Additional connector-specific values, in the same shape as customProperties elsewhere in the API.
+          items:
+            type: object
+            properties:
+              property:
+                type: string
+                example: grantId
+              value:
+                type: string
+                example: g-9f2c41ab
+        links:
+          type: object
+          description: Named links related to this provisioning, e.g. the connector's run log.
+          additionalProperties:
+            type: string
+          example:
+            Grant run log: https://connector.example.com/runs/8412
     AccessCreatedEvent:
       type: object
       description: A new access resource was created.
@@ -7879,6 +8481,162 @@ components:
           type: string
           format: date-time
           description: The business time when the data usage agreement was canceled
+          example: 2023-01-01T09:15:20.705Z
+    AccessProvisioningStartedEvent:
+      type: object
+      description: An external component started creating the grant in the data platform.
+      required:
+        - id
+        - status
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the access resource.
+          example: access-1
+        status:
+          type: string
+          description: The provisioning status the access resource moved to.
+          example: provisioning
+        platform:
+          type: string
+          nullable: true
+          description: The data platform the grant was created in, when the reporting component supplied one.
+          example: bigquery
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time the transition was recorded
+          example: 2023-01-01T09:15:20.705Z
+    AccessProvisionedEvent:
+      type: object
+      description: The grant was created and the consumer can now access the data.
+      required:
+        - id
+        - status
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the access resource.
+          example: access-1
+        status:
+          type: string
+          description: The provisioning status the access resource moved to.
+          example: provisioned
+        platform:
+          type: string
+          nullable: true
+          description: The data platform the grant was created in, when the reporting component supplied one.
+          example: bigquery
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time the transition was recorded
+          example: 2023-01-01T09:15:20.705Z
+    AccessProvisioningFailedEvent:
+      type: object
+      description: The grant could not be created, so the consumer has no access.
+      required:
+        - id
+        - status
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the access resource.
+          example: access-1
+        status:
+          type: string
+          description: The provisioning status the access resource moved to.
+          example: provisioning-failed
+        platform:
+          type: string
+          nullable: true
+          description: The data platform the grant was created in, when the reporting component supplied one.
+          example: bigquery
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time the transition was recorded
+          example: 2023-01-01T09:15:20.705Z
+    AccessDeprovisioningStartedEvent:
+      type: object
+      description: An external component started removing the grant.
+      required:
+        - id
+        - status
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the access resource.
+          example: access-1
+        status:
+          type: string
+          description: The provisioning status the access resource moved to.
+          example: deprovisioning
+        platform:
+          type: string
+          nullable: true
+          description: The data platform the grant was created in, when the reporting component supplied one.
+          example: bigquery
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time the transition was recorded
+          example: 2023-01-01T09:15:20.705Z
+    AccessDeprovisionedEvent:
+      type: object
+      description: The grant was removed and the consumer no longer has access.
+      required:
+        - id
+        - status
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the access resource.
+          example: access-1
+        status:
+          type: string
+          description: The provisioning status the access resource moved to.
+          example: deprovisioned
+        platform:
+          type: string
+          nullable: true
+          description: The data platform the grant was created in, when the reporting component supplied one.
+          example: bigquery
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time the transition was recorded
+          example: 2023-01-01T09:15:20.705Z
+    AccessDeprovisioningFailedEvent:
+      type: object
+      description: The grant could not be removed, so access may still exist in the data platform.
+      required:
+        - id
+        - status
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The identifier of the access resource.
+          example: access-1
+        status:
+          type: string
+          description: The provisioning status the access resource moved to.
+          example: deprovisioning-failed
+        platform:
+          type: string
+          nullable: true
+          description: The data platform the grant was created in, when the reporting component supplied one.
+          example: bigquery
+        timestamp:
+          type: string
+          format: date-time
+          description: The business time the transition was recorded
           example: 2023-01-01T09:15:20.705Z
     TeamCreatedEvent:
       type: object
