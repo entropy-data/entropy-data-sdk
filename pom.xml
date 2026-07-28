@@ -44,6 +44,17 @@
     <junit-jupiter.version>6.0.3</junit-jupiter.version>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <!-- Testcontainers pulls commons-compress 1.24.0, which is below the fix for GHSA-4265-ccf5-phj5 / GHSA-4g9r-vxhx-9pgx -->
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>1.28.0</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>jakarta.annotation</groupId>
