@@ -7188,6 +7188,28 @@ components:
               type: string
               description: The version of the connector.
               example: "1.0.0"
+        health:
+          type: object
+          description: The operational health of the connector, as reported by the connector itself.
+          properties:
+            status:
+              type: string
+              description: The health status of the connector.
+              example: running
+            startedAt:
+              type: string
+              format: date-time
+              description: The point in time the connector was started.
+              example: 2023-10-01T12:00:00Z
+            updatedAt:
+              type: string
+              format: date-time
+              description: The point in time the connector last reported its health.
+              example: 2023-10-01T12:00:00Z
+            errorMessage:
+              type: string
+              description: The error that made the connector unhealthy, if there is one.
+              example: Connection lost
         state:
           type: object
           additionalProperties: true
