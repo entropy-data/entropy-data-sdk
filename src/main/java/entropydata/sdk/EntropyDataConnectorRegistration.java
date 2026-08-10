@@ -25,10 +25,20 @@ public class EntropyDataConnectorRegistration {
    */
   private final String type;
 
+  /**
+   * The version of the connector, so that the version a connector runs with is visible in Entropy Data. May be null.
+   */
+  private final String connectorVersion;
+
   public EntropyDataConnectorRegistration(EntropyDataClient client, String connectorId, String type) {
+    this(client, connectorId, type, null);
+  }
+
+  public EntropyDataConnectorRegistration(EntropyDataClient client, String connectorId, String type, String connectorVersion) {
     this.client = client;
     this.id = Objects.requireNonNull(connectorId, "Connector ID is required");
     this.type = Objects.requireNonNull(type, "Connector type is required");
+    this.connectorVersion = connectorVersion;
   }
 
   public void register() {
@@ -49,6 +59,7 @@ public class EntropyDataConnectorRegistration {
         .id(id)
         .info(new ConnectorInfo()
             .type(type)
+            .connectorVersion(connectorVersion)
         );
 
     log.info("Registering integration connector {}", id);
