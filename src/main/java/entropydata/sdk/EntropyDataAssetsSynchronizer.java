@@ -25,10 +25,18 @@ public class EntropyDataAssetsSynchronizer {
       String connectorId,
       EntropyDataClient client,
       EntropyDataAssetsProvider assetsProvider) {
+    this(connectorId, client, assetsProvider, null);
+  }
+
+  public EntropyDataAssetsSynchronizer(
+      String connectorId,
+      EntropyDataClient client,
+      EntropyDataAssetsProvider assetsProvider,
+      String connectorVersion) {
     this.connectorId = connectorId;
     this.client = client;
     this.assetsProvider = assetsProvider;
-    this.connectorRegistration = new EntropyDataConnectorRegistration(client, connectorId, "assets-synchronizer");
+    this.connectorRegistration = new EntropyDataConnectorRegistration(client, connectorId, "assets-synchronizer", connectorVersion);
 
     this.connectorRegistration.register();
   }

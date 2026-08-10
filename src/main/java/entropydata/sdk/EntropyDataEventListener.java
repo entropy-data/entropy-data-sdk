@@ -64,11 +64,16 @@ public class EntropyDataEventListener {
 
   public EntropyDataEventListener(String connectorId, String type, EntropyDataClient client, EntropyDataEventHandler eventHandler,
       EntropyDataStateRepository stateRepository) {
+    this(connectorId, type, client, eventHandler, stateRepository, null);
+  }
+
+  public EntropyDataEventListener(String connectorId, String type, EntropyDataClient client, EntropyDataEventHandler eventHandler,
+      EntropyDataStateRepository stateRepository, String connectorVersion) {
     this.connectorId = Objects.requireNonNull(connectorId, "connectorId must not be null");
     this.eventHandler = Objects.requireNonNull(eventHandler, "eventHandler must not be null");
     this.client = Objects.requireNonNull(client, "client must not be null");
     this.stateRepository = Objects.requireNonNull(stateRepository, "stateRepository must not be null");
-    this.connectorRegistration = new EntropyDataConnectorRegistration(client, connectorId, type);
+    this.connectorRegistration = new EntropyDataConnectorRegistration(client, connectorId, type, connectorVersion);
 
     this.objectMapper = new ObjectMapper()
         .findAndRegisterModules()
