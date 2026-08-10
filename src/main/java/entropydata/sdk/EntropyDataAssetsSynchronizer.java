@@ -37,10 +37,14 @@ public class EntropyDataAssetsSynchronizer {
     log.info("{}: start syncing assets", connectorId);
 
     // TODO error handling for connectorRegistration
-    // TODO error handling during while loop
 
     while (!this.stopped) {
-      synchronizeAssets();
+      try {
+        synchronizeAssets();
+      } catch (Exception e) {
+        // Errors (such as OutOfMemoryError) are deliberately not caught, so the process can terminate and be restarted
+        log.error("{}: Failed to synchronize assets, now wait for {} to make the next attempt", connectorId, delay, e);
+      }
       try {
         log.info("Waiting for {} until next sync ...", delay);
         Thread.sleep(delay.toMillis());
