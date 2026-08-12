@@ -21,18 +21,18 @@ Existing Connectors
 
 We provide some connectors for commonly used platforms that use this SDK and that can be used out-of-the-box or as a template for custom integrations:
 
-| Platform              | Connector                                                                                                  | Synchronize Assets | Access Management | Remarks                     |
-|-----------------------|------------------------------------------------------------------------------------------------------------|--------------------|-------------------|-----------------------------|
-| Databricks            | [datamesh-manager-connector-databricks](https://github.com/datamesh-manager/datamesh-manager-connector-databricks) | ✅                  | ✅                 | Uses Unity Catalog APIs     |
-| Snowflake             | [datamesh-manager-connector-snowflake](https://github.com/datamesh-manager/datamesh-manager-connector-snowflake)   | ✅                  | ✅                 | Uses the Snowflake REST API | 
-| Google Cloud Platform | [datamesh-manager-connector-gcp](https://github.com/datamesh-manager/datamesh-manager-connector-gcp)               | ✅                  | ✅                 | Uses BigQuery APIs          |
-| Hive                 | [datamesh-manager-connector-hive](https://github.com/datamesh-manager/datamesh-manager-connector-hive)                                                                                                           |   ✅                  |                   | Uses JDBC (supports Hive, Impala, or Cloudera)                 |
-| MariaDB                   | [datamesh-manager-connector-mariadb](https://github.com/datamesh-manager/datamesh-manager-connector-mariadb)                                                                                                           | ✅                   |                   | Uses JDBC                 |
-| AWS                   |                                                                                                            |                    |                   | Coming soon                 |
-| Azure                 |                                                                                                            |                    |                   | Coming soon                 |
-| datahub               |                                                                                                            |                    |                   | Coming soon                 |
-| Collibra              |                                                                                                            |                    |                   | Coming soon                 |
-| Iceberg Catalog              |                                                                                                            |                    |                   | Coming soon                 |
+| Platform              | Connector                                                                                                       | Synchronize Assets | Access Management | Remarks                                        |
+|-----------------------|-----------------------------------------------------------------------------------------------------------------|--------------------|-------------------|------------------------------------------------|
+| Databricks            | [entropy-data-connector-databricks](https://github.com/entropy-data/entropy-data-connector-databricks)           | ✅                  | ✅                 | Uses Unity Catalog APIs                        |
+| Snowflake             | [entropy-data-connector-snowflake](https://github.com/entropy-data/entropy-data-connector-snowflake)             | ✅                  | ✅                 | Uses the Snowflake REST API                    |
+| Google Cloud Platform | [entropy-data-connector-gcp](https://github.com/entropy-data/entropy-data-connector-gcp)                         | ✅                  | ✅                 | Uses BigQuery APIs                             |
+| Hive                  | [entropy-data-connector-hive](https://github.com/entropy-data/entropy-data-connector-hive)                       | ✅                  |                   | Uses JDBC (supports Hive, Impala, or Cloudera) |
+| MariaDB               | [entropy-data-connector-mariadb](https://github.com/entropy-data/entropy-data-connector-mariadb)                 | ✅                  |                   | Uses JDBC                                      |
+| AWS                   |                                                                                                                 |                    |                   | Coming soon                                    |
+| Azure                 |                                                                                                                 |                    |                   | Coming soon                                    |
+| datahub               |                                                                                                                 |                    |                   | Coming soon                                    |
+| Collibra              |                                                                                                                 |                    |                   | Coming soon                                    |
+| Iceberg Catalog       |                                                                                                                 |                    |                   | Coming soon                                    |
 
 
 If you are interested in further integration, please [contact us](https://entropy-data.atlassian.net/servicedesk/customer/portals).
