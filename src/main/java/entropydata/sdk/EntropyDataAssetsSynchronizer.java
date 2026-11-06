@@ -1,10 +1,8 @@
 package entropydata.sdk;
 
 import entropydata.sdk.EntropyDataAssetsProvider.AssetCallback;
-import entropydata.sdk.client.ApiException;
 import entropydata.sdk.client.model.Asset;
 import java.time.Duration;
-import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +15,7 @@ public class EntropyDataAssetsSynchronizer {
   private final EntropyDataClient client;
   private final EntropyDataConnectorRegistration connectorRegistration;
   private final EntropyDataAssetsProvider assetsProvider;
+  private final EntropyDataAssetWriter assetWriter;
   private volatile boolean stopped = false;
 
   private Duration delay = Duration.parse("PT60M");
@@ -36,6 +35,7 @@ public class EntropyDataAssetsSynchronizer {
     this.connectorId = connectorId;
     this.client = client;
     this.assetsProvider = assetsProvider;
+    this.assetWriter = new EntropyDataAssetWriter(client.getAssetsApi());
     this.connectorRegistration = new EntropyDataConnectorRegistration(client, connectorId, "assets-synchronizer", connectorVersion);
 
     this.connectorRegistration.register();
@@ -94,27 +94,11 @@ public class EntropyDataAssetsSynchronizer {
   }
 
   public void saveAsset(Asset asset) {
-    try {
-      Asset existingAsset = this.client.getAssetsApi().getAsset(asset.getId());
-      if (Objects.deepEquals(asset, existingAsset)) {
-        log.info("Asset {} already exists and unchanged", asset.getId());
-        return;
-      }
-    } catch (ApiException e) {
-      if (e.getCode() == 404) {
-        log.debug("Asset {} does not exist, so continue", asset.getId());
-      } else {
-        throw e;
-      }
-    }
-
-    log.info("Saving asset {}", asset.getId());
-    client.getAssetsApi().addAsset(asset.getId(), asset);
+    assetWriter.save(asset);
   }
 
   public void deleteAsset(String id) {
-    log.info("Deleting asset {}", id);
-    client.getAssetsApi().deleteAsset(id);
+    assetWriter.delete(id);
   }
 
 }

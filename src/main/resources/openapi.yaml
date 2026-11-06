@@ -2719,7 +2719,12 @@ paths:
       tags:
         - Assets
       summary: Get all data assets
-      description: Get all data products of an organization.
+      description: |
+        Get all data assets of an organization.
+
+        With `source`, `qualifiedName`, or `sourceId`, only assets matching every given parameter exactly are returned.
+        A connector uses this to find an asset that was created before the platform object existed, for example
+        `?source=unity&qualifiedName=sales.orders.order_lines`.
       operationId: getAssets
       parameters:
         - in: query
@@ -2729,6 +2734,24 @@ paths:
             minimum: 0
           required: false
           description: The number of the requested page, starting from 0. Each page contains a maximum of 1000 assets, sorted by creation date ascending. Use the Link header with rel="next" to navigate to the next page.
+        - in: query
+          name: source
+          schema:
+            type: string
+          required: false
+          description: Only assets whose `info.source` equals this value.
+        - in: query
+          name: qualifiedName
+          schema:
+            type: string
+          required: false
+          description: Only assets whose `info.qualifiedName` equals this value, ignoring case.
+        - in: query
+          name: sourceId
+          schema:
+            type: string
+          required: false
+          description: Only assets whose `info.sourceId` equals this value.
       responses:
         200:
           description: List of all data assets
