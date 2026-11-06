@@ -126,6 +126,20 @@ class EntropyDataAssetWriterTests {
     assertThat(entropyData.listCalls).isEqualTo(1);
   }
 
+  @Test
+  void stopsLookingUpOnceEntropyDataTurnsOutToIgnoreTheFiltersInAnOrganizationThatStartedEmpty() {
+    entropyData.ignoresFilters = true;
+
+    var writer = new EntropyDataAssetWriter(entropyData);
+    writer.save(table("first-table-uuid", "sales.orders.order_lines"));
+    writer.save(table("second-table-uuid", "sales.orders.customers"));
+    writer.save(table("third-table-uuid", "sales.orders.invoices"));
+
+    assertThat(entropyData.puts).containsExactly("first-table-uuid", "second-table-uuid", "third-table-uuid");
+    // two empty answers for the first asset, then the second asset's first lookup returns the first asset unfiltered
+    assertThat(entropyData.listCalls).isEqualTo(3);
+  }
+
   private static Asset table(String id, String qualifiedName) {
     return new Asset().id(id)
         .info(new AssetInfo().source("unity").sourceId(id).qualifiedName(qualifiedName).type("unity_table").description("from Databricks"));

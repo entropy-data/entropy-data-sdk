@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +28,6 @@ class EntropyDataAssetWriter {
 
   private static final Logger log = LoggerFactory.getLogger(EntropyDataAssetWriter.class);
 
-  private static final String PROBE_SOURCE = "entropy-data-sdk-lookup-probe";
-
   private final AssetsApi assetsApi;
 
   /**
@@ -39,7 +36,13 @@ class EntropyDataAssetWriter {
    */
   private final Map<String, String> entropyDataIds = new ConcurrentHashMap<>();
 
-  private volatile Boolean lookupSupported;
+  /**
+   * An Entropy Data version without the lookup filters ignores them and answers with the first page of all assets. An answer
+   * holding an asset that does not match what was asked for gives that away, so lookups stop for the rest of the process
+   * instead of fetching up to a page of assets for every new one. An empty organization cannot give it away, so no probe is
+   * made up front.
+   */
+  private volatile boolean lookupSupported = true;
 
   EntropyDataAssetWriter(AssetsApi assetsApi) {
     this.assetsApi = assetsApi;
@@ -85,7 +88,7 @@ class EntropyDataAssetWriter {
     entropyDataIds.remove(asset.getId());
 
     var info = asset.getInfo();
-    if (info == null || isBlank(info.getSource()) || !lookupSupported()) {
+    if (info == null || isBlank(info.getSource())) {
       return Optional.empty();
     }
 
@@ -137,7 +140,7 @@ class EntropyDataAssetWriter {
       entropyDataIds.put(providerId, providerId);
       return providerId;
     }
-    if (!isBlank(source) && lookupSupported()) {
+    if (!isBlank(source)) {
       var matches = findBySourceId(source, providerId);
       if (matches.size() == 1) {
         entropyDataIds.put(providerId, matches.get(0).getId());
@@ -169,22 +172,6 @@ class EntropyDataAssetWriter {
     return unchanged;
   }
 
-  /**
-   * An Entropy Data version without the lookup filters ignores them and returns the first page of all assets. One probe that
-   * cannot match anything tells the two apart, so such a version is not asked for every new asset.
-   */
-  private boolean lookupSupported() {
-    if (lookupSupported == null) {
-      var probe = assetsApi.getAssets(null, PROBE_SOURCE, UUID.randomUUID().toString(), null);
-      lookupSupported = probe == null || probe.isEmpty();
-      if (!lookupSupported) {
-        log.warn("Entropy Data ignores the asset lookup filters, so assets created before their platform object existed "
-            + "are not matched and get a duplicate. Update Entropy Data to match them.");
-      }
-    }
-    return lookupSupported;
-  }
-
   private Optional<Asset> findById(String id) {
     try {
       return Optional.ofNullable(assetsApi.getAsset(id));
@@ -197,20 +184,34 @@ class EntropyDataAssetWriter {
   }
 
   private List<Asset> findBySourceId(String source, String sourceId) {
-    return Optional.ofNullable(assetsApi.getAssets(null, source, null, sourceId)).orElse(List.of()).stream()
-        .filter(candidate -> candidate.getInfo() != null)
-        .filter(candidate -> source.equals(candidate.getInfo().getSource()))
-        .filter(candidate -> sourceId.equals(candidate.getInfo().getSourceId()))
-        .toList();
+    return lookUp(source, null, sourceId);
   }
 
   private List<Asset> findPlaceholders(String source, String qualifiedName) {
-    return Optional.ofNullable(assetsApi.getAssets(null, source, qualifiedName, null)).orElse(List.of()).stream()
-        .filter(candidate -> candidate.getInfo() != null)
-        .filter(candidate -> source.equals(candidate.getInfo().getSource()))
-        .filter(candidate -> qualifiedName.equalsIgnoreCase(candidate.getInfo().getQualifiedName()))
+    return lookUp(source, qualifiedName, null).stream()
         .filter(candidate -> isBlank(candidate.getInfo().getSourceId()))
         .toList();
+  }
+
+  private List<Asset> lookUp(String source, String qualifiedName, String sourceId) {
+    if (!lookupSupported) {
+      return List.of();
+    }
+    var answer = Optional.ofNullable(assetsApi.getAssets(null, source, qualifiedName, sourceId)).orElse(List.of());
+    var matching = answer.stream()
+        .filter(candidate -> candidate.getInfo() != null)
+        .filter(candidate -> source.equals(candidate.getInfo().getSource()))
+        .filter(candidate -> qualifiedName == null || qualifiedName.equalsIgnoreCase(candidate.getInfo().getQualifiedName()))
+        .filter(candidate -> sourceId == null || sourceId.equals(candidate.getInfo().getSourceId()))
+        .toList();
+    if (matching.size() < answer.size()) {
+      lookupSupported = false;
+      log.warn("Entropy Data ignores the asset lookup filters, so assets created before their platform object existed "
+          + "are not matched and get a duplicate. Update Entropy Data to match them.");
+      // A page of all assets is no complete answer, so a single match on it could hide a second one elsewhere.
+      return List.of();
+    }
+    return matching;
   }
 
   private static AssetInfo infoOf(Asset asset) {
