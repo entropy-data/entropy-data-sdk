@@ -76,7 +76,19 @@ class EntropyDataAssetWriter {
     assetsApi.addAsset(asset.getId(), asset);
   }
 
-  String entropyDataIdOf(String providerId) {
+  void delete(String providerId) {
+    var entropyDataId = entropyDataIds.get(providerId);
+    if (entropyDataId == null) {
+      // A deletion carries the provider's id only, so an asset taken over before a restart is found by its source id alone.
+      var matches = lookUp(null, null, providerId);
+      entropyDataId = matches.size() == 1 ? matches.get(0).getId() : providerId;
+    }
+    log.info("Deleting asset {}", entropyDataId);
+    assetsApi.deleteAsset(entropyDataId);
+    entropyDataIds.remove(providerId);
+  }
+
+  private String entropyDataIdOf(String providerId) {
     return entropyDataIds.getOrDefault(providerId, providerId);
   }
 
@@ -92,16 +104,16 @@ class EntropyDataAssetWriter {
       return Optional.empty();
     }
 
-    if (!isBlank(info.getSourceId())) {
-      var matches = findBySourceId(info.getSource(), info.getSourceId());
-      if (matches.size() > 1) {
-        log.warn("Asset {}: {} assets have source {} and source id {}, so none of them is updated", asset.getId(), matches.size(),
-            info.getSource(), info.getSourceId());
-        return Optional.empty();
-      }
-      if (matches.size() == 1) {
-        return findById(matches.get(0).getId());
-      }
+    // Taking an asset over stores the provider's id as its source id when the provider sends none.
+    var sourceId = isBlank(info.getSourceId()) ? asset.getId() : info.getSourceId();
+    var matches = findBySourceId(info.getSource(), sourceId);
+    if (matches.size() > 1) {
+      log.warn("Asset {}: {} assets have source {} and source id {}, so none of them is updated", asset.getId(), matches.size(),
+          info.getSource(), sourceId);
+      return Optional.empty();
+    }
+    if (matches.size() == 1) {
+      return findById(matches.get(0).getId());
     }
 
     if (!isBlank(info.getQualifiedName())) {
@@ -200,7 +212,7 @@ class EntropyDataAssetWriter {
     var answer = Optional.ofNullable(assetsApi.getAssets(null, source, qualifiedName, sourceId)).orElse(List.of());
     var matching = answer.stream()
         .filter(candidate -> candidate.getInfo() != null)
-        .filter(candidate -> source.equals(candidate.getInfo().getSource()))
+        .filter(candidate -> source == null || source.equals(candidate.getInfo().getSource()))
         .filter(candidate -> qualifiedName == null || qualifiedName.equalsIgnoreCase(candidate.getInfo().getQualifiedName()))
         .filter(candidate -> sourceId == null || sourceId.equals(candidate.getInfo().getSourceId()))
         .toList();

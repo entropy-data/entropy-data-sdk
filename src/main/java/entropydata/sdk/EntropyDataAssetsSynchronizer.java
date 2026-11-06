@@ -98,9 +98,7 @@ public class EntropyDataAssetsSynchronizer {
   }
 
   public void deleteAsset(String id) {
-    var entropyDataId = assetWriter.entropyDataIdOf(id);
-    log.info("Deleting asset {}", entropyDataId);
-    client.getAssetsApi().deleteAsset(entropyDataId);
+    assetWriter.delete(id);
   }
 
 }

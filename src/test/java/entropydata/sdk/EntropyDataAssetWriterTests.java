@@ -140,9 +140,46 @@ class EntropyDataAssetWriterTests {
     assertThat(entropyData.listCalls).isEqualTo(3);
   }
 
+  @Test
+  void findsTheTakenOverAssetAfterARestartWhenTheProviderSendsNoSourceId() {
+    entropyData.store(new Asset().id("orders-placeholder").info(new AssetInfo().source("snowflake").qualifiedName("sales.orders.order_lines")));
+    new EntropyDataAssetWriter(entropyData).save(tableWithoutSourceId("snowflake-orders"));
+
+    new EntropyDataAssetWriter(entropyData).save(tableWithoutSourceId("snowflake-orders"));
+
+    assertThat(entropyData.puts).containsExactly("orders-placeholder");
+    assertThat(entropyData.assets).doesNotContainKey("snowflake-orders");
+  }
+
+  @Test
+  void deletesTheTakenOverAssetAfterARestart() {
+    entropyData.store(new Asset().id("orders-placeholder").info(new AssetInfo().source("snowflake").qualifiedName("sales.orders.order_lines")));
+    new EntropyDataAssetWriter(entropyData).save(tableWithoutSourceId("snowflake-orders"));
+
+    new EntropyDataAssetWriter(entropyData).delete("snowflake-orders");
+
+    assertThat(entropyData.deletes).containsExactly("orders-placeholder");
+    assertThat(entropyData.assets).isEmpty();
+  }
+
+  @Test
+  void deletesAnAssetThatWasNotTakenOverUnderItsOwnId() {
+    entropyData.store(tableWithoutSourceId("snowflake-orders"));
+
+    new EntropyDataAssetWriter(entropyData).delete("snowflake-orders");
+
+    assertThat(entropyData.deletes).containsExactly("snowflake-orders");
+    assertThat(entropyData.assets).isEmpty();
+  }
+
   private static Asset table(String id, String qualifiedName) {
     return new Asset().id(id)
         .info(new AssetInfo().source("unity").sourceId(id).qualifiedName(qualifiedName).type("unity_table").description("from Databricks"));
+  }
+
+  private static Asset tableWithoutSourceId(String id) {
+    return new Asset().id(id)
+        .info(new AssetInfo().source("snowflake").qualifiedName("SALES.ORDERS.ORDER_LINES").type("snowflake_table"));
   }
 
   /** Behaves like the asset endpoints of Entropy Data, including the read-only assigned tags. */
@@ -151,6 +188,7 @@ class EntropyDataAssetWriterTests {
     private final ApiClient apiClient = new ApiClient();
     final Map<String, Asset> assets = new LinkedHashMap<>();
     final List<String> puts = new ArrayList<>();
+    final List<String> deletes = new ArrayList<>();
     boolean ignoresFilters = false;
     int listCalls = 0;
 
@@ -189,6 +227,12 @@ class EntropyDataAssetWriterTests {
       var existing = assets.get(id);
       stored.setAssignedTags(existing == null ? null : existing.getAssignedTags());
       assets.put(id, stored);
+    }
+
+    @Override
+    public void deleteAsset(String id) {
+      deletes.add(id);
+      assets.remove(id);
     }
 
     private Asset copy(Asset asset) {
