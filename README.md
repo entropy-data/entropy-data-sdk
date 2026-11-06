@@ -100,6 +100,11 @@ var assetsSynchronizer = new EntropyDataAssetsSynchronizer(connectorid, client, 
 assetsSynchronizer.start(); // This will start a long-running connector that calls the fetchAssets method periodically
 ```
 
+How the synchronizer writes an asset:
+
+- **Matching an existing asset.** It looks for the asset under the asset's `id` first. If there is none, it looks for an asset with the same `info.source` and `info.sourceId`, then for an asset with the same `info.source` and `info.qualifiedName` (ignoring case) and no `info.sourceId` yet. That last one is an asset someone created in Entropy Data before the platform object existed. A found asset is updated under its own id and keeps it, and `relationships` pointing at the provider's id are pointed at it. Set `info.source`, `info.sourceId` (the platform's stable id), and `info.qualifiedName` on your assets so this works. It needs an Entropy Data version that supports the lookup filters on `GET /api/assets`; with an older one, the synchronizer logs a warning once and creates the asset under its `id` as before.
+- **Fields curated in Entropy Data.** An owner set in Entropy Data stays; `info.owner` from the provider only fills an empty one. Empty `tags` and `links` keep the ones in Entropy Data.
+
 ### Implement an EventListener (optional)
 
 To trigger actions in your data platform when events happen in Entropy Data, you can implement the `EntropyDataEventListener` interface:
