@@ -2,6 +2,8 @@ package entropydata.sdk;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import entropydata.sdk.client.ApiClient;
 import entropydata.sdk.client.ApiException;
 import entropydata.sdk.client.api.AssetsApi;
@@ -15,6 +17,8 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class EntropyDataAssetWriterTests {
+
+  private static final ObjectMapper objectMapper = new ApiClient().getObjectMapper();
 
   private final InMemoryAssetsApi entropyData = new InMemoryAssetsApi();
 
@@ -92,7 +96,7 @@ class EntropyDataAssetWriterTests {
 
   @Test
   void skipsAnAssetThatOnlyDiffersByOwnerAndAssignedTags() {
-    var curated = table("table-uuid", "sales.orders.order_lines").assignedTags(List.of("governance/internal"));
+    var curated = withAssignedTags(table("table-uuid", "sales.orders.order_lines"), List.of("governance/internal"));
     curated.getInfo().owner("team-sales");
     entropyData.store(curated);
 
@@ -182,10 +186,16 @@ class EntropyDataAssetWriterTests {
         .info(new AssetInfo().source("snowflake").qualifiedName("SALES.ORDERS.ORDER_LINES").type("snowflake_table"));
   }
 
+  /** The generated model may have no setter for the read-only assigned tags, only a JSON creator. */
+  private static Asset withAssignedTags(Asset asset, List<String> assignedTags) {
+    ObjectNode json = objectMapper.valueToTree(asset);
+    json.set(Asset.JSON_PROPERTY_ASSIGNED_TAGS, objectMapper.valueToTree(assignedTags));
+    return objectMapper.convertValue(json, Asset.class);
+  }
+
   /** Behaves like the asset endpoints of Entropy Data, including the read-only assigned tags. */
   private static class InMemoryAssetsApi extends AssetsApi {
 
-    private final ApiClient apiClient = new ApiClient();
     final Map<String, Asset> assets = new LinkedHashMap<>();
     final List<String> puts = new ArrayList<>();
     final List<String> deletes = new ArrayList<>();
@@ -223,10 +233,8 @@ class EntropyDataAssetWriterTests {
     @Override
     public void addAsset(String id, Asset asset) {
       puts.add(id);
-      var stored = copy(asset);
       var existing = assets.get(id);
-      stored.setAssignedTags(existing == null ? null : existing.getAssignedTags());
-      assets.put(id, stored);
+      assets.put(id, withAssignedTags(asset, existing == null ? null : existing.getAssignedTags()));
     }
 
     @Override
@@ -236,7 +244,7 @@ class EntropyDataAssetWriterTests {
     }
 
     private Asset copy(Asset asset) {
-      return apiClient.getObjectMapper().convertValue(asset, Asset.class);
+      return objectMapper.convertValue(asset, Asset.class);
     }
   }
 }

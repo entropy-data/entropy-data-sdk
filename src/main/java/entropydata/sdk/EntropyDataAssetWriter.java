@@ -1,5 +1,6 @@
 package entropydata.sdk;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import entropydata.sdk.client.ApiException;
 import entropydata.sdk.client.api.AssetsApi;
 import entropydata.sdk.client.model.Asset;
@@ -175,13 +176,17 @@ class EntropyDataAssetWriter {
     }
   }
 
-  /** Assigned tags are read-only in the API, so they take part in the comparison only. */
-  private static boolean isUnchanged(Asset asset, Asset existing) {
-    var provided = asset.getAssignedTags();
-    asset.setAssignedTags(existing.getAssignedTags());
-    var unchanged = Objects.deepEquals(asset, existing);
-    asset.setAssignedTags(provided);
-    return unchanged;
+  /**
+   * Assigned tags are read-only in the API, so a provider cannot change them. The assets are compared as JSON because the
+   * generated model may have no setter for a read-only property.
+   */
+  private boolean isUnchanged(Asset asset, Asset existing) {
+    var objectMapper = assetsApi.getApiClient().getObjectMapper();
+    ObjectNode provided = objectMapper.valueToTree(asset);
+    ObjectNode current = objectMapper.valueToTree(existing);
+    provided.remove(Asset.JSON_PROPERTY_ASSIGNED_TAGS);
+    current.remove(Asset.JSON_PROPERTY_ASSIGNED_TAGS);
+    return provided.equals(current);
   }
 
   private Optional<Asset> findById(String id) {
